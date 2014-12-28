@@ -21,12 +21,10 @@ At this time, you're unfortunately in the wilderness as far as installing the ne
 Create a new directory in your Dropbox for Plerd's sake, and then create these subdirectories inside of it:
 
 * `source`: This will hold your blog's Markdown-based source files.
-* `template`: Holds your blog's templates. (Go ahead and copy the contents of this repository's `template` file into this directory, after you create it.)
+* `templates`: Holds your blog's templates. (Go ahead and copy the contents of this repository's `templates` file into this directory, after you create it.)
 * `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
 
 You should then update `conf/plerd.conf` to taste. Set the `path` attribute to the full path of the Dropbox-synched directory Plerd will use, from the perspective of the server machine's filesystem.
-
-Copy the contents of this repository's `template` directory into the `template` subdirectory of the salient Dropbox-synced folder.
 
 And then you need to do whatever you'd like with the webserver of your choice such that it treats the synced `docroot` subdirectory as the your blog's own docroot.
 
@@ -56,7 +54,7 @@ Publishing this file will result in a three-paragraph HTML file named `2010-03-0
 
 ### Publishing posts
 
-* Run `bin/plerdall` to create a new website in Plerd's docroot directory, based on the contents of its source and template directories.
+* Run `bin/plerdall` to create a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
 
 * Run `bin/plerdwatcher` to launch a daemon that monitors the source directory for changes, republishing files as necessary.
 
