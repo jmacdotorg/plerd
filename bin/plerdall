@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use YAML::XS qw( LoadFile );
+use FindBin;
+
+use lib "$FindBin::Bin/../lib";
+
+use Plerd;
+
+my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+
+my $plerd = Plerd->new(
+    path     => $config_ref->{ path },
+    title    => $config_ref->{ title },
+    base_uri => URI->new ( $config_ref->{ base_uri } ),
+);
+
+$plerd->publish_all;

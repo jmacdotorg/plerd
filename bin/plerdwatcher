@@ -1,0 +1,42 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use YAML::XS qw( LoadFile );
+use File::ChangeNotify;
+use FindBin;
+use Path::Class::File;
+
+use lib "$FindBin::Bin/../lib";
+
+use Plerd;
+
+my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+
+my $plerd = Plerd->new(
+    path     => $config_ref->{ path },
+    title    => $config_ref->{ title },
+    base_uri => URI->new ( $config_ref->{ base_uri } ),
+);
+
+my $watcher = File::ChangeNotify->instantiate_watcher (
+    directories => [ $plerd->source_directory . '' ],
+    filter      => qr/\.(md|markdown)$/,
+);
+
+warn "Plerdwatcher is watching " . $plerd->source_directory . "...\n";
+
+while ( my @events = $watcher->wait_for_events ) {
+    for my $event ( @events ) {
+        if ( ( $event->type eq 'create' ) || ( $event->type eq 'modify' ) ) {
+            $plerd->files_to_publish(
+                [ Path::Class::File->new( $event->path ) ]
+            );
+            $plerd->publish;
+        }
+        elsif ( $event->type eq 'delete' ) {
+            $plerd->publish_all;
+        }
+    }
+}
