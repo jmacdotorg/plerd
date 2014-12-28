@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt title = post.title %]
+
+[% FOREACH post IN posts %]
+<div class="post">
+    <div class="title page-header"><h1><a href="[% post.uri %]">[% post.title %]<br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
+    <div class="body">[% post.body %]</div>
+</div>
+[% END %]
+
+[% END %]
