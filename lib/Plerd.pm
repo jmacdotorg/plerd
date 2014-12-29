@@ -123,6 +123,7 @@ has 'recent_posts' => (
     is => 'ro',
     isa => 'ArrayRef[Plerd::Post]',
     lazy_build => 1,
+    clearer => 'clear_recent_posts',
 );
 
 sub publish {
@@ -144,10 +145,11 @@ sub publish {
     if ( $self->requires_recent_page_update ) {
         $self->publish_recent_page;
         $self->publish_rss;
+
+        $self->clear_recent_posts;
     }
 
     $self->clear_files_to_publish;
-
 }
 
 sub publish_all {
