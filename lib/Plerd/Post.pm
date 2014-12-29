@@ -71,13 +71,8 @@ sub _build_publication_file {
 sub _build_published_filename {
     my $self = shift;
 
-    my $filename = lc $self->title;
-    $filename =~ s/\W/-/g;
-    $filename =~ s/--+/-/g;
-    $filename =~ s/^-//;
-    $filename =~ s/-$//;
-
-    $filename = $self->date->ymd( q{-} ) . "-$filename.html";
+    my $filename = $self->source_file->basename;
+    $filename =~ s/\..*$/.html/;
 
     return $filename;
 }

@@ -40,7 +40,7 @@ Plerd post-source files are just Markdown files. However, Plerd requires that ev
 
 Furthermore, source files' names must end in either `.md` or `.markdown`.
 
-For example, a valid source file could be called `2010-01-01 blah.markdown`, and it could contain this, in full:
+For example, a valid source file could be called `2010-01-01-my-day-today.markdown`, and it could contain this, in full:
 
     title: My day today
 
@@ -50,7 +50,7 @@ For example, a valid source file could be called `2010-01-01 blah.markdown`, and
 
     Well, that's all for now. Bye bye.
 
-Publishing this file will result in a three-paragraph HTML file named `2010-03-01-my-day-today.html` appearing in the blog's docroot directory. (Note that any part of the source file's name besides the date will be ignored.) It will also get linked from `archive.html` among the posts from March, 2010, and it will furthermore appear in the recent-posts page and the Atom document if a post from March 1, 2010 represents one of your blog's ten most recent posts.
+Publishing this file will result in a three-paragraph HTML file named `2010-03-01-my-day-today.html` appearing in the blog's docroot directory. It will also get linked from `archive.html` among the posts from March, 2010, and it will furthermore appear in the recent-posts page and the Atom document if a post from March 1, 2010 represents one of your blog's ten most recent posts.
 
 ### Publishing posts
 
