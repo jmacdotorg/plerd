@@ -40,7 +40,7 @@ Plerd post-source files are just Markdown files. However, Plerd requires that ev
 
 Furthermore, source files' names must end in either `.md` or `.markdown`.
 
-For example, a valid source file could be called `2010-01-01-my-day-today.markdown`, and it could contain this, in full:
+For example, a valid source file could be called `2010-03-01-my-day-today.markdown`, and it could contain this, in full:
 
     title: My day today
 
