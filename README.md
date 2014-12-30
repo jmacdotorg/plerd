@@ -27,7 +27,7 @@ To install Plerd's dependencies, you need __cpanm__ (a.k.a. _cpanminus_) install
     curl -LO http://xrl.us/cpanm
     chmod +x cpanm
 
-With cpanm installed, run the following command from the top level of your plerd directory (the one containing this here README file):
+With cpanm installed, run the following command from the top level of your Plerd repository (the directory that contains this here README file):
 
     cpanm --installdeps .
 
