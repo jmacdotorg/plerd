@@ -104,6 +104,8 @@ DISTRIBUTIONS
       DateTime::Duration 1.12
       DateTime::Helpers 1.12
       DateTime::Infinite 1.12
+      DateTime::Infinite::Future 1.12
+      DateTime::Infinite::Past 1.12
       DateTime::LeapSecond 1.12
     requirements:
       Carp 0
@@ -1121,7 +1123,6 @@ DISTRIBUTIONS
   ExtUtils-MakeMaker-7.04
     pathname: B/BI/BINGOS/ExtUtils-MakeMaker-7.04.tar.gz
     provides:
-      DynaLoader 7.04
       ExtUtils::Command::MM 7.04
       ExtUtils::Liblist 7.04
       ExtUtils::Liblist::Kid 7.04
@@ -1156,7 +1157,6 @@ DISTRIBUTIONS
       ExtUtils::testlib 7.04
       MM 7.04
       MY 7.04
-      in 7.04
     requirements:
       Data::Dumper 0
       DirHandle 0
@@ -1170,12 +1170,10 @@ DISTRIBUTIONS
     provides:
       File::ChangeNotify 0.24
       File::ChangeNotify::Event 0.24
-      File::ChangeNotify::TestHelper undef
       File::ChangeNotify::Watcher 0.24
       File::ChangeNotify::Watcher::Default 0.24
       File::ChangeNotify::Watcher::Inotify 0.24
       File::ChangeNotify::Watcher::KQueue 0.24
-      inc::MyModuleBuild undef
     requirements:
       Carp 0
       Class::Load 0
@@ -1298,8 +1296,6 @@ DISTRIBUTIONS
       Class::MOP 2.1403
       Class::MOP::Attribute 2.1403
       Class::MOP::Class 2.1403
-      Class::MOP::Class::Immutable::Trait undef
-      Class::MOP::Deprecated undef
       Class::MOP::Instance 2.1403
       Class::MOP::Method 2.1403
       Class::MOP::Method::Accessor 2.1403
@@ -1308,18 +1304,11 @@ DISTRIBUTIONS
       Class::MOP::Method::Inlined 2.1403
       Class::MOP::Method::Meta 2.1403
       Class::MOP::Method::Wrapped 2.1403
-      Class::MOP::MiniTrait undef
-      Class::MOP::Mixin undef
-      Class::MOP::Mixin::AttributeCore undef
-      Class::MOP::Mixin::HasAttributes undef
-      Class::MOP::Mixin::HasMethods undef
-      Class::MOP::Mixin::HasOverloads undef
       Class::MOP::Module 2.1403
       Class::MOP::Object 2.1403
       Class::MOP::Overload 2.1403
       Class::MOP::Package 2.1403
       Moose 2.1403
-      Moose::Deprecated undef
       Moose::Exception 2.1403
       Moose::Exception::AccessorMustReadWrite 2.1403
       Moose::Exception::AddParameterizableTypeTakesParameterizableType 2.1403
@@ -1551,8 +1540,8 @@ DISTRIBUTIONS
       Moose::Exception::WrongTypeConstraintGiven 2.1403
       Moose::Exporter 2.1403
       Moose::Meta::Attribute 2.1403
+      Moose::Meta::Attribute::Custom::Moose 2.1403
       Moose::Meta::Attribute::Native 2.1403
-      Moose::Meta::Attribute::Native::Trait undef
       Moose::Meta::Attribute::Native::Trait::Array 2.1403
       Moose::Meta::Attribute::Native::Trait::Bool 2.1403
       Moose::Meta::Attribute::Native::Trait::Code 2.1403
@@ -1561,94 +1550,15 @@ DISTRIBUTIONS
       Moose::Meta::Attribute::Native::Trait::Number 2.1403
       Moose::Meta::Attribute::Native::Trait::String 2.1403
       Moose::Meta::Class 2.1403
-      Moose::Meta::Class::Immutable::Trait undef
       Moose::Meta::Instance 2.1403
       Moose::Meta::Method 2.1403
       Moose::Meta::Method::Accessor 2.1403
-      Moose::Meta::Method::Accessor::Native undef
-      Moose::Meta::Method::Accessor::Native::Array undef
-      Moose::Meta::Method::Accessor::Native::Array::Writer undef
-      Moose::Meta::Method::Accessor::Native::Array::accessor undef
-      Moose::Meta::Method::Accessor::Native::Array::clear undef
-      Moose::Meta::Method::Accessor::Native::Array::count undef
-      Moose::Meta::Method::Accessor::Native::Array::delete undef
-      Moose::Meta::Method::Accessor::Native::Array::elements undef
-      Moose::Meta::Method::Accessor::Native::Array::first undef
-      Moose::Meta::Method::Accessor::Native::Array::first_index undef
-      Moose::Meta::Method::Accessor::Native::Array::get undef
-      Moose::Meta::Method::Accessor::Native::Array::grep undef
-      Moose::Meta::Method::Accessor::Native::Array::insert undef
-      Moose::Meta::Method::Accessor::Native::Array::is_empty undef
-      Moose::Meta::Method::Accessor::Native::Array::join undef
-      Moose::Meta::Method::Accessor::Native::Array::map undef
-      Moose::Meta::Method::Accessor::Native::Array::natatime undef
-      Moose::Meta::Method::Accessor::Native::Array::pop undef
-      Moose::Meta::Method::Accessor::Native::Array::push undef
-      Moose::Meta::Method::Accessor::Native::Array::reduce undef
-      Moose::Meta::Method::Accessor::Native::Array::set undef
-      Moose::Meta::Method::Accessor::Native::Array::shallow_clone undef
-      Moose::Meta::Method::Accessor::Native::Array::shift undef
-      Moose::Meta::Method::Accessor::Native::Array::shuffle undef
-      Moose::Meta::Method::Accessor::Native::Array::sort undef
-      Moose::Meta::Method::Accessor::Native::Array::sort_in_place undef
-      Moose::Meta::Method::Accessor::Native::Array::splice undef
-      Moose::Meta::Method::Accessor::Native::Array::uniq undef
-      Moose::Meta::Method::Accessor::Native::Array::unshift undef
-      Moose::Meta::Method::Accessor::Native::Bool::not undef
-      Moose::Meta::Method::Accessor::Native::Bool::set undef
-      Moose::Meta::Method::Accessor::Native::Bool::toggle undef
-      Moose::Meta::Method::Accessor::Native::Bool::unset undef
-      Moose::Meta::Method::Accessor::Native::Code::execute undef
-      Moose::Meta::Method::Accessor::Native::Code::execute_method undef
-      Moose::Meta::Method::Accessor::Native::Collection undef
-      Moose::Meta::Method::Accessor::Native::Counter::Writer undef
-      Moose::Meta::Method::Accessor::Native::Counter::dec undef
-      Moose::Meta::Method::Accessor::Native::Counter::inc undef
-      Moose::Meta::Method::Accessor::Native::Counter::reset undef
-      Moose::Meta::Method::Accessor::Native::Counter::set undef
-      Moose::Meta::Method::Accessor::Native::Hash undef
-      Moose::Meta::Method::Accessor::Native::Hash::Writer undef
-      Moose::Meta::Method::Accessor::Native::Hash::accessor undef
-      Moose::Meta::Method::Accessor::Native::Hash::clear undef
-      Moose::Meta::Method::Accessor::Native::Hash::count undef
-      Moose::Meta::Method::Accessor::Native::Hash::defined undef
-      Moose::Meta::Method::Accessor::Native::Hash::delete undef
-      Moose::Meta::Method::Accessor::Native::Hash::elements undef
-      Moose::Meta::Method::Accessor::Native::Hash::exists undef
-      Moose::Meta::Method::Accessor::Native::Hash::get undef
-      Moose::Meta::Method::Accessor::Native::Hash::is_empty undef
-      Moose::Meta::Method::Accessor::Native::Hash::keys undef
-      Moose::Meta::Method::Accessor::Native::Hash::kv undef
-      Moose::Meta::Method::Accessor::Native::Hash::set undef
-      Moose::Meta::Method::Accessor::Native::Hash::shallow_clone undef
-      Moose::Meta::Method::Accessor::Native::Hash::values undef
-      Moose::Meta::Method::Accessor::Native::Number::abs undef
-      Moose::Meta::Method::Accessor::Native::Number::add undef
-      Moose::Meta::Method::Accessor::Native::Number::div undef
-      Moose::Meta::Method::Accessor::Native::Number::mod undef
-      Moose::Meta::Method::Accessor::Native::Number::mul undef
-      Moose::Meta::Method::Accessor::Native::Number::set undef
-      Moose::Meta::Method::Accessor::Native::Number::sub undef
-      Moose::Meta::Method::Accessor::Native::Reader undef
-      Moose::Meta::Method::Accessor::Native::String::append undef
-      Moose::Meta::Method::Accessor::Native::String::chomp undef
-      Moose::Meta::Method::Accessor::Native::String::chop undef
-      Moose::Meta::Method::Accessor::Native::String::clear undef
-      Moose::Meta::Method::Accessor::Native::String::inc undef
-      Moose::Meta::Method::Accessor::Native::String::length undef
-      Moose::Meta::Method::Accessor::Native::String::match undef
-      Moose::Meta::Method::Accessor::Native::String::prepend undef
-      Moose::Meta::Method::Accessor::Native::String::replace undef
-      Moose::Meta::Method::Accessor::Native::String::substr undef
-      Moose::Meta::Method::Accessor::Native::Writer undef
       Moose::Meta::Method::Augmented 2.1403
       Moose::Meta::Method::Constructor 2.1403
       Moose::Meta::Method::Delegation 2.1403
       Moose::Meta::Method::Destructor 2.1403
       Moose::Meta::Method::Meta 2.1403
       Moose::Meta::Method::Overridden 2.1403
-      Moose::Meta::Mixin::AttributeCore undef
-      Moose::Meta::Object::Trait undef
       Moose::Meta::Role 2.1403
       Moose::Meta::Role::Application 2.1403
       Moose::Meta::Role::Application::RoleSummation 2.1403
@@ -1676,7 +1586,6 @@ DISTRIBUTIONS
       Moose::Util 2.1403
       Moose::Util::MetaRole 2.1403
       Moose::Util::TypeConstraints 2.1403
-      Moose::Util::TypeConstraints::Builtins undef
       Test::Moose 2.1403
       metaclass 2.1403
       oose 2.1403
@@ -1778,7 +1687,6 @@ DISTRIBUTIONS
   Package-Stash-XS-0.28
     pathname: D/DO/DOY/Package-Stash-XS-0.28.tar.gz
     provides:
-      CompileTime undef
       Package::Stash::XS 0.28
     requirements:
       ExtUtils::MakeMaker 6.30
@@ -1807,23 +1715,10 @@ DISTRIBUTIONS
     pathname: D/DR/DROLSKY/Params-Validate-1.13.tar.gz
     provides:
       Attribute::Params::Validate 1.13
-      Bar undef
-      Baz undef
-      Foo undef
-      PVTests undef
-      PVTests::Callbacks undef
-      PVTests::Defaults undef
-      PVTests::Regex undef
-      PVTests::Standard undef
-      PVTests::With undef
       Params::Validate 1.13
       Params::Validate::Constants 1.13
       Params::Validate::PP 1.13
       Params::Validate::XS 1.13
-      Quux undef
-      Testing::X undef
-      Yadda undef
-      inc::MyModuleBuild undef
     requirements:
       Attribute::Handlers 0.79
       Carp 0
@@ -1863,6 +1758,19 @@ DISTRIBUTIONS
       overload 0
       parent 0
       strict 0
+  Readonly-2.00
+    pathname: S/SA/SANKO/Readonly-2.00.tar.gz
+    provides:
+      Readonly 2.00
+      Readonly::Array 2.00
+      Readonly::Hash 2.00
+      Readonly::Scalar 2.00
+    requirements:
+      CPAN::Meta 0
+      CPAN::Meta::Prereqs 0
+      ExtUtils::CBuilder 0
+      Module::Build 0.38
+      perl v5.6.0
   Scalar-List-Utils-1.41
     pathname: P/PE/PEVANS/Scalar-List-Utils-1.41.tar.gz
     provides:
@@ -1878,13 +1786,6 @@ DISTRIBUTIONS
     provides:
       Sub::Exporter 0.987
       Sub::Exporter::Util 0.987
-      Test::SubExporter::DashSetup undef
-      Test::SubExporter::Faux undef
-      Test::SubExporter::GroupGen undef
-      Test::SubExporter::GroupGenSubclass undef
-      Test::SubExporter::ObjGen undef
-      Test::SubExporter::ObjGen::Obj undef
-      Test::SubExporter::s_e undef
     requirements:
       Carp 0
       Data::OptList 0.100
