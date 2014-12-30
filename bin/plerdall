@@ -6,7 +6,6 @@ use strict;
 use FindBin;
 use lib
     "$FindBin::Bin/../lib",
-    "$FindBin::Bin/../local/lib/perl5",
 ;
 
 use YAML qw( LoadFile );
