@@ -2,9 +2,11 @@
 
 Plerd is meant to be an ultralight blogging platform for Markdown fans that plays well with Dropbox.
 
+It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single, Dropbox-synced folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
+
 This software is in **very early development**, currently existing in a minimum-viable-product form. Beyond being hard to install and obscure to use, its API might change dramatically while I, Plerd's creator, continue to puzzle out how it actually wants to work.
 
-If you want something aiming towards a similar goal but rather more mature, have a look at e.g. [Letterpress](https://github.com/an0/Letterpress).
+If you want something aiming towards a similar goal but rather more mature, have a look at [Letterpress](https://github.com/an0/Letterpress).
 
 ## Purpose
 
@@ -16,19 +18,56 @@ That's it! That's all Plerd does.
 
 ## Setup
 
-At this time, you're unfortunately in the wilderness as far as installing the necessary Perl modules. (I won't consider this software actually released until I make that bit easier for everyone else.)
+### Requirements
 
-Create a new directory in your Dropbox for Plerd's sake, and then create these subdirectories inside of it:
+You need __carton__ installed on your system. You can obtain carton via various package managers (e.g. apt-get), or [via the CPAN](https://metacpan.org/pod/distribution/Carton/script/carton).
 
-* `source`: This will hold your blog's Markdown-based source files.
-* `templates`: Holds your blog's templates. (Go ahead and copy the contents of this repository's `templates` file into this directory, after you create it.)
-* `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
+(Alternately, you can ignore carton and just hand-install all the CPAN modules listed in `cpanfile` however you like. But carton offers the prettier path if you can walk it.)
 
-You should then update `conf/plerd.conf` to taste. Set the `path` attribute to the full path of the Dropbox-synched directory Plerd will use, from the perspective of the server machine's filesystem.
+### Installation
 
-And then you need to do whatever you'd like with the webserver of your choice such that it treats the synced `docroot` subdirectory as the your blog's own docroot.
+Run this command from the top level of your plerd directory (the one containing this here README file):
+
+    carton install --deployment
+
+### Configuration
+
+1. Create a new directory in your Dropbox for Plerd's sake. You can name it whatever you'd like, and it can exist at any level within your Dropbox. Then, create these subdirectories inside of it:
+
+    * `source`: This will hold your blog's Markdown-based source files.
+    * `templates`: Holds your blog's templates.
+    * `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
+    
+    You can freely add other files or directories in this directory if you wish (a `drafts` folder, perhaps?). Plerd will happily ignore them.
+
+1. Update `conf/plerd.conf` to best suit your blog. 
+
+    * Set the `path` attribute to the full path of the Dropbox-synched directory you created in the first step.
+    * Set the other attributes as should be obvious, based on the provided examples.
+
+1. Copy the contents of this repository's `templates` directory into the new `templates` subdirectory you created in the first step.
+
+    These are sample templates that you can customize as much as you'd like. They are rendered using [Template Toolkit](http://www.template-toolkit.org). You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via [the [% INCLUDE %] directive](http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE), and so on.
+
+1. Configure the webserver of your choice such that it treats the synced `docroot` subdirectory (which you created as part of the first step) as your new blog's own docroot.
+
+    Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up.
 
 ## Usage
+
+### Running Plerd
+
+Plerd includes two command-line programs, both found in this distributin's `bin` directory:
+
+* __plerdall__ creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
+
+    Run this command to initially create your blog, and then at any future time you wish to re-create all its files (e.g. if you make changes to templates).
+
+* __plerdwatcher__ runs a daemon that monitors the Dropbox-synced source directory for changes, republishing files as necessary.
+
+    ___This is where the magic happens.___ While both _plerdwatcher_ and Dropbox's own daemon process run on your webserver's machine, any changes you make to your blog's source directory will instantly update your blog's published static files as appropriate.
+    
+    In this way you can, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing to your blog  by hitting _File &rarr; Save_ in your text editor. [What what.](https://vine.co/v/OB5j0jdn1Pt)
 
 ### Composing posts
 
@@ -52,15 +91,15 @@ For example, a valid source file could be called `2010-03-01-my-day-today.markdo
 
 Publishing this file will result in a three-paragraph HTML file named `2010-03-01-my-day-today.html` appearing in the blog's docroot directory. It will also get linked from `archive.html` among the posts from March, 2010, and it will furthermore appear in the recent-posts page and the Atom document if a post from March 1, 2010 represents one of your blog's ten most recent posts.
 
-### Publishing posts
+### Updating or deleting posts
 
-* Run `bin/plerdall` to create a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
+To update a blog post, just edit its source Markdown file.
 
-* Run `bin/plerdwatcher` to launch a daemon that monitors the source directory for changes, republishing files as necessary.
+To unpublish a blog post, just delete its source Markdown file, or move it out of the synced source directory.
 
-## Working example
+## See Plerd at work
 
-This software powers [Jason McIntosh's blog at jmac.org](http://blog.jmac.org). At this point it probably isn't in use anywhere else. You are quite welcome to try using it yourself if you'd like, but I haven't really done much to make that easy for you (yet).
+This software powers [Jason McIntosh's blog at jmac.org](http://blog.jmac.org), for which it was written.
 
 ## Author
 
