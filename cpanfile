@@ -1,0 +1,10 @@
+requires 'Moose';
+requires 'Template';
+requires 'Path::Class';
+requires 'DateTime';
+requires 'DateTime::Format::W3CDTF';
+requires 'URI';
+requires 'Text::Markdown';
+requires 'YAML';
+requires 'FindBin';
+requires 'File::ChangeNotify';
