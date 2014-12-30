@@ -3,12 +3,15 @@
 use warnings;
 use strict;
 
-use YAML::XS qw( LoadFile );
-use File::ChangeNotify;
 use FindBin;
-use Path::Class::File;
+use lib
+    "$FindBin::Bin/../lib",
+    "$FindBin::Bin/../local/lib/perl5",
+;
 
-use lib "$FindBin::Bin/../lib";
+use YAML qw( LoadFile );
+use File::ChangeNotify;
+use Path::Class::File;
 
 use Plerd;
 

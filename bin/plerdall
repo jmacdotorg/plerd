@@ -3,10 +3,13 @@
 use warnings;
 use strict;
 
-use YAML::XS qw( LoadFile );
 use FindBin;
+use lib
+    "$FindBin::Bin/../lib",
+    "$FindBin::Bin/../local/lib/perl5",
+;
 
-use lib "$FindBin::Bin/../lib";
+use YAML qw( LoadFile );
 
 use Plerd;
 
