@@ -15,9 +15,11 @@ use Plerd;
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
 my $plerd = Plerd->new(
-    path     => $config_ref->{ path },
-    title    => $config_ref->{ title },
-    base_uri => URI->new ( $config_ref->{ base_uri } ),
+    path         => $config_ref->{ path },
+    title        => $config_ref->{ title },
+    author_name  => $config_ref->{ author_name },
+    author_email => $config_ref->{ author_email },
+    base_uri     => URI->new ( $config_ref->{ base_uri } ),
 );
 
 $plerd->publish_all;

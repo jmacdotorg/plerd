@@ -30,6 +30,18 @@ has 'title' => (
     isa => 'Str',
 );
 
+has 'author_name' => (
+    is => 'ro',
+    required => 1,
+    isa => 'Str',
+);
+
+has 'author_email' => (
+    is => 'ro',
+    required => 1,
+    isa => 'Str',
+);
+
 has 'directory' => (
     is => 'ro',
     isa => 'Path::Class::Dir',
@@ -370,6 +382,14 @@ title
 =item *
 
 base_uri
+
+=item *
+
+author_name
+
+=item *
+
+author_email
 
 =back
 

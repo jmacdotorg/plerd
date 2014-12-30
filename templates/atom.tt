@@ -7,8 +7,8 @@
   <updated>[% timestamp %]</updated>
   <id>[% base_uri %]</id>
   <author>
-    <name><![CDATA[Sam Handwich]]></name>
-    <email><![CDATA[handwich@example.com]]></email>
+    <name><![CDATA[[% plerd.author_name %]]]></name>
+    <email><![CDATA[[% plerd.author_email %]]]></email>
   </author>
   <generator uri="https://github.com/jmacdotorg/plerd">Plerd</generator>
 
