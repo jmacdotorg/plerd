@@ -18,17 +18,19 @@ That's it! That's all Plerd does.
 
 ## Setup
 
-### Requirements
-
-You need __carton__ installed on your system. You can obtain carton via various package managers (e.g. apt-get), or [via the CPAN](https://metacpan.org/pod/distribution/Carton/script/carton).
-
-(Alternately, you can ignore carton and just hand-install all the CPAN modules listed in `cpanfile` however you like. But carton offers the prettier path if you can walk it.)
-
 ### Installation
 
-Run this command from the top level of your plerd directory (the one containing this here README file):
+This version of Plerd is intended to run directly from a cloned Git repository, rather than from a formally installed location on your system. You will likely need to install its various library dependencies, however.
 
-    carton install --deployment
+To install Plerd's dependencies, you need __cpanm__ (a.k.a. _cpanminus_) installed on your system. You can obtain cpanm via various package managers (e.g. apt-get), or [via the CPAN](https://metacpan.org/pod/distribution/App-cpanminus/bin/cpanm), or by running this command:
+
+    curl -LO http://xrl.us/cpanm
+
+With cpanm installed, run the following command from the top level of your plerd directory (the one containing this here README file):
+
+    cpanm --installdeps .
+
+This should crunch though the installation of a bunch of Perl modules that Plerd needs. It'll take a few minutes. When it's all done, Plerd will be ready for configuration.
 
 ### Configuration
 
