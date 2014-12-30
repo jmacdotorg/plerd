@@ -331,3 +331,129 @@ sub _build_recent_posts {
 
 1;
 
+=head1 NAME
+
+Plerd - Ultralight blogging with Markdown and Dropbox
+
+=head1 DESCRIPTION
+
+Plerd is a very lightweight system for writing and maintaining a blog based on
+Markdown files stored in a Dropbox-synced directory.
+
+For instructions on installing and using Plerd, please see the README file that
+should have accompanied this distribution. It is also available online
+at L<https://github.com/jmacdotorg/plerd#plerd>.
+
+The remainder of this document describes method calls and other information
+specific to the Plerd object class.
+
+=head1 CLASS METHODS
+
+=over
+
+=item new( \%config )
+
+Object constructor. The single config hashref I<must> include the following keys,
+each of which maps to the object attribute of the same name
+(see L<"OBJECT ATTRIBUTES">).
+
+=over
+
+=item *
+
+path
+
+=item *
+
+title
+
+=item *
+
+base_uri
+
+=back
+
+=back
+
+=head1 OBJECT ATTRIBUTES
+
+=head2 Read-only attributes, set during construction
+
+=over
+
+=item path
+
+String representing the filesystem path to the synced folder within Dropbox to use.
+
+=item title
+
+String representing this blog's title.
+
+=item base_uri
+
+L<URI> object representing the base URI for this blog, which the system will prepend
+to any absolute links it builds.
+
+=back
+
+=head2 Read-only attributes
+
+=over
+
+=item directory
+
+A L<Path::Class::Dir> object representation of the path provided via this object's
+C<path> attribute.
+
+=item source_directory
+
+A L<Path::Class::Dir> object representation of the Dropbox-synced directory that holds
+the blog's Markdown-based source files.
+
+=item template_directory
+
+A L<Path::Class::Dir> object representation of the Dropbox-synced directory that holds
+the blog's Template Toolkit-based template files. (See also L<Template>.)
+
+=item publication_directory
+
+A L<Path::Class::Dir> object representation of the Dropbox-synced directory that holds
+the blog's docroot -- in other words, the place Plerd will write HTML and XML files to.
+
+=back
+
+=head2 Read-write attributes
+
+=over
+
+=item files_to_publish ( [ $markdown_file_1, $markdown_file_2, ... ] );
+
+An array reference of L<Path::Class::File> objects, each representing a Markdown file
+that will get published when this object's publish() method is called.
+
+=back
+
+=head1 OBJECT METHODS
+
+=over
+
+=item publish
+
+Publishes the blog, based on the current value of the C<files_to_publish> attribute.
+
+If C<files_to_publish> contains at least one file, then Plerd will publish a fresh
+"permalink" HTML file for every file it contains. It will also recreate the recent,
+archive, and syndication HTML and XML files if necessary.
+
+If C<files_to_publish> is empty, this method does nothing.
+
+=item publish_all
+
+Publishes every Markdown file in the blog's source directory, regardlness of the value
+of C<files_to_publish>. Also recreates the recent, archive, and syndication files.
+
+=back
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>

@@ -147,3 +147,83 @@ sub publish {
 
 
 1;
+
+=head1 NAME
+
+Plerd::Post - A Plerd blog post
+
+=head1 DESCRIPTION
+
+An object of the class Plerd::Post represents a single post to a
+Plerd-based blog, with Markdown source and HTML output.
+
+=head1 CLASS METHODS
+
+=over
+
+=item new( \%config )
+
+Object constructor. The single config hashref I<must> include the following keys:
+
+=over
+
+=item plerd
+
+The parent Plerd object.
+
+=item source_file
+
+A Path::Class::File object representing this post's Markdown source file.
+
+=back
+
+=back
+
+=head1 OBJECT ATTRIBUTES
+
+=head2 Read-only attributes
+
+=over
+
+=item published_filename
+
+The local filename (without parent directory path) of the HTML file that this post
+will generate upon publication.
+
+=item uri
+
+The L<URI> of the of the HTML file that this post will generate upon publication.
+
+=back
+
+=head2 Read-write attributes
+
+=over
+
+=item title
+
+String representing this post's title.
+
+=item date
+
+L<DateTime> object representing this post's presented publication date.
+
+=item body
+
+String representing the post's body text.
+
+=back
+
+=head1 OBJECT METHODS
+
+=over
+
+=item publish
+
+Publishes the post.
+
+=back
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>

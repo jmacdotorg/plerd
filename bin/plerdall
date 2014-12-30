@@ -21,3 +21,33 @@ my $plerd = Plerd->new(
 );
 
 $plerd->publish_all;
+
+=head1 NAME
+
+plerdall - Publish an entire Plerd blog from source
+
+=head1 SYNOPSIS
+
+In /path/to/plerd/conf/plerd.conf:
+
+ base_uri: http://blog.example.com
+ path: /home/me/Dropbox/plerd
+ title: My Lovely Blog
+
+And then, on the command line, while in the top-level plerd directory:
+
+ bin/plerdall
+
+=head1 DESCRIPTION
+
+This script directs Plerd to completely publish a blog, once, based configuration.
+If the blog's already been published, then it'll get wholly and freshly
+republished.
+
+For instructions on installing and using Plerd, please see the README file that
+should have accompanied this distribution. It is also available online
+at L<https://github.com/jmacdotorg/plerd#plerd>.
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>

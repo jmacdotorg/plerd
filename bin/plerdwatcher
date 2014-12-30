@@ -42,3 +42,33 @@ while ( my @events = $watcher->wait_for_events ) {
         }
     }
 }
+
+=head1 NAME
+
+plerdall - Publish an entire Plerd blog from source
+
+=head1 SYNOPSIS
+
+In /path/to/plerd/conf/plerd.conf:
+
+ base_uri: http://blog.example.com
+ path: /home/me/Dropbox/plerd
+ title: My Lovely Blog
+
+And then, on the command line, while in the top-level plerd directory:
+
+ bin/plerdwatcher &
+
+=head1 DESCRIPTION
+
+This script launches a simple daemon that monitors a Plerd blog's Dropbox-
+synced directory for changes. When it sees changes, it will direct Plerd
+to publish or republish files as needed.
+
+For instructions on installing and using Plerd, please see the README file that
+should have accompanied this distribution. It is also available online
+at L<https://github.com/jmacdotorg/plerd#plerd>.
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>
