@@ -22,14 +22,11 @@ That's it! That's all Plerd does.
 
 This version of Plerd is intended to run directly from a cloned Git repository, rather than from a formally installed location on your system. You will likely need to install its various library dependencies, however.
 
-To install Plerd's dependencies, you need __cpanm__ (a.k.a. _cpanminus_) installed on your system. You can obtain cpanm via various package managers (e.g. apt-get), or [via the CPAN](https://metacpan.org/pod/distribution/App-cpanminus/bin/cpanm), or by running this pair of commands:
+To install Plerd's dependencies, run the following command from the top level of your Plerd repository (the directory that contains this here README file):
 
-    curl -LO http://xrl.us/cpanm
-    chmod +x cpanm
-
-With cpanm installed, run the following command from the top level of your Plerd repository (the directory that contains this here README file):
-
-    cpanm --installdeps .
+    curl -fsSL https://cpanmin.us | perl - --installdeps .
+    
+(If you already have _cpanm_ installed, you can just run `cpanm --installdeps .` instead.)
 
 This should crunch though the installation of a bunch of Perl modules that Plerd needs. It'll take a few minutes. When it's all done, Plerd will be ready for configuration.
 
