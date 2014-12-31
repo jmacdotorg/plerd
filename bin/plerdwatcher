@@ -32,16 +32,8 @@ my $watcher = File::ChangeNotify->instantiate_watcher (
 warn "Plerdwatcher is watching " . $plerd->source_directory . "...\n";
 
 while ( my @events = $watcher->wait_for_events ) {
-    for my $event ( @events ) {
-        if ( ( $event->type eq 'create' ) || ( $event->type eq 'modify' ) ) {
-            $plerd->files_to_publish(
-                [ Path::Class::File->new( $event->path ) ]
-            );
-            $plerd->publish;
-        }
-        elsif ( $event->type eq 'delete' ) {
-            $plerd->publish_all;
-        }
+    if ( @events ) {
+        $plerd->publish_all;
     }
 }
 
