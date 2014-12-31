@@ -1,4 +1,4 @@
-[% WRAPPER wrapper.tt title = post.title %]
+[% WRAPPER wrapper.tt %]
 
 [% FOREACH post IN posts %]
 <div class="post">

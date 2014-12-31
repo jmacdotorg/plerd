@@ -140,6 +140,7 @@ sub publish {
         {
             plerd => $self->plerd,
             posts => [ $self ],
+            title => $self->title,
         },
         $self->publication_file->openw,
     );

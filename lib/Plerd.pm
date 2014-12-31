@@ -182,6 +182,7 @@ sub publish_recent_page {
         {
             plerd => $self,
             posts => $self->recent_posts,
+            title => $self->title,
         },
         $self->recent_file->openw,
     );
