@@ -40,7 +40,7 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
     
     You can freely add other files or directories in this directory if you wish (a `drafts` folder, perhaps?). Plerd will happily ignore them.
 
-1. Update `conf/plerd.conf` to best suit your blog. 
+1. Copy `conf/plerd_example.conf` to `conf/plerd.conf`, and then update it to best suit your blog. 
 
     * Set the `path` attribute to the full path of the Dropbox-synched directory you created in the first step.
     * Set the other attributes as should be obvious, based on the provided examples.
