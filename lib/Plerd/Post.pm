@@ -3,6 +3,7 @@ package Plerd::Post;
 use Moose;
 use DateTime;
 use Text::Markdown qw( markdown );
+use Text::SmartyPants;
 use URI;
 
 has 'plerd' => (
@@ -129,7 +130,7 @@ sub _process_source_file {
     while ( <$fh> ) {
         $body .= $_;
     }
-    $self->body( markdown( $body ) );
+    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
 }
 
 sub publish {
