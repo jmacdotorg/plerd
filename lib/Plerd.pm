@@ -9,9 +9,6 @@ use URI;
 
 use Plerd::Post;
 
-use Readonly;
-Readonly my $RECENT_POSTS_COUNT => 10;
-
 has 'path' => (
     is => 'ro',
     required => 1,
@@ -40,6 +37,12 @@ has 'author_email' => (
     is => 'ro',
     required => 1,
     isa => 'Str',
+);
+
+has 'recent_posts_maxsize' => (
+    is => 'ro',
+    isa => 'Int',
+    default => 10,
 );
 
 has 'directory' => (
@@ -125,12 +128,6 @@ has 'rss_file' => (
     lazy_build => 1,
 );
 
-has 'requires_recent_page_update' => (
-    is => 'ro',
-    isa => 'Bool',
-    lazy_build => 1,
-);
-
 has 'recent_posts' => (
     is => 'ro',
     isa => 'ArrayRef[Plerd::Post]',
@@ -154,12 +151,10 @@ sub publish {
 
     $self->publish_archive_page;
 
-    if ( $self->requires_recent_page_update ) {
-        $self->publish_recent_page;
-        $self->publish_rss;
+    $self->publish_recent_page;
+    $self->publish_rss;
 
-        $self->clear_recent_posts;
-    }
+    $self->clear_recent_posts;
 
     $self->clear_files_to_publish;
 }
@@ -325,20 +320,18 @@ sub _build_rss_file {
     );
 }
 
-
-sub _build_requires_recent_page_update {
-    my $self = shift;
-
-    return 1;
-}
-
 sub _build_recent_posts {
     my $self = shift;
 
     return [
         map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
         grep { /\.markdown$|\.md/ }
-        ( reverse sort $self->source_directory->children )[0..$RECENT_POSTS_COUNT]
+        (
+            reverse
+            sort
+            $self->source_directory->children
+        )
+        [0 .. $self->recent_posts_maxsize]
     ];
 }
 
@@ -394,6 +387,16 @@ author_email
 
 =back
 
+And, optional keys, with defaults:
+
+=over
+
+=item *
+
+recent_posts_maxsize I<Default value: 10>
+
+=back
+
 =back
 
 =head1 OBJECT ATTRIBUTES
@@ -415,11 +418,28 @@ String representing this blog's title.
 L<URI> object representing the base URI for this blog, which the system will prepend
 to any absolute links it builds.
 
+=item recent_posts_maxsize
+
+Integer representing the maximum size of the recent_posts array, which in turn
+defines how many posts (at most) appear on the blog's front page and syndication
+document.
+
 =back
 
 =head2 Read-only attributes
 
 =over
+
+=item recent_posts
+
+An arrayref of L<Plerd::Post> objects, representing the most recent posts made to
+the blog, in newest-to-oldest order. (Recency is determined by the dates manually
+set on the posts by the posts' author, not on their source files' modification
+time or whatever.)
+
+The size of the array is no larger than the current value of the Plerd
+object's C<recent_posts_maxsize> attribute (and thus will be equal to that number
+for any blog whose total number of posts is greater than that number).
 
 =item directory
 
