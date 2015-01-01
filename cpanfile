@@ -8,3 +8,4 @@ requires 'Text::Markdown';
 requires 'YAML';
 requires 'FindBin';
 requires 'File::ChangeNotify';
+requires 'App::Daemon';

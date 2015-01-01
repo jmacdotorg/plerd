@@ -69,6 +69,12 @@ Plerd includes two command-line programs, both found in this distributin's `bin`
     
     In this way you can, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing to your blog  by hitting _File &rarr; Save_ in your text editor. [What what.](https://vine.co/v/OB5j0jdn1Pt)
 
+    Launch plerdwatcher through this command (assuming your working directory is Plerd's top-level directory):
+    
+        bin/plerdwatcher start
+    
+    It also accepts the verbs `stop`, `restart`, and `status`, as well as [all the command-line options listed in the App::Daemon documentation](https://metacpan.org/pod/App::Daemon#Command-Line-Options).
+
 ### Composing posts
 
 Plerd post-source files are just Markdown files. However, Plerd requires that every post-source file specify a date and a title for its post, which it extracts in the following ways:
