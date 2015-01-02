@@ -42,7 +42,7 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
 
 1. Copy `conf/plerd_example.conf` to `conf/plerd.conf`, and then update it to best suit your blog. 
 
-    * Set the `path` attribute to the full path of the Dropbox-synched directory you created in the first step.
+    * Set the `path` attribute to the full path of the Dropbox-synced directory you created in the first step.
     * Set the other attributes as should be obvious, based on the provided examples.
 
 1. Copy the contents of this repository's `templates` directory into the new `templates` subdirectory you created in the first step.
@@ -57,11 +57,11 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
 
 ### Running Plerd
 
-Plerd includes two command-line programs, both found in this distributin's `bin` directory:
+Plerd includes two command-line programs, both found in this distribution's `bin` directory:
 
 * __plerdall__ creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
 
-    Run this command to initially create your blog, and then at any future time you wish to re-create all its files (e.g. if you make changes to templates).
+    Run this program (with no arguments) to initially populate your blog's docroot, and at any other time you wish to manually regenerate your blog's served files.
 
 * __plerdwatcher__ runs a daemon that monitors the Dropbox-synced source directory for changes, republishing files as necessary.
 
