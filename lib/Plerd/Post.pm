@@ -235,6 +235,15 @@ will generate upon publication.
 
 The L<URI> of the of the HTML file that this post will generate upon publication.
 
+=item published_timestamp
+
+This post's date, in W3C format, set to midnight in the local timezone.
+
+=item updated_timestamp
+
+The modification time of this this post's source file, in W3C format, set to
+the local timezone.
+
 =back
 
 =head2 Read-write attributes
