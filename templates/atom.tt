@@ -16,7 +16,8 @@
   <entry>
     <title type="html"><![CDATA[[% post.title %]]]></title>
     <link href="[% post.uri %]"/>
-    <updated>[% post.ymd( '-' ) %]T00:00:00Z</updated>
+    <published>[% post.published_timestamp %]</published>
+    <updated>[% post.updated_timestamp %]</updated>
     <id>[% post.uri %]</id>
     <content type="html"><![CDATA[[% post.body %]]]></content>
   </entry>

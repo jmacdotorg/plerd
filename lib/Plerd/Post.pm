@@ -2,6 +2,7 @@ package Plerd::Post;
 
 use Moose;
 use DateTime;
+use DateTime::Format::W3CDTF;
 use Text::Markdown qw( markdown );
 use Text::SmartyPants;
 use URI;
@@ -60,6 +61,18 @@ has 'uri' => (
     lazy_build => 1,
 );
 
+has 'updated_timestamp' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
+has 'published_timestamp' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
 sub _build_publication_file {
     my $self = shift;
 
@@ -86,6 +99,32 @@ sub _build_uri {
         $self->plerd->base_uri,
     );
 }
+
+sub _build_updated_timestamp {
+    my $self = shift;
+
+    my $mtime = $self->source_file->stat->mtime;
+
+    my $formatter = DateTime::Format::W3CDTF->new;
+    my $timestamp = $formatter->format_datetime(
+        DateTime->from_epoch(
+            epoch     => $mtime,
+            time_zone => 'local',
+        ),
+    );
+
+    return $timestamp;
+}
+
+sub _build_published_timestamp {
+    my $self = shift;
+
+    my $formatter = DateTime::Format::W3CDTF->new;
+    my $timestamp = $formatter->format_datetime( $self->date );
+
+    return $timestamp;
+}
+
 
 sub _process_source_file {
     my $self = shift;
@@ -123,7 +162,7 @@ sub _process_source_file {
         year => $year,
         month => $month,
         day => $day,
-        time_zone => 'GMT',
+        time_zone => 'local',
     ) );
 
     my $body;

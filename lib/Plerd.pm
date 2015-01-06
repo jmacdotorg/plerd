@@ -188,7 +188,7 @@ sub publish_rss {
 
     my $formatter = DateTime::Format::W3CDTF->new;
     my $timestamp =
-        $formatter->format_datetime( DateTime->now( time_zone => 'UTC' ) )
+        $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
     ;
 
     $self->template->process(
