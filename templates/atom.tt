@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[[% plerd.title %]]]></title>
-  <link href="[% base_uri %]/atom.xml" rel="self"/>
-  <link href="[% base_uri %]"/>
+  <link href="[% plerd.base_uri %]/atom.xml" rel="self" />
+  <link href="[% plerd.base_uri %]" />
   <updated>[% timestamp %]</updated>
-  <id>[% base_uri %]</id>
+  <id>[% plerd.base_uri %]</id>
   <author>
     <name><![CDATA[[% plerd.author_name %]]]></name>
     <email><![CDATA[[% plerd.author_email %]]]></email>
