@@ -129,12 +129,19 @@ has 'recent_posts' => (
     clearer => 'clear_recent_posts',
 );
 
+has 'datetime_formatter' => (
+    is => 'ro',
+    isa => 'DateTime::Format::W3CDTF',
+    default => sub { DateTime::Format::W3CDTF->new },
+);
+
 sub publish {
     my $self = shift;
 
     return unless ( $self->there_are_files_to_publish );
 
     for my $file ( @{ $self->files_to_publish } ) {
+        next unless -e $file;
         my $post = Plerd::Post->new(
             source_file => $file,
             plerd => $self,
@@ -180,7 +187,7 @@ sub publish_recent_page {
 sub publish_rss {
     my $self = shift;
 
-    my $formatter = DateTime::Format::W3CDTF->new;
+    my $formatter = $self->datetime_formatter;
     my $timestamp =
         $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
     ;

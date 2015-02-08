@@ -125,10 +125,17 @@ sub _build_published_timestamp {
     return $timestamp;
 }
 
-
+# This next internal method does a bunch of stuff.
+# It's called via Moose-trigger when the object's source_file attribute is set.
+# * Read and store the file's data (body) and metadata
+# * Figure out the publication timestamp, based on possible (not guaranteed!)
+#   presence of date in the filename AND/OR "time" metadata attribute
+# * If the file lacks a timestamp attribute, rewrite the file so that it has one
+# * If the file lacks a Plerd-style filename, rename it so that it has one
 sub _process_source_file {
     my $self = shift;
 
+    # Slurp the file, storing the title and time metadata, and the body.
     my $fh = $self->source_file->openr;
     my %attributes;
     while ( my $line = <$fh> ) {
@@ -141,15 +148,15 @@ sub _process_source_file {
 
     }
 
-    $self->title( $attributes{ title } );
-    my ( $year, $month, $day ) =
-        $self->source_file->basename =~ /^(\d\d\d\d)-(\d\d)-(\d\d)/;
-
-    unless ( $year ) {
-        die 'Error processing ' . $self->source_file . ': '
-            . ' Could not find a YYYY-MM-DD date in its filename.'
-        ;
+    my $body;
+    while ( <$fh> ) {
+        $body .= $_;
     }
+    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
+
+    close $fh;
+
+    $self->title( $attributes{ title } );
 
     unless ( $attributes{ title } ) {
         die 'Error processing ' . $self->source_file . ': '
@@ -157,19 +164,81 @@ sub _process_source_file {
         ;
     }
 
+    # Note whether the filename asserts the post's publication date.
+    my ( $filename_year, $filename_month, $filename_day ) =
+        $self->source_file->basename =~ /^(\d\d\d\d)-(\d\d)-(\d\d)/;
 
-    $self->date( DateTime->new (
-        year => $year,
-        month => $month,
-        day => $day,
-        time_zone => 'local',
-    ) );
-
-    my $body;
-    while ( <$fh> ) {
-        $body .= $_;
+    # Set the post's date, using these rules:
+    # * If the post has a time attribute in W3 format, use that
+    # * Elsif the post's filename asserts a date, use midnight of that date,
+    #   and also add a time attribute to the file.
+    # * Else use right now, and also add a time attribute to the file.
+    if ( $attributes{ time } ) {
+        $self->date(
+            $self->plerd->datetime_formatter->parse_datetime( $attributes{ time } )
+        );
+        unless ( $self->date ) {
+            die 'Error processing ' . $self->source_file . ': '
+                . ' The "time" attribute is not in W3C format.'
+            ;
+        }
     }
-    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
+    else {
+        my $publication_dt;
+
+        if ( $filename_year ) {
+            # The post specifies its day in the filename, but we still don't have a
+            # publication hour. So, just use midnight.
+            $publication_dt = DateTime->new(
+                year => $filename_year,
+                month => $filename_month,
+                day => $filename_day,
+                time_zone => 'local',
+            );
+        }
+        else {
+            # The file doesn't name the time, *and* the file doesn't contain the date
+            # in metadata (or else we wouldn't be here), so we'll just use right-now.
+            $publication_dt = DateTime->now;
+        }
+
+        $self->date( $publication_dt );
+
+        my $date_string =
+            $self->plerd->datetime_formatter->format_datetime( $publication_dt );
+
+        my $new_content = <<EOF;
+title: $attributes{ title }
+time: $date_string
+
+$body
+EOF
+        $self->source_file->spew( $new_content );
+    }
+
+    # If the filename either isn't Plerdish, or it asserts a date that doesn't match
+    # the post's publication date, rename the file.
+    if ( not( $filename_year )
+         || not(
+                ( $filename_year == $self->date->year )
+                && ( $filename_month == $self->date->month )
+                && ( $filename_day == $self->date->day )
+            )
+    ) {
+        my ( $file_extension ) = $self->source_file =~ /\.(\w+)$/;
+        my $new_filename = $self->title;
+        $new_filename =~ s/\W+/-/g;
+        $new_filename = lc $new_filename;
+        $new_filename = $self->date->ymd( q{-} ) . q{-} . $new_filename;
+        $new_filename .= ".$file_extension";
+        my $new_location = Path::Class::File->new(
+            $self->source_file->parent,
+            $new_filename,
+        );
+        unless ( $self->source_file->move_to( $new_location ) ) {
+            die "Failed to move " . $self->source_file . " to $new_filename.";
+        }
+    }
 }
 
 sub publish {
