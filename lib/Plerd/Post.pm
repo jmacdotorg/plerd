@@ -227,7 +227,9 @@ EOF
     ) {
         my ( $file_extension ) = $self->source_file =~ /\.(\w+)$/;
         my $new_filename = $self->title;
-        $new_filename =~ s/\W+/-/g;
+        $new_filename =~ s/\s+/-/g;
+        $new_filename =~ s/--+/-/g;
+        $new_filename =~ s/[^\w\-]+//g;
         $new_filename = lc $new_filename;
         $new_filename = $self->date->ymd( q{-} ) . q{-} . $new_filename;
         $new_filename .= ".$file_extension";
