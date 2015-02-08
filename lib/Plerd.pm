@@ -123,9 +123,9 @@ has 'rss_file' => (
 );
 
 has 'recent_posts' => (
-    is => 'rw',
+    is => 'ro',
     isa => 'ArrayRef[Plerd::Post]',
-    default => sub { [] },
+    lazy_build => 1,
     clearer => 'clear_recent_posts',
 );
 
@@ -148,7 +148,6 @@ sub publish {
         );
 
         $post->publish;
-        $self->_maybe_add_to_recent_posts( $post );
     }
 
     $self->publish_archive_page;
@@ -157,8 +156,7 @@ sub publish {
     $self->publish_rss;
 
     $self->clear_files_to_publish;
-
-    $self->recent_posts( [] );
+    $self->clear_recent_posts;
 }
 
 sub publish_all {
@@ -322,27 +320,37 @@ sub _build_rss_file {
     );
 }
 
-sub _maybe_add_to_recent_posts {
+sub _build_recent_posts {
     my $self = shift;
-    my ( $post ) = @_;
 
-    my $did_update = 0;
+    my @recent_posts = ();
 
-    if ( @{ $self->recent_posts } < $self->recent_posts_maxsize ) {
-        push @{ $self->recent_posts }, $post;
-        $did_update = 1;
-    }
-    elsif ( $post->date > $self->recent_posts->[ -1 ]->date ) {
-        pop @{ $self->recent_posts };
-        push @{ $self->recent_posts }, $post;
-        $did_update = 1;
-    }
-
-    if ( $did_update ) {
-        $self->recent_posts(
-            [ sort { $b->date <=> $a->date } @{ $self->recent_posts } ]
+    for my $file (
+        grep { /\.markdown$|\.md/ } $self->source_directory->children
+    ) {
+        my $post = Plerd::Post->new(
+            plerd => $self,
+            source_file => $file,
         );
+
+        my $did_update = 0;
+
+        if ( @recent_posts < $self->recent_posts_maxsize ) {
+            push @recent_posts, $post;
+            $did_update = 1;
+        }
+        elsif ( $post->date > $recent_posts[ -1 ]->date ) {
+            pop @recent_posts;
+            push @recent_posts, $post;
+            $did_update = 1;
+        }
+
+        if ( $did_update ) {
+            @recent_posts = sort { $b->date <=> $a->date } @recent_posts;
+        }
     }
+
+    return \@recent_posts;
 }
 
 1;
