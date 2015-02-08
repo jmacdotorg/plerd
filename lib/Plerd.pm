@@ -63,12 +63,6 @@ has 'template_directory' => (
     lazy_build => 1,
 );
 
-has 'recent_post_files' => (
-    is => 'ro',
-    isa => 'ArrayRef[Path::Class::File]',
-    lazy_build => 1,
-);
-
 has 'publication_directory' => (
     is => 'ro',
     isa => 'Path::Class::Dir',
