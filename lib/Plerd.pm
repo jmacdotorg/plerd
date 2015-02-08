@@ -157,6 +157,8 @@ sub publish {
     $self->publish_rss;
 
     $self->clear_files_to_publish;
+
+    $self->recent_posts( [] );
 }
 
 sub publish_all {
