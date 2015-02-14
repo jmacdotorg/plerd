@@ -55,6 +55,14 @@
                 </p>
             </section>
             <section>
+                <h1>Search</h1>
+                <form action="https://duckduckgo.com" method="get">
+                <input name="q" type="text" placeholder="Search this blog" />
+                <input name="sites" type="hidden" value="[% plerd.base_uri %]" />
+                <input type="submit" value="Go" />
+                </form>
+            </section>
+            <section>
                 <h1>Recent Posts</h1>
                 <ul>
                 [% FOR post IN plerd.recent_posts %]
