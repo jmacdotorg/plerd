@@ -207,9 +207,9 @@ sub publish_rss {
 sub publish_archive_page {
     my $self = shift;
 
-    my @posts = map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
+    my @posts = sort { $b->date <=> $a->date }
+                map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
                 grep { /\.markdown$|\.md/ }
-                reverse sort
                 $self->source_directory->children
     ;
 
