@@ -177,6 +177,7 @@ sub _process_source_file {
         $self->date(
             $self->plerd->datetime_formatter->parse_datetime( $attributes{ time } )
         );
+        $self->date->set_time_zone( 'local' );
         unless ( $self->date ) {
             die 'Error processing ' . $self->source_file . ': '
                 . ' The "time" attribute is not in W3C format.'
@@ -199,7 +200,7 @@ sub _process_source_file {
         else {
             # The file doesn't name the time, *and* the file doesn't contain the date
             # in metadata (or else we wouldn't be here), so we'll just use right-now.
-            $publication_dt = DateTime->now;
+            $publication_dt = DateTime->now( time_zone => 'local' );
         }
 
         $self->date( $publication_dt );
