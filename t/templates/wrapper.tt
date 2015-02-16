@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>[% title %]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="atom.xml" rel="alternate" title="[% plerd.title %]" type="application/atom+xml">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <style>
+        .page-header h1 :link, .page-header h1 :visited {
+            color: black;
+        }
+        .sidebar h1 {
+            font-size: 1.5em;
+        }
+        img.author-link {
+            width: 20px;
+        }
+        .sidebar section {
+            margin-top: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="recent.html">[% plerd.title %]</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="archive.html">Archive</a></li>
+                    <li><a href="atom.xml">RSS</a></li>
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </div>
+
+    <div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+            [% content %]
+        </div>
+        <div class="col-sm-3 sidebar">
+            <section>
+                <h1>Hello</h1>
+                <p>
+                    This is a blog by <a href="mailto:[% plerd.author_email %]">[% plerd.author_name %]</a>.
+                </p>
+            </section>
+            <section>
+                <h1>Search</h1>
+                <form action="https://duckduckgo.com" method="get">
+                <input name="q" type="text" placeholder="Search this blog" />
+                <input name="sites" type="hidden" value="[% plerd.base_uri %]" />
+                <input type="submit" value="Go" />
+                </form>
+            </section>
+            <section>
+                <h1>Recent Posts</h1>
+                <ul>
+                [% FOR post IN plerd.recent_posts %]
+                    <li><a href="[% post.uri %]">[% post.title %]</a></li>
+                [% END %]
+                </ul>
+            </section>
+        </div>
+    </div>
+     <footer style="font-size:small; font-style:italic" class="container">
+        <hr /> 
+        <p>Powered by <a href="https://github.com/jmacdotorg/plerd">Plerd</a>.</p>
+        </footer>
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    </body>
+</html>

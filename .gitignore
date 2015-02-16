@@ -1,3 +1,5 @@
 plerd.conf
 log
 run
+t/docroot
+t/source
