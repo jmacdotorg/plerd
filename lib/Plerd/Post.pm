@@ -152,17 +152,19 @@ sub _process_source_file {
     while ( <$fh> ) {
         $body .= $_;
     }
-    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
 
     close $fh;
 
-    $self->title( $attributes{ title } );
-
-    unless ( $attributes{ title } ) {
+    if ( $attributes{ title } ) {
+        $self->title( $attributes{ title } );
+    }
+    else {
         die 'Error processing ' . $self->source_file . ': '
             . ' File content does not define a post title.'
         ;
     }
+
+    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
 
     # Note whether the filename asserts the post's publication date.
     my ( $filename_year, $filename_month, $filename_day ) =
