@@ -22,9 +22,8 @@ foreach ( Path::Class::Dir->new( "$FindBin::Bin/source_model" )->children ) {
 
 # And then clean out the docroot.
 my $docroot_dir = Path::Class::Dir->new( "$FindBin::Bin/docroot" );
-foreach ( $docroot_dir->children ) {
-    $_->remove;
-}
+$docroot_dir->rmtree;
+$docroot_dir->mkpath;
 
 # Now try to make a Plerd object, and send it through its paces.
 my $plerd = Plerd->new(
