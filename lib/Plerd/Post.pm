@@ -217,15 +217,8 @@ EOF
         $self->source_file->spew( $new_content );
     }
 
-    # If the filename either isn't Plerdish, or it asserts a date that doesn't match
-    # the post's publication date, rename the file.
-    if ( not( $filename_year )
-         || not(
-                ( $filename_year == $self->date->year )
-                && ( $filename_month == $self->date->month )
-                && ( $filename_day == $self->date->day )
-            )
-    ) {
+    # If the filename isn't Plerdish, rename the file.
+    if ( not $filename_year ) {
         my ( $file_extension ) = $self->source_file =~ /\.(\w+)$/;
         my $new_filename = $self->title;
         $new_filename =~ s/\s+/-/g;
