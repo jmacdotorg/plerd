@@ -2,7 +2,9 @@ use warnings;
 use strict;
 use Test::More;
 use Path::Class::Dir;
+use Path::Class::File;
 use URI;
+use DateTime;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
@@ -15,9 +17,15 @@ my $source_dir = Path::Class::Dir->new( "$FindBin::Bin/source" );
 $source_dir->rmtree;
 $source_dir->mkpath;
 
+my $now = DateTime->now( time_zone => 'local' );
+my $ymd = $now->ymd;
+
 my $model_dir = Path::Class::Dir->new( "$FindBin::Bin/source_model" );
 foreach ( Path::Class::Dir->new( "$FindBin::Bin/source_model" )->children ) {
-    $_->copy_to( $source_dir );
+    my $filename = $_->basename;
+    $filename =~ s/TODAY/$ymd/;
+    my $destination = Path::Class::File->new( $source_dir, $filename );
+    $_->copy_to( $destination );
 }
 
 # And then clean out the docroot.
@@ -46,6 +54,11 @@ unlink "$FindBin::Bin/source/no-title.md";
 
 $plerd->publish_all;
 
-is( scalar( $docroot_dir->children ), 6, "Correct number of HTML files generated." );
+# The "+3" below accounts for the generated recent, archive, and RSS files.
+my $expected_docroot_count = scalar( $source_dir->children) + 3;
+is( scalar( $docroot_dir->children ),
+            $expected_docroot_count,
+            "Correct number of files generated in docroot."
+);
 
 done_testing();

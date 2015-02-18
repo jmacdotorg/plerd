@@ -191,13 +191,22 @@ sub _process_source_file {
 
         if ( $filename_year ) {
             # The post specifies its day in the filename, but we still don't have a
-            # publication hour. So, just use midnight.
-            $publication_dt = DateTime->new(
-                year => $filename_year,
-                month => $filename_month,
-                day => $filename_day,
-                time_zone => 'local',
-            );
+            # publication hour.
+            # If the filename's date is today (locally), use the current time.
+            # Otherwise, use midnight of the provided date.
+            my $now = DateTime->now( time_zone => 'local' );
+            my $ymd = $now->ymd( q{-} );
+            if ( $self->source_file->basename =~ /^$ymd/ ) {
+                $publication_dt = $now;
+            }
+            else {
+                $publication_dt = DateTime->new(
+                    year => $filename_year,
+                    month => $filename_month,
+                    day => $filename_day,
+                    time_zone => 'local',
+                );
+            }
         }
         else {
             # The file doesn't name the time, *and* the file doesn't contain the date
