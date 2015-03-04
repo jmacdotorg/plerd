@@ -12,6 +12,8 @@ use YAML qw( LoadFile );
 use File::ChangeNotify;
 use Path::Class::File;
 use App::Daemon qw( daemonize );
+use Try::Tiny;
+use Log::Log4perl qw( :easy );
 
 use Plerd;
 
@@ -40,7 +42,12 @@ my $watcher = File::ChangeNotify->instantiate_watcher (
 
 while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
-        $plerd->publish_all;
+        try {
+            $plerd->publish_all;
+        }
+        catch {
+            ERROR "Failed to publish: $_\n";
+        };
     }
 }
 
