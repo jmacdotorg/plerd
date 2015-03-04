@@ -160,7 +160,7 @@ sub _process_source_file {
     }
     else {
         die 'Error processing ' . $self->source_file . ': '
-            . ' File content does not define a post title.'
+            . 'File content does not define a post title.'
         ;
     }
     $self->body( $body );
@@ -179,13 +179,15 @@ sub _process_source_file {
     #   and also add a time attribute to the file.
     # * Else use right now, and also add a time attribute to the file.
     if ( $attributes{ time } ) {
-        $self->date(
-            $self->plerd->datetime_formatter->parse_datetime( $attributes{ time } )
-        );
-        $self->date->set_time_zone( 'local' );
+        eval {
+            $self->date(
+                $self->plerd->datetime_formatter->parse_datetime( $attributes{ time } )
+            );
+            $self->date->set_time_zone( 'local' );
+        };
         unless ( $self->date ) {
             die 'Error processing ' . $self->source_file . ': '
-                . ' The "time" attribute is not in W3C format.'
+                . 'The "time" attribute is not in W3C format.'
             ;
         }
     }
