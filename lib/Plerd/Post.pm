@@ -163,8 +163,11 @@ sub _process_source_file {
             . ' File content does not define a post title.'
         ;
     }
+    $self->body( $body );
 
-    $self->body( Text::SmartyPants::process( markdown( $body ) ) );
+    foreach ( qw( title body ) ) {
+        $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
+    }
 
     # Note whether the filename asserts the post's publication date.
     my ( $filename_year, $filename_month, $filename_day ) =

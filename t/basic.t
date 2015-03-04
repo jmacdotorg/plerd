@@ -64,4 +64,13 @@ is( scalar( $docroot_dir->children ),
             "Correct number of files generated in docroot."
 );
 
+### Test formatting in titles
+{
+my $post = Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' )->slurp;
+like ( $post,
+       qr{an <em>example</em> of a &#8220;backdated},
+       'Post title is formatted.'
+     );
+}
+
 done_testing();
