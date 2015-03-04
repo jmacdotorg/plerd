@@ -169,6 +169,11 @@ sub _process_source_file {
         $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
     }
 
+    # Strip unnecessary <p> tags that the markdown processor just added to the title.
+    my $stripped_title = $self->title;
+    $stripped_title =~ s{</?p>\s*}{}g;
+    $self->title( $stripped_title );
+
     # Note whether the filename asserts the post's publication date.
     my ( $filename_year, $filename_month, $filename_day ) =
         $self->source_file->basename =~ /^(\d\d\d\d)-(\d\d)-(\d\d)/;
