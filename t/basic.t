@@ -42,6 +42,8 @@ my $plerd = Plerd->new(
     base_uri     => URI->new ( 'http://blog.example.com/' ),
 );
 
+my $rejects = 0;
+
 eval { $plerd->publish_all; };
 like ( $@, qr/Invalid W3CDTF/, 'Rejected source file with invalid timestamp.' );
 
@@ -49,13 +51,14 @@ unlink "$FindBin::Bin/source/bad-date.md";
 
 eval { $plerd->publish_all; };
 like ( $@, qr/post title/, 'Rejected title-free source file.' );
+$rejects++;
 
 unlink "$FindBin::Bin/source/no-title.md";
 
 $plerd->publish_all;
 
 # The "+3" below accounts for the generated recent, archive, and RSS files.
-my $expected_docroot_count = scalar( $source_dir->children) + 3;
+my $expected_docroot_count = scalar( $source_dir->children) - $rejects + 3;
 is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."
