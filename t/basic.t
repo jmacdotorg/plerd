@@ -45,7 +45,7 @@ my $plerd = Plerd->new(
 my $rejects = 0;
 
 eval { $plerd->publish_all; };
-like ( $@, qr/Invalid W3CDTF/, 'Rejected source file with invalid timestamp.' );
+like ( $@, qr/not in W3C format/, 'Rejected source file with invalid timestamp.' );
 
 unlink "$FindBin::Bin/source/bad-date.md";
 
