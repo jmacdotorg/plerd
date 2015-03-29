@@ -4,7 +4,7 @@ Plerd is meant to be an ultralight blogging platform for Markdown fans that play
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
 
-This software is in **very early development**, currently existing in a minimum-viable-product form. Beyond being hard to install and obscure to use, its API might change dramatically while I, Plerd's creator, continue to puzzle out how it actually wants to work.
+This software is in **very early development**. Its API might change dramatically while I, Plerd's creator, continue to puzzle out how it actually wants to work.
 
 If you want something aiming towards a similar goal but rather more mature, have a look at [Letterpress](https://github.com/an0/Letterpress).
 
