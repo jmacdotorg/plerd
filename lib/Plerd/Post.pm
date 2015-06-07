@@ -86,7 +86,21 @@ sub _build_published_filename {
     my $self = shift;
 
     my $filename = $self->source_file->basename;
-    $filename =~ s/\..*$/.html/;
+
+    # If the source filename already seems Plerdish, just replace its extension.
+    # Else, generate a Plerdish filename based on the post's date and title.
+    if ( $filename =~ /^(\d\d\d\d)-(\d\d)-(\d\d)/ ) {
+        $filename =~ s/\..*$/.html/;
+    }
+    else {
+        $filename = $self->title;
+        $filename =~ s/\s+/-/g;
+        $filename =~ s/--+/-/g;
+        $filename =~ s/[^\w\-]+//g;
+        $filename = lc $filename;
+        $filename = $self->date->ymd( q{-} ) . q{-} . $filename;
+        $filename .= '.html';
+    }
 
     return $filename;
 }
@@ -236,25 +250,6 @@ time: $date_string
 $body
 EOF
         $self->source_file->spew( $new_content );
-    }
-
-    # If the filename isn't Plerdish, rename the file.
-    if ( not $filename_year ) {
-        my ( $file_extension ) = $self->source_file =~ /\.(\w+)$/;
-        my $new_filename = $self->title;
-        $new_filename =~ s/\s+/-/g;
-        $new_filename =~ s/--+/-/g;
-        $new_filename =~ s/[^\w\-]+//g;
-        $new_filename = lc $new_filename;
-        $new_filename = $self->date->ymd( q{-} ) . q{-} . $new_filename;
-        $new_filename .= ".$file_extension";
-        my $new_location = Path::Class::File->new(
-            $self->source_file->parent,
-            $new_filename,
-        );
-        unless ( $self->source_file->move_to( $new_location ) ) {
-            die "Failed to move " . $self->source_file . " to $new_filename.";
-        }
     }
 }
 

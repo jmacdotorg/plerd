@@ -91,22 +91,17 @@ For example, a valid, ready-to-publish source file could be called `today.markdo
 
 ### Publishing posts
 
-To publish a post, simply move it to Plerd's source directory. Plerd may, once it notices the new file, change the file in two ways:
+To publish a post, simply move it to Plerd's source directory. (Take care not to overwrite an older post's source file that may have the same name.)
 
-* Plerd will rename the file from your working title to Plerd's own source filename format, comprising the publication date followed by the title, all separated by hyphens. For example: `2015-01-01-my-day-today.md`.
+Plerd will, once it notices the new file, give the file a timestamp recording the date and time of its publication. This timestamp will appear in its own line, after the title line.
 
-    Plerd will not rename the file if you already named it in this format, even if the filename doesn't agree with the post's actual publication date or title.
+Normally, Plerd will set the publication time to the moment that you added the file to the source directory. Plerd recognizes two exceptions to this rule:
 
-    Note that, depending upon various factors, such as your text editor's features and whether you're using Plerd with Dropbox, you may need to close the file in your editor and re-open it at its new name and location in order to work with it further.
-
-* Plerd will give the file a timestamp recording the date and time of its publication. This timestamp will appear in its own line, after the title line.
-
-    Normally, Plerd will set the publication time to the moment that you added the file to the source directory. Plerd recognizes two exceptions to this rule:
-
-    * If you manually give your post a `time:` timestamp, and it's in W3C date-time format, then Plerd will leave that timestamp alone.
+* If you manually give your post a `time:` timestamp, and it's in W3C date-time format, then Plerd will leave that timestamp alone.
     
-    * If you leave the timestamp out, _and_ include in your post's filename a date of yesterday or earlier (e.g. `1994-06-10-i-like-ace-of-base.md`), then Plerd will set the post's timestamp to midnight (in the local time zone) of that date. This allows you to batch-backdate many posts at once -- useful, perhaps, for populating a new blog with existing writing.
+* If you leave the timestamp out, _and_ include in your post's filename a date of yesterday or earlier (e.g. `1994-06-10-i-like-ace-of-base.md`), then Plerd will set the post's timestamp to midnight (in the local time zone) of that date. This allows you to batch-backdate many posts at once -- useful, perhaps, for populating a new blog with existing writing.
 
+(Note that Plerd assumes you use a text editor smart enough to see that the source file has both moved and had additional lines added to it from an external process, and to react to this in a graceful fashion.)
 
 Once it has prepared the source file, Plerd will update the blog. It will create a new HTML file for the new entry, and add a link to it from the `archive.html` page. It will also appear in the recent-posts sidebar of every other entry, as well as the Atom document (unless you decided to manually backdate the entry by specifying your own date attribute within the file).
 

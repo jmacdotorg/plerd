@@ -70,4 +70,12 @@ like ( $post,
      );
 }
 
+### Test published-file naming
+my $renamed_file =
+    Path::Class::File->new( $docroot_dir, $ymd . '-a-good-source-file.html' );
+my $not_renamed_file =
+    Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' );
+is (-e $renamed_file, 1, 'Source file with dateless filename named as excpected.' );
+is (-e $not_renamed_file, 1, 'Source file with backdated filename named as excpected.' );
+
 done_testing();
