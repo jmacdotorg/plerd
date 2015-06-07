@@ -10,3 +10,4 @@ requires 'FindBin';
 requires 'File::ChangeNotify';
 requires 'App::Daemon';
 requires 'Try::Tiny';
+requires 'HTML::Strip';

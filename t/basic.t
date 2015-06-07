@@ -61,7 +61,7 @@ is( scalar( $docroot_dir->children ),
             "Correct number of files generated in docroot."
 );
 
-### Test formatting in titles
+### Test formatting in titles and filenames
 {
 my $post = Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' )->slurp;
 like ( $post,
@@ -71,11 +71,23 @@ like ( $post,
 }
 
 ### Test published-file naming
+{
 my $renamed_file =
     Path::Class::File->new( $docroot_dir, $ymd . '-a-good-source-file.html' );
 my $not_renamed_file =
     Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' );
-is (-e $renamed_file, 1, 'Source file with dateless filename named as excpected.' );
-is (-e $not_renamed_file, 1, 'Source file with backdated filename named as excpected.' );
+is (-e $renamed_file, 1, 'Source file with dateless filename named as expected.' );
+is (-e $not_renamed_file, 1, 'Source file with backdated filename named as expected.' );
 
+my $renamed_file_with_funky_title =
+    Path::Class::File->new(
+        $docroot_dir,
+        $ymd . '-apostrophes-and-html-shouldnt-turn-into-garbage.html',
+    );
+is (
+    -e $renamed_file_with_funky_title,
+    1,
+    'Source file with formatted title received a nice clean published filename.'
+);
+}
 done_testing();

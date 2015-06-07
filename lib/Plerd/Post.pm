@@ -6,6 +6,7 @@ use DateTime::Format::W3CDTF;
 use Text::Markdown qw( markdown );
 use Text::SmartyPants;
 use URI;
+use HTML::Strip;
 
 has 'plerd' => (
     is => 'ro',
@@ -94,6 +95,8 @@ sub _build_published_filename {
     }
     else {
         $filename = $self->title;
+        my $stripper = HTML::Strip->new( emit_spaces => 0 );
+        $filename = $stripper->parse( $filename );
         $filename =~ s/\s+/-/g;
         $filename =~ s/--+/-/g;
         $filename =~ s/[^\w\-]+//g;
