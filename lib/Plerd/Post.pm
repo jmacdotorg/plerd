@@ -51,7 +51,7 @@ has 'date' => (
 );
 
 has 'published_filename' => (
-    is => 'ro',
+    is => 'rw',
     isa => 'Str',
     lazy_build => 1,
 );
@@ -148,7 +148,7 @@ sub _build_published_timestamp {
 # * Figure out the publication timestamp, based on possible (not guaranteed!)
 #   presence of date in the filename AND/OR "time" metadata attribute
 # * If the file lacks a timestamp attribute, rewrite the file so that it has one
-# * If the file lacks a Plerd-style filename, rename it so that it has one
+# * If the file lacks a filename attribute, rewrite the file so that it has one
 sub _process_source_file {
     my $self = shift;
 
@@ -200,6 +200,7 @@ sub _process_source_file {
     # * Elsif the post's filename asserts a date, use midnight of that date,
     #   and also add a time attribute to the file.
     # * Else use right now, and also add a time attribute to the file.
+    my $attributes_need_to_be_written_out = 0;
     if ( $attributes{ time } ) {
         eval {
             $self->date(
@@ -246,9 +247,24 @@ sub _process_source_file {
         my $date_string =
             $self->plerd->datetime_formatter->format_datetime( $publication_dt );
 
+        $attributes{ time } = $date_string;
+        $attributes_need_to_be_written_out = 1;
+    }
+
+    if ( $attributes{ published_filename } ) {
+        $self->published_filename( $attributes{ published_filename } );
+    }
+    else {
+        $attributes{ published_filename } = $self->published_filename;
+        $attributes_need_to_be_written_out = 1;
+    }
+
+
+    if ( $attributes_need_to_be_written_out ) {
         my $new_content = <<EOF;
 title: $attributes{ title }
-time: $date_string
+time: $attributes{ time }
+published_filename: $attributes{ published_filename }
 
 $body
 EOF

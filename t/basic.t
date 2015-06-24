@@ -90,4 +90,43 @@ is (
     'Source file with formatted title received a nice clean published filename.'
 );
 }
+
+### Make sure re-titling posts works as expected
+{
+my $source_file = Path::Class::File->new( $source_dir, 'good-source-file.md' );
+my $text = $source_file->slurp;
+$text =~ s/title: A good source file/title: A retitled source file/;
+$source_file->spew( $text );
+
+$plerd->publish_all;
+
+my $welcome_file = Path::Class::File->new(
+    $docroot_dir,
+    $ymd . '-a-good-source-file.html',
+);
+my $unwelcome_file = Path::Class::File->new(
+    $docroot_dir,
+    $ymd . '-a-retitled-source-file.html',
+);
+
+is ( $docroot_dir->contains( $welcome_file ),
+     1,
+     'A file named after the old title is still there.',
+);
+isnt ( $docroot_dir->contains( $unwelcome_file ),
+     1,
+     'A file named after the new title is not there.',
+);
+
+$text =~ s/-a-good-source-file/-a-retitled-source-file/;
+$source_file->spew( $text );
+
+$plerd->publish_all;
+is ( $docroot_dir->contains( $unwelcome_file ),
+     1,
+     'A file named after the new title is there now.',
+);
+
+
+}
 done_testing();
