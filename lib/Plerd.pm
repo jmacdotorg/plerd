@@ -163,7 +163,7 @@ sub publish_all {
     my $self = shift;
 
     $self->files_to_publish(
-        [ grep { /\.markdown$|\.md/ } $self->source_directory->children ]
+        [ grep { /\.markdown$|\.md$/ } $self->source_directory->children ]
     );
 
     $self->publish;
@@ -209,7 +209,7 @@ sub publish_archive_page {
 
     my @posts = sort { $b->date <=> $a->date }
                 map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
-                grep { /\.markdown$|\.md/ }
+                grep { /\.markdown$|\.md$/ }
                 $self->source_directory->children
     ;
 
@@ -326,7 +326,7 @@ sub _build_recent_posts {
     my @recent_posts = ();
 
     for my $file (
-        grep { /\.markdown$|\.md/ } $self->source_directory->children
+        grep { /\.markdown$|\.md$/ } $self->source_directory->children
     ) {
         my $post = Plerd::Post->new(
             plerd => $self,
