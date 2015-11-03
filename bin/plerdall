@@ -20,6 +20,8 @@ my $plerd = Plerd->new(
     author_name  => $config_ref->{ author_name },
     author_email => $config_ref->{ author_email },
     base_uri     => URI->new ( $config_ref->{ base_uri } ),
+
+    generates_post_guids => $config_ref->{ generate_post_guids },
 );
 
 $plerd->publish_all;

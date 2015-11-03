@@ -7,6 +7,7 @@ use Text::Markdown qw( markdown );
 use Text::SmartyPants;
 use URI;
 use HTML::Strip;
+use Data::GUID;
 
 has 'plerd' => (
     is => 'ro',
@@ -59,6 +60,12 @@ has 'published_filename' => (
 has 'uri' => (
     is => 'ro',
     isa => 'URI',
+    lazy_build => 1,
+);
+
+has 'guid' => (
+    is => 'rw',
+    isa => 'Maybe[Data::GUID]',
     lazy_build => 1,
 );
 
@@ -140,6 +147,17 @@ sub _build_published_timestamp {
     my $timestamp = $formatter->format_datetime( $self->date );
 
     return $timestamp;
+}
+
+sub _build_guid {
+    my $self = shift;
+
+    if ( $self->plerd->generates_post_guids ) {
+        return Data::GUID->new;
+    }
+    else {
+        return undef;
+    }
 }
 
 # This next internal method does a bunch of stuff.
@@ -259,12 +277,24 @@ sub _process_source_file {
         $attributes_need_to_be_written_out = 1;
     }
 
+    my $optional_attributes = '';
+    if ( $self->plerd->generates_post_guids ) {
+        if ( $attributes{ guid } ) {
+            $self->guid( Data::GUID->from_string( $attributes{ guid } ) );
+        }
+        else {
+            $attributes{ guid } = $self->guid;
+            $optional_attributes = "guid: $attributes{ guid }";
+            $attributes_need_to_be_written_out = 1;
+        }
+    }
 
     if ( $attributes_need_to_be_written_out ) {
         my $new_content = <<EOF;
 title: $attributes{ title }
 time: $attributes{ time }
 published_filename: $attributes{ published_filename }
+$optional_attributes
 
 $body
 EOF

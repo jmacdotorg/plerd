@@ -1,6 +1,7 @@
 requires 'Moose';
 requires 'Template';
 requires 'Path::Class';
+requires 'Data::GUID';
 requires 'DateTime';
 requires 'DateTime::Format::W3CDTF';
 requires 'URI';
