@@ -4,10 +4,6 @@ Plerd is meant to be an ultralight blogging platform for Markdown fans that play
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
 
-This software is in **very early development**. Its API might change dramatically while I, Plerd's creator, continue to puzzle out how it actually wants to work.
-
-If you want something aiming towards a similar goal but rather more mature, have a look at [Letterpress](https://github.com/an0/Letterpress).
-
 ## Purpose
 
 Plerd allows a blogger to publish new posts to their blog simply by adding Markdown files to a designated blog-source directory. By mixing in Dropbox, this directory can live on their local machine. They can also update posts by updating said files, and unpublish posts by deleting or moving files from that same folder.
@@ -15,6 +11,14 @@ Plerd allows a blogger to publish new posts to their blog simply by adding Markd
 The generated website comprises a single directory containing only static files. These include one "permalink" HTML page for every post, a recent-posts front page, a single archive page (in the manner of [Daring Fireball](http://daringfireball.net/archive)), and a syndication document in Atom format. All these are constructed from simple, customizable templates.
 
 That's it! That's all Plerd does.
+
+If you have the time and inclination, you may watch [a 20-minute presentation about my reasons for creating Plerd](http://blog.jmac.org/2015-06-09-my-yapcna-2015-talk-about-blogging.html).
+
+## Project status
+
+I consider this a released work with a stable interface. (I write this in late 2015 after using it for months without introducing radical changes to its behavior, and other people have started using it too. So there you have it.)
+
+It still has plenty of room for improvement, but it will continue to do what it does now, in more or less the same fashion, indefinitely. Should a future release ever make this untrue, it will increase its major version number to reflect this.
 
 ## Setup
 
@@ -26,8 +30,6 @@ To install Plerd's dependencies, run the following command from the top level of
 
     curl -fsSL https://cpanmin.us | perl - --installdeps .
     
-(If you already have _cpanm_ installed, you can just run `cpanm --installdeps .` instead.)
-
 This should crunch though the installation of a bunch of Perl modules that Plerd needs. It'll take a few minutes. When it's all done, Plerd will be ready for configuration.
 
 ### Configuration
