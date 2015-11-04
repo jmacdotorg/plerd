@@ -1,5 +1,7 @@
 package Plerd;
 
+our $VERSION = '1.0';
+
 use Moose;
 use Template;
 use Path::Class::Dir;
