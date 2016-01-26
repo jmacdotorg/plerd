@@ -78,6 +78,10 @@ to publish or republish files as needed.
 I<plerdwatcher> runs via L<App::Daemon>, and accepts all the command-line
 arguments documented there.
 
+It stores its logs in a directory called C<log>
+and other run-time files in a C<run> directory, both of which it expects to
+find as siblings of its own parent directory (usually C<bin>).
+
 For instructions on installing and using Plerd, please see the README file that
 should have accompanied this distribution. It is also available online
 at L<https://github.com/jmacdotorg/plerd#plerd>.
