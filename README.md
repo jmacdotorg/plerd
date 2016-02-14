@@ -16,9 +16,9 @@ If you have the time and inclination, you may watch [a 20-minute presentation ab
 
 ## Project status
 
-I consider this a released work with a stable interface. (I write this in late 2015 after using it for months without introducing radical changes to its behavior, and other people have started using it too. So there you have it.)
+Plerd is released and stable. It still has plenty of room for improvement, and I welcome community feedback and patch proposals, but it will continue to do what it does now, in more or less the same fashion, for the foreseeable future.
 
-It still has plenty of room for improvement, but it will continue to do what it does now, in more or less the same fashion, indefinitely. Should a future release ever make this untrue, it will increase its major version number to reflect this.
+Please visit [Plerd's homepage](http://jmac.org/plerd) for links to Plerd community resources, such as mailing lists.
 
 ## Setup
 
@@ -122,6 +122,12 @@ To have Plerd work with Dropbox, just place its working directory (the one conta
 Now, you can create, update, and delete blog posts just by moving and editing files, _no matter what computer you're using_, so long as it has access to that Dropbox folder.
 
 In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting _File &rarr; Save_ in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way. [What what.](https://vine.co/v/OB5j0jdn1Pt)
+
+## Support
+
+For public mailing lists, author contact information, and related goodies, please visit [the Plerd homepage](http://jmac.org/plerd).
+
+To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
 
 ## See Plerd at work
 
