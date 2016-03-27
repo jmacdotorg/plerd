@@ -143,6 +143,18 @@ has 'generates_post_guids' => (
     default => 0,
 );
 
+has 'posts' => (
+    is => 'ro',
+    isa => 'ArrayRef[Plerd::Post]',
+    lazy_build => 1,
+);
+
+has 'index_of_post_with_guid' => (
+    is => 'ro',
+    isa  => 'HashRef',
+    lazy_build => 1,
+);
+
 sub publish {
     my $self = shift;
 
@@ -215,17 +227,13 @@ sub publish_rss {
 sub publish_archive_page {
     my $self = shift;
 
-    my @posts = sort { $b->date <=> $a->date }
-                map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
-                grep { /\.markdown$|\.md$/ }
-                $self->source_directory->children
-    ;
+    my $posts_ref = $self->posts;
 
     $self->template->process(
         $self->archive_template_file->openr,
         {
             plerd => $self,
-            posts => \@posts,
+            posts => $posts_ref,
         },
         $self->archive_file->openw,
     );
@@ -333,13 +341,7 @@ sub _build_recent_posts {
 
     my @recent_posts = ();
 
-    for my $file (
-        grep { /\.markdown$|\.md$/ } $self->source_directory->children
-    ) {
-        my $post = Plerd::Post->new(
-            plerd => $self,
-            source_file => $file,
-        );
+    for my $post ( @{ $self->posts } ) {
 
         my $did_update = 0;
 
@@ -359,6 +361,32 @@ sub _build_recent_posts {
     }
 
     return \@recent_posts;
+}
+
+sub _build_posts {
+    my $self = shift;
+
+    my @posts = sort { $b->date <=> $a->date }
+                map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
+                grep { /\.markdown$|\.md$/ }
+                $self->source_directory->children
+    ;
+
+    return \@posts;
+}
+
+sub _build_index_of_post_with_guid {
+    my $self = shift;
+
+    my %index_of_post;
+
+    my $current_index = 0;
+
+    for my $post ( @{ $self->posts } ) {
+        $index_of_post{ $post->guid } = $current_index++;
+    }
+
+    return \%index_of_post;
 }
 
 1;
@@ -459,6 +487,13 @@ document.
 =head2 Read-only attributes
 
 =over
+
+=item posts
+
+An arrayref of L<Plerd::Post> objects, representing all the blog's posts, in
+newest-to-oldest order. (Recency is determined by the dates manually
+set on the posts by the posts' author, not on their source files' modification
+time or whatever.)
 
 =item recent_posts
 
