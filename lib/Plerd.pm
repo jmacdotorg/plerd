@@ -178,7 +178,7 @@ sub publish_all {
     my $self = shift;
 
     $self->files_to_publish(
-        [ grep { /\.markdown$|\.md$/ } $self->source_directory->children ]
+        [ sort grep { /\.markdown$|\.md$/ } $self->source_directory->children ]
     );
 
     $self->publish;
