@@ -127,13 +127,8 @@ is ( $docroot_dir->contains( $unwelcome_file ),
      'A file named after the new title is there now.',
 );
 
-### Test optional GUIDs
-unlike ( $source_file->slurp,
-         qr/guid: /,
-         'Source file doesn\'t contain a GUID when it shouldn\'t.',
-);
+### Test GUIDs
 
-$plerd->generates_post_guids( 1 );
 $plerd->publish_all;
 like ( $source_file->slurp,
        qr/guid: /,
