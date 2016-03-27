@@ -137,12 +137,6 @@ has 'datetime_formatter' => (
     default => sub { DateTime::Format::W3CDTF->new },
 );
 
-has 'generates_post_guids' => (
-    is => 'rw',
-    isa => 'Bool',
-    default => 0,
-);
-
 has 'posts' => (
     is => 'ro',
     isa => 'ArrayRef[Plerd::Post]',
@@ -448,10 +442,6 @@ And, optional keys, with defaults:
 =item *
 
 recent_posts_maxsize I<Default value: 10>
-
-=item *
-
-generates_post_guids I<Default value: 0>
 
 =back
 

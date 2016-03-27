@@ -187,12 +187,7 @@ sub _build_published_timestamp {
 sub _build_guid {
     my $self = shift;
 
-    if ( $self->plerd->generates_post_guids ) {
-        return Data::GUID->new;
-    }
-    else {
-        return undef;
-    }
+    return Data::GUID->new;
 }
 
 # This next internal method does a bunch of stuff.
@@ -312,16 +307,12 @@ sub _process_source_file {
         $attributes_need_to_be_written_out = 1;
     }
 
-    my $optional_attributes = '';
-    if ( $self->plerd->generates_post_guids ) {
-        if ( $attributes{ guid } ) {
-            $self->guid( Data::GUID->from_string( $attributes{ guid } ) );
-        }
-        else {
-            $attributes{ guid } = $self->guid;
-            $optional_attributes = "guid: $attributes{ guid }";
-            $attributes_need_to_be_written_out = 1;
-        }
+    if ( $attributes{ guid } ) {
+        $self->guid( Data::GUID->from_string( $attributes{ guid } ) );
+    }
+    else {
+        $attributes{ guid } = $self->guid;
+        $attributes_need_to_be_written_out = 1;
     }
 
     if ( $attributes_need_to_be_written_out ) {
@@ -329,7 +320,7 @@ sub _process_source_file {
 title: $attributes{ title }
 time: $attributes{ time }
 published_filename: $attributes{ published_filename }
-$optional_attributes
+guid: $attributes{ guid }
 
 $body
 EOF
