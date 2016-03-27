@@ -7,4 +7,19 @@
 </div>
 [% END %]
 
+[% IF posts.size == 1 %]
+
+    <div class="nextprev">
+        <hr />
+        [% IF post.next_post %]
+            <p>Next post: <a href="[% post.next_post.uri %]">[% post.next_post.title %]</a></p>
+        [% END %]
+        [% IF post.previous_post %]
+            <p>Previous post: <a href="[% post.previous_post.uri %]">[% post.previous_post.title %]</a></p>
+        [% END %]
+    </div>
+
+[% END %]
+
+
 [% END %]
