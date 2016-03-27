@@ -8,6 +8,7 @@ use Path::Class::Dir;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use URI;
+use Carp;
 
 use Plerd::Post;
 
@@ -381,6 +382,11 @@ sub _build_index_of_post_with_guid {
     }
 
     return \%index_of_post;
+}
+
+sub generates_post_guids {
+    carp "generates_post_guids() is deprecated. (Also, it doesn't do anything "
+         . "anyway.)";
 }
 
 1;
