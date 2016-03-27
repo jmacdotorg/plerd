@@ -81,13 +81,13 @@ has 'published_timestamp' => (
     lazy_build => 1,
 );
 
-has 'next_post' => (
+has 'newer_post' => (
     is => 'ro',
     isa => 'Maybe[Plerd::Post]',
     lazy_build => 1,
 );
 
-has 'previous_post' => (
+has 'older_post' => (
     is => 'ro',
     isa => 'Maybe[Plerd::Post]',
     lazy_build => 1,
@@ -152,27 +152,27 @@ sub _build_updated_timestamp {
     return $timestamp;
 }
 
-sub _build_next_post {
+sub _build_newer_post {
     my $self = shift;
 
     my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
-    my $next_post;
+    my $newer_post;
     if ( $index - 1 >= 0 ) {
-        $next_post = $self->plerd->posts->[ $index - 1 ];
+        $newer_post = $self->plerd->posts->[ $index - 1 ];
     }
 
-    return $next_post;
+    return $newer_post;
 }
 
-sub _build_previous_post {
+sub _build_older_post {
     my $self = shift;
 
     my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
-    my $previous_post = $self->plerd->posts->[ $index + 1 ];
+    my $older_post = $self->plerd->posts->[ $index + 1 ];
 
-    return $previous_post;
+    return $older_post;
 }
 
 sub _build_published_timestamp {
@@ -400,14 +400,14 @@ This post's date, in W3C format, set to midnight in the local timezone.
 The modification time of this this post's source file, in W3C format, set to
 the local timezone.
 
-=item previous_post
+=item older_post
 
 A Plerd::Post object representing the next-older post to the blog.
 
 Is the current object represents the oldest post in the blog, then this method
 returns undef.
 
-=item next_post
+=item newer_post
 
 A Plerd::Post object representing the next-newer post to the blog.
 

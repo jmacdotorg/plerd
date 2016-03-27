@@ -1,6 +1,6 @@
 1.1 2016-03-27
 
-    - Adding "next_post" and "previous_post" read-only methods to post objects.
+    - Adding "newer_post" and "older_post" read-only methods to post objects.
 
     - Adding a "posts" read-only method to the Plerd object, returning all of
       the blog's posts.
