@@ -1,3 +1,7 @@
+1.2 2016-04-09
+
+    - Fixing a bug that could prevent the recent, arhcive, and RSS pages from updating properly.
+
 1.1 2016-03-27
 
     - Adding "newer_post" and "older_post" read-only methods to post objects.
