@@ -142,6 +142,7 @@ has 'posts' => (
     is => 'ro',
     isa => 'ArrayRef[Plerd::Post]',
     lazy_build => 1,
+    clearer => 'clear_posts',
 );
 
 has 'index_of_post_with_guid' => (
@@ -172,6 +173,7 @@ sub publish {
 
     $self->clear_files_to_publish;
     $self->clear_recent_posts;
+    $self->clear_posts;
 }
 
 sub publish_all {
