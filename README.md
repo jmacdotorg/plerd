@@ -18,8 +18,6 @@ If you have the time and inclination, you may watch [a 20-minute presentation ab
 
 Plerd is released and stable. It still has plenty of room for improvement, and I welcome community feedback and patch proposals, but it will continue to do what it does now, in more or less the same fashion, for the foreseeable future.
 
-Please visit [Plerd's homepage](http://jmac.org/plerd) for links to Plerd community resources, such as mailing lists.
-
 ## Setup
 
 ### Installation
@@ -125,9 +123,9 @@ In this way you could, for example, compose and edit blog posts via Markdown in 
 
 ## Support
 
-For public mailing lists, author contact information, and related goodies, please visit [the Plerd homepage](http://jmac.org/plerd).
-
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
+
+[Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
 
 ## See Plerd at work
 
