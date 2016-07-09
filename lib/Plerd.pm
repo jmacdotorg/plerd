@@ -14,7 +14,21 @@ use Plerd::Post;
 
 has 'path' => (
     is => 'ro',
-    required => 1,
+    isa => 'Str',
+);
+
+has 'source_path' => (
+    is => 'ro',
+    isa => 'Str',
+);
+
+has 'template_path' => (
+    is => 'ro',
+    isa => 'Str',
+);
+
+has 'publication_path' => (
+    is => 'ro',
     isa => 'Str',
 );
 
@@ -241,34 +255,49 @@ sub publish_archive_page {
 sub _build_directory {
     my $self = shift;
 
-    return Path::Class::Dir->new( $self->path );
+    if ( defined $self->path ) {
+        return Path::Class::Dir->new( $self->path );
+    }
+    else {
+        return undef;
+    }
+}
+
+sub _build_subdirectory {
+    my $self = shift;
+    my ( $path_method, $subdir_name ) = @_;
+
+    if ( defined $self->$path_method ) {
+        return Path::Class::Dir->new( $self->$path_method );
+    }
+    elsif ( defined $self->path ) {
+        return Path::Class::Dir->new(
+            $self->directory,
+            $subdir_name,
+        );
+    }
+    else {
+        die "Can't build source directory! Neither a '$path_method' nor"
+            . "a 'path' attribute is defined.\n";
+    }
 }
 
 sub _build_source_directory {
     my $self = shift;
 
-    return Path::Class::Dir->new(
-        $self->directory,
-        'source',
-    );
+    return $self->_build_subdirectory( 'source_path', 'source' );
 }
 
 sub _build_publication_directory {
     my $self = shift;
 
-    return Path::Class::Dir->new(
-        $self->directory,
-        'docroot',
-    );
+    return $self->_build_subdirectory( 'publication_path', 'docroot' );
 }
 
 sub _build_template_directory {
     my $self = shift;
 
-    return Path::Class::Dir->new(
-        $self->directory,
-        'templates',
-    );
+    return $self->_build_subdirectory( 'template_path', 'templates' );
 }
 
 sub _build_template {
@@ -461,9 +490,25 @@ recent_posts_maxsize I<Default value: 10>
 
 =over
 
+=item source_path
+
+The path to the filesystem directory containing this blog's source directory.
+
+=item template_path
+
+The path to the filesystem directory containing this blog's templates directory.
+
+=item publication_path
+
+The path to the filesystem directory containing this blog's output directory.
+
 =item path
 
-String representing the filesystem path to the synced folder within Dropbox to use.
+The path to a filesystem directory within which Plerd will look for
+"source", "docroot", and "templates" directories as needed, using those names exactly.
+
+B<Caution:> If this is not defined I<and> any one of the previous three attributes
+is also undefined, then Plerd will die if you try to publish the blog.
 
 =item title
 
@@ -507,7 +552,7 @@ for any blog whose total number of posts is greater than that number).
 =item directory
 
 A L<Path::Class::Dir> object representation of the path provided via this object's
-C<path> attribute.
+C<path> attribute. If said attribute is undefined, then this will return undef.
 
 =item source_directory
 

@@ -136,4 +136,28 @@ like ( $source_file->slurp,
 );
 
 }
+
+### Test using alternate config paths
+{
+my $alt_config_plerd = Plerd->new(
+    source_path       => "$FindBin::Bin/source",
+    publication_path  => "$FindBin::Bin/docroot",
+    template_path     => "$FindBin::Bin/templates",
+    title             => 'Test Blog',
+    author_name       => 'Nobody',
+    author_email      => 'nobody@example.com',
+    base_uri          => URI->new ( 'http://blog.example.com/' ),
+);
+
+$docroot_dir->rmtree;
+$docroot_dir->mkpath;
+
+$alt_config_plerd->publish_all;
+is( scalar( $docroot_dir->children ),
+            $expected_docroot_count,
+            "Correct number of files generated in docroot."
+);
+
+
+}
 done_testing();
