@@ -1,3 +1,7 @@
+1.3 2016-07-23
+
+    - Plerd no longer requires that the source, docroot, and template directories all exist within the same master directory.
+
 1.2 2016-04-09
 
     - Fixing a bug that could prevent the recent, archive, and RSS pages from updating properly.
