@@ -137,8 +137,29 @@ like ( $source_file->slurp,
 
 }
 
+### Test trailing no slash on base_uri
+{
+my $plerd = Plerd->new(
+    path         => $FindBin::Bin,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new ( 'http://www.example.com/blog' ),
+);
+
+$plerd->publish_all;
+like ( Path::Class::File->new( $docroot_dir, 'recent.html' )->slurp,
+     qr{http://www.example.com/blog/1999-01-01-backdated.html},
+     'Base URIs missing trailing slashes work',
+);
+
+}
+
 ### Test using alternate config paths
 {
+$docroot_dir->rmtree;
+$docroot_dir->mkpath;
+
 my $alt_config_plerd = Plerd->new(
     source_path       => "$FindBin::Bin/source",
     publication_path  => "$FindBin::Bin/docroot",
@@ -148,9 +169,6 @@ my $alt_config_plerd = Plerd->new(
     author_email      => 'nobody@example.com',
     base_uri          => URI->new ( 'http://blog.example.com/' ),
 );
-
-$docroot_dir->rmtree;
-$docroot_dir->mkpath;
 
 $alt_config_plerd->publish_all;
 is( scalar( $docroot_dir->children ),
