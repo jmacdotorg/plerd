@@ -445,7 +445,7 @@ String representing the post's body text.
 A hashref of all the attributes defined in the source document's metadata
 section, whether or not Plerd takes any special meaning from them.
 
-For example, if a source document defines both C<title> and C<favorite-color>
+For example, if a source document defines both C<title> and C<favorite_color>
 key-value pairs in its metadata, both keys and values will appear in this
 hashref, even though Plerd pays no mind to the latter key.
 
