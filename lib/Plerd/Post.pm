@@ -39,6 +39,11 @@ has 'body' => (
     isa => 'Str',
 );
 
+has 'attributes' => (
+    is => 'rw',
+    isa => 'HashRef',
+);
+
 has 'date' => (
     is => 'rw',
     isa => 'DateTime',
@@ -203,15 +208,21 @@ sub _process_source_file {
     # Slurp the file, storing the title and time metadata, and the body.
     my $fh = $self->source_file->openr;
     my %attributes;
+    my @ordered_attribute_names = qw( time title published_filename guid );
     while ( my $line = <$fh> ) {
         chomp $line;
         last unless $line =~ /\S/;
         my ($key, $value) = $line =~ /^\s*(\w+?)\s*:\s*(.*)$/;
         if ( $key ) {
-            $attributes{ lc $key } = $value;
+            $key = lc $key;
+            $attributes{ $key } = $value;
+            unless ( grep { $_ eq $key } @ordered_attribute_names ) {
+                push @ordered_attribute_names, $key;
+            }
         }
-
     }
+
+    $self->attributes( \%attributes );
 
     my $body;
     while ( <$fh> ) {
@@ -316,14 +327,11 @@ sub _process_source_file {
     }
 
     if ( $attributes_need_to_be_written_out ) {
-        my $new_content = <<EOF;
-title: $attributes{ title }
-time: $attributes{ time }
-published_filename: $attributes{ published_filename }
-guid: $attributes{ guid }
-
-$body
-EOF
+        my $new_content = '';
+        for my $attribute_name ( @ordered_attribute_names ) {
+            $new_content .= "$attribute_name: $attributes{ $attribute_name }\n";
+        }
+        $new_content .= "\n$body\n";
         $self->source_file->spew( $new_content );
     }
 }
@@ -431,6 +439,15 @@ L<DateTime> object representing this post's presented publication date.
 =item body
 
 String representing the post's body text.
+
+=item attributes
+
+A hashref of all the attributes defined in the source document's metadata
+section, whether or not Plerd takes any special meaning from them.
+
+For example, if a source document defines both C<title> and C<favorite-color>
+key-value pairs in its metadata, both keys and values will appear in this
+hashref, even though Plerd pays no mind to the latter key.
 
 =back
 

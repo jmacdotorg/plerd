@@ -135,6 +135,18 @@ like ( $source_file->slurp,
        'Source file contains a GUID, as expected.',
 );
 
+### Test miscellaneous-attribute pass-through
+my $byline_post =
+    Path::Class::File->new(
+        $docroot_dir,
+        '2000-01-01-this-post-has-extra-headers.html',
+    );
+
+like( $byline_post->slurp,
+      qr/"byline">Sam Handwich/,
+      'Miscellaneous header passed through to the template',
+);
+
 }
 
 ### Test using alternate config paths
@@ -157,7 +169,6 @@ is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."
 );
-
-
 }
+
 done_testing();
