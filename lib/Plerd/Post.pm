@@ -208,7 +208,7 @@ sub _process_source_file {
     # Slurp the file, storing the title and time metadata, and the body.
     my $fh = $self->source_file->openr;
     my %attributes;
-    my @ordered_attribute_names = qw( time title published_filename guid );
+    my @ordered_attribute_names = qw( title time published_filename guid );
     while ( my $line = <$fh> ) {
         chomp $line;
         last unless $line =~ /\S/;
