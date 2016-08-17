@@ -126,6 +126,17 @@ Now, you can create, update, and delete blog posts just by moving and editing fi
 
 In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting _File &rarr; Save_ in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way. [What what.](https://vine.co/v/OB5j0jdn1Pt)
 
+## Advanced use
+
+### User-defined attributes
+
+You can add any attributes you'd like to your posts, and then refer to them from your templates via a hash named `attributes` attached to every post object. For example, if a post's metadata looks like this:
+
+    title: Example of user-defined attributes
+    byline: Sam Handwich
+
+Then you can refer to `post.attributes.byline` to fetch that value from within the `post.tt` template file, even though "byline" is not an attribute that Plerd otherwise recognizes. (If a template refers to an attribute key that a post's source file does not define, it will simply return a blank value.)
+
 ## Support
 
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
