@@ -1,3 +1,9 @@
+1.4  2016-08-17
+
+     - Adding support for user-defined post attributes.
+     
+     - Improving handling of base-URI configurations involving paths. (David Turner)
+
 1.31 2016-08-01
 
      - Plerdwatcher now pays attention to all config directives, including the new ones defined in v1.3.
