@@ -70,8 +70,7 @@ has 'uri' => (
 
 has 'guid' => (
     is => 'rw',
-    isa => 'Maybe[Data::GUID]',
-    lazy_build => 1,
+    isa => 'Data::GUID',
 );
 
 has 'updated_timestamp' => (
@@ -204,8 +203,8 @@ sub _build_guid {
 # * Read and store the file's data (body) and metadata
 # * Figure out the publication timestamp, based on possible (not guaranteed!)
 #   presence of date in the filename AND/OR "time" metadata attribute
-# * If the file lacks a timestamp attribute, rewrite the file so that it has one
-# * If the file lacks a filename attribute, rewrite the file so that it has one
+# * If the file lacks a various required attributes, rewrite the file so that
+#   it has them.
 sub _process_source_file {
     my $self = shift;
 
@@ -326,7 +325,8 @@ sub _process_source_file {
         $self->guid( Data::GUID->from_string( $attributes{ guid } ) );
     }
     else {
-        $attributes{ guid } = $self->guid;
+        $attributes{ guid } = Data::GUID->new;
+        $self->guid( $attributes{ guid } );
         $attributes_need_to_be_written_out = 1;
     }
 
