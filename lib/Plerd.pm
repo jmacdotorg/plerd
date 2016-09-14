@@ -152,6 +152,7 @@ has 'index_of_post_with_guid' => (
     is => 'ro',
     isa  => 'HashRef',
     lazy_build => 1,
+    clearer => 'clear_post_index_hash',
 );
 
 sub publish_all {
@@ -168,7 +169,7 @@ sub publish_all {
 
     $self->clear_recent_posts;
     $self->clear_posts;
-
+    $self->clear_post_index_hash;
 }
 
 sub publish_recent_page {
