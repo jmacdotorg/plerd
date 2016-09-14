@@ -86,17 +86,6 @@ has 'publication_directory' => (
     lazy_build => 1,
 );
 
-has 'files_to_publish' => (
-    is => 'rw',
-    isa => 'ArrayRef[Path::Class::File]',
-    traits => ['Array'],
-    handles => {
-        number_of_files_to_publish => 'count',
-        there_are_files_to_publish => 'count',
-    },
-    clearer => 'clear_files_to_publish',
-);
-
 has 'template' => (
     is => 'ro',
     isa => 'Template',
@@ -165,18 +154,10 @@ has 'index_of_post_with_guid' => (
     lazy_build => 1,
 );
 
-sub publish {
+sub publish_all {
     my $self = shift;
 
-    return unless ( $self->there_are_files_to_publish );
-
-    for my $file ( @{ $self->files_to_publish } ) {
-        next unless -e $file;
-        my $post = Plerd::Post->new(
-            source_file => $file,
-            plerd => $self,
-        );
-
+    for my $post ( @{ $self->posts } ) {
         $post->publish;
     }
 
@@ -185,19 +166,9 @@ sub publish {
     $self->publish_recent_page;
     $self->publish_rss;
 
-    $self->clear_files_to_publish;
     $self->clear_recent_posts;
     $self->clear_posts;
-}
 
-sub publish_all {
-    my $self = shift;
-
-    $self->files_to_publish(
-        [ sort grep { /\.markdown$|\.md$/ } $self->source_directory->children ]
-    );
-
-    $self->publish;
 }
 
 sub publish_recent_page {
@@ -575,31 +546,14 @@ the blog's docroot -- in other words, the place Plerd will write HTML and XML fi
 
 =over
 
-=item files_to_publish ( [ $markdown_file_1, $markdown_file_2, ... ] );
-
-An array reference of L<Path::Class::File> objects, each representing a Markdown file
-that will get published when this object's publish() method is called.
-
-=back
-
 =head1 OBJECT METHODS
 
 =over
 
-=item publish
-
-Publishes the blog, based on the current value of the C<files_to_publish> attribute.
-
-If C<files_to_publish> contains at least one file, then Plerd will publish a fresh
-"permalink" HTML file for every file it contains. It will also recreate the recent,
-archive, and syndication HTML and XML files if necessary.
-
-If C<files_to_publish> is empty, this method does nothing.
-
 =item publish_all
 
-Publishes every Markdown file in the blog's source directory, regardlness of the value
-of C<files_to_publish>. Also recreates the recent, archive, and syndication files.
+Publishes every Markdown file in the blog's source directory.
+Also recreates the recent, archive, and syndication files.
 
 =back
 
