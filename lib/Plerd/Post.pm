@@ -163,7 +163,7 @@ sub _build_updated_timestamp {
 sub _build_newer_post {
     my $self = shift;
 
-    my $index = $self->plerd->index_of_post_with_date->{ $self->date };
+    my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
     my $newer_post;
     if ( $index - 1 >= 0 ) {
@@ -176,7 +176,7 @@ sub _build_newer_post {
 sub _build_older_post {
     my $self = shift;
 
-    my $index = $self->plerd->index_of_post_with_date->{ $self->date };
+    my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
     my $older_post = $self->plerd->posts->[ $index + 1 ];
 
