@@ -148,7 +148,7 @@ has 'posts' => (
     clearer => 'clear_posts',
 );
 
-has 'index_of_post_with_guid' => (
+has 'index_of_post_with_date' => (
     is => 'ro',
     isa  => 'HashRef',
     lazy_build => 1,
@@ -372,7 +372,7 @@ sub _build_posts {
     return \@posts;
 }
 
-sub _build_index_of_post_with_guid {
+sub _build_index_of_post_with_date {
     my $self = shift;
 
     my %index_of_post;
@@ -380,7 +380,7 @@ sub _build_index_of_post_with_guid {
     my $current_index = 0;
 
     for my $post ( @{ $self->posts } ) {
-        $index_of_post{ $post->guid } = $current_index++;
+        $index_of_post{ $post->date } = $current_index++;
     }
 
     return \%index_of_post;
