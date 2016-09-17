@@ -147,6 +147,44 @@ like( $byline_post->slurp,
       'Miscellaneous header passed through to the template',
 );
 
+### Test newer / older post links
+  # (Including robustness after new posts are added)
+my $new_post =
+    Path::Class::File->new(
+        $source_dir,
+        'another_post.md',
+    );
+$new_post->spew( "title:Blah\n\nWords, words, words." );
+$expected_docroot_count++;
+$plerd->publish_all;
+
+my $first_post = $plerd->posts->[0];
+my $second_post = $plerd->posts->[1];
+my $third_post = $plerd->posts->[2];
+my $last_post = $plerd->posts->[-1];
+my $penultimate_post = $plerd->posts->[-2];
+is( $first_post->newer_post, undef, 'First post has no newer post.' );
+is( $first_post->older_post,
+    $second_post,
+    'First post has correct older post.'
+);
+is( $second_post->newer_post,
+    $first_post,
+    'Second post has correct newer post.'
+);
+is( $second_post->older_post,
+    $third_post,
+    'Second post has correct older post.'
+);
+is( $last_post->older_post,
+    undef,
+    'Last post has no older post.'
+);
+is( $last_post->newer_post,
+    $penultimate_post,
+    'Last post has correct newer post.'
+);
+
 }
 
 ### Test trailing no slash on base_uri
