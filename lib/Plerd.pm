@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.4';
+our $VERSION = '1.41';
 
 use Moose;
 use Template;
@@ -392,6 +392,12 @@ sub generates_post_guids {
          . "anyway.)";
 }
 
+sub publish {
+    my $self = shift;
+
+    return $self->publish_all;
+}
+
 1;
 
 =head1 NAME
@@ -542,10 +548,6 @@ A L<Path::Class::Dir> object representation of the Dropbox-synced directory that
 the blog's docroot -- in other words, the place Plerd will write HTML and XML files to.
 
 =back
-
-=head2 Read-write attributes
-
-=over
 
 =head1 OBJECT METHODS
 

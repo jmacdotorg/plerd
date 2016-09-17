@@ -1,3 +1,9 @@
+1.41 2016-09-17
+
+     - Fixing a bug that would sometimes cause existing posts' "older_post" and "newer_post" methods to return incorrect values after new the publication of new posts.
+
+     - Removing support for the Plerd object's "publish" method and "files_to_publish" attribute. (The former now just calls the "publish_all" method.)
+
 1.4  2016-08-17
 
      - Adding support for user-defined post attributes.
