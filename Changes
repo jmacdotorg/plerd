@@ -1,3 +1,7 @@
+1.42 2016-10-06
+
+     - Adding some styling to the default template so that plain <img> elements within posts dont overflow the content div's width.
+     
 1.41 2016-09-17
 
      - Fixing a bug that would sometimes cause existing posts' "older_post" and "newer_post" methods to return incorrect values after new the publication of new posts.

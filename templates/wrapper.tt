@@ -19,6 +19,9 @@
         .sidebar section {
             margin-top: 2em;
         }
+        img {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
