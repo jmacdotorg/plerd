@@ -343,12 +343,16 @@ sub _process_source_file {
 sub publish {
     my $self = shift;
 
+    # Make <title>-ready text free of possible Markdown-generated HTML tags.
+    my $stripped_title = $self->title;
+    $stripped_title =~ s{</(em|strong)>}{}g;
+
     $self->plerd->template->process(
         $self->plerd->post_template_file->openr,
         {
             plerd => $self->plerd,
             posts => [ $self ],
-            title => $self->title,
+            title => $stripped_title,
         },
         $self->publication_file->openw,
     );
