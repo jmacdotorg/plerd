@@ -345,7 +345,7 @@ sub publish {
 
     # Make <title>-ready text free of possible Markdown-generated HTML tags.
     my $stripped_title = $self->title;
-    $stripped_title =~ s{</(em|strong)>}{}g;
+    $stripped_title =~ s{</?(em|strong)>}{}g;
 
     $self->plerd->template->process(
         $self->plerd->post_template_file->openr,
