@@ -143,7 +143,7 @@ To report bugs or file pull requests, visit [Plerd's GitHub repository](https://
 
 [Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
 
-You can discuss or ask questions about Plerd at the `#plerd` channel on [Freenode IRC](http://freenode.net). Plerd's author and maintainer hangs out there as `jmac` and will gladly respond to queries sooner or later.
+You can discuss or ask questions about Plerd at [the `#plerd` channel](irc://chat.freenode.net:6667/plerd) on [Freenode IRC](http://freenode.net). Plerd's author and maintainer hangs out there as `jmac` and will gladly respond to queries sooner or later.
 
 ## See Plerd at work
 
