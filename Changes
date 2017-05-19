@@ -1,3 +1,9 @@
+1.43 2017-05-19
+
+     - Adding experimental support for JSON Feed (http://jsonfeed.org). 
+     
+     - Fixing a bug where Markdown in post titles could result in messed-up HTML title-element content.
+
 1.42 2016-10-06
 
      - Adding some styling to the default template so that plain <img> elements within posts dont overflow the content div's width.
