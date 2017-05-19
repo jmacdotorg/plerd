@@ -8,7 +8,7 @@ It allows you to compose and maintain blog posts as easily as adding and modifyi
 
 Plerd allows a blogger to publish new posts to their blog simply by adding Markdown files to a designated blog-source directory. By mixing in Dropbox, this directory can live on their local machine. They can also update posts by updating said files, and unpublish posts by deleting or moving files from that same folder.
 
-The generated website comprises a single directory containing only static files. These include one "permalink" HTML page for every post, a recent-posts front page, a single archive page (in the manner of [Daring Fireball](http://daringfireball.net/archive)), and a syndication document in Atom format. All these are constructed from simple, customizable templates.
+The generated website comprises a single directory containing only static files. These include one "permalink" HTML page for every post, a recent-posts front page, a single archive page (in the manner of [Daring Fireball](http://daringfireball.net/archive)), and syndication documents in Atom and [JSON Feed](http://jsonfeed.org) formats. All these are constructed from simple, customizable templates.
 
 That's it! That's all Plerd does.
 
@@ -108,7 +108,7 @@ Normally, Plerd will set the publication time to the moment that you added the f
 
 (Note that Plerd assumes you use a text editor smart enough to see that the source file has both moved and had additional lines added to it from an external process, and to react to this in a graceful fashion.)
 
-Once it has prepared the source file, Plerd will update the blog. It will create a new HTML file for the new entry, and add a link to it from the `archive.html` page. It will also appear in the recent-posts sidebar of every other entry, as well as the Atom document (unless you decided to manually backdate the entry by specifying your own date attribute within the file).
+Once it has prepared the source file, Plerd will update the blog. It will create a new HTML file for the new entry, and add a link to it from the `archive.html` page. It will also appear in the recent-posts sidebar of every other entry, as well as the Atom and JSON Feed documents (unless you decided to manually backdate the entry by specifying your own date attribute within the file).
 
 ### Updating or deleting posts
 

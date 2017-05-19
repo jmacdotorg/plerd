@@ -4,7 +4,9 @@
     <title>[% title %]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="atom.xml" rel="alternate" title="[% plerd.title %]" type="application/atom+xml">
+    <link href="atom.xml" rel="alternate" title="Atom feed" type="application/atom+xml">
+    <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
+
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     <style>
         .page-header h1 :link, .page-header h1 :visited {
