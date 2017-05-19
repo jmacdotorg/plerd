@@ -1,0 +1,25 @@
+{
+  "version": "https://jsonfeed.org/version/1",
+  "title": "[% plerd.title %]",
+  "home_page_url": "[% plerd.base_uri %]",
+  "feed_url": "[% plerd.base_uri %]/feed.json",
+  "user_comment": "This feed allows you to read the posts from this site in any feed reader that supports the JSON Feed format. To add this feed to your reader, copy the following URL — [% plerd.base_uri %]/feed.json — and add it your reader.",
+  "author": {
+    "name": "[% plerd.author_name %]"[% IF plerd.author_email %],
+    "url": "mailto:[% plerd.author_email %]"[% END %]
+  },
+  "items": [
+[% post_count = 0 %]
+[% FOR post IN posts %]
+    [% post_count = post_count + 1 %]
+    {
+      "id": "[% post.uri %]",
+      "url": "[% post.uri %]",
+      "title": "[% post.title %]",
+      "content_html": "[% post.body | json %]",
+      "date_published": "[% post.published_timestamp %]",
+      "date_modified": "[% post.updated_timestamp %]"
+    }[% IF post_count < posts.size %],[% END %]
+[% END %]
+  ]
+}

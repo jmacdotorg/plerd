@@ -110,6 +110,12 @@ has 'rss_template_file' => (
     lazy_build => 1,
 );
 
+has 'jsonfeed_template_file' => (
+    is => 'ro',
+    isa => 'Path::Class::File',
+    lazy_build => 1,
+);
+
 has 'recent_file' => (
     is => 'ro',
     isa => 'Path::Class::File',
@@ -123,6 +129,12 @@ has 'archive_file' => (
 );
 
 has 'rss_file' => (
+    is => 'ro',
+    isa => 'Path::Class::File',
+    lazy_build => 1,
+);
+
+has 'jsonfeed_file' => (
     is => 'ro',
     isa => 'Path::Class::File',
     lazy_build => 1,
@@ -166,6 +178,7 @@ sub publish_all {
 
     $self->publish_recent_page;
     $self->publish_rss;
+    $self->publish_jsonfeed;
 
     $self->clear_recent_posts;
     $self->clear_posts;
@@ -189,22 +202,38 @@ sub publish_recent_page {
 sub publish_rss {
     my $self = shift;
 
+    $self->_publish_feed( 'rss' );
+}
+
+sub publish_jsonfeed {
+    my $self = shift;
+
+    $self->_publish_feed( 'jsonfeed' );
+}
+
+sub _publish_feed {
+    my $self = shift;
+    my ( $feed_type ) = @_;
+
+    my $template_file_method = "${feed_type}_template_file";
+    my $file_method          = "${feed_type}_file";
+
+    return unless -e $self->$template_file_method;
+
     my $formatter = $self->datetime_formatter;
     my $timestamp =
         $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
     ;
 
     $self->template->process(
-        $self->rss_template_file->openr,
+        $self->$template_file_method->openr,
         {
             plerd => $self,
             posts => $self->recent_posts,
             timestamp => $timestamp,
         },
-        $self->rss_file->openw,
+        $self->$file_method->openw,
     );
-
-
 }
 
 sub publish_archive_page {
@@ -277,6 +306,15 @@ sub _build_template {
 
     return Template->new( {
         INCLUDE_PATH => $self->template_directory,
+        FILTERS => {
+            json => sub {
+                my $text = shift;
+                $text =~ s/"/\\"/g;
+                $text =~ s/\n/\\n/g;
+                return $text;
+            }
+        },
+
     } );
 }
 
@@ -295,6 +333,15 @@ sub _build_rss_template_file {
     return Path::Class::File->new(
         $self->template_directory,
         'atom.tt',
+    );
+}
+
+sub _build_jsonfeed_template_file {
+    my $self = shift;
+
+    return Path::Class::File->new(
+        $self->template_directory,
+        'jsonfeed.tt',
     );
 }
 
@@ -331,6 +378,15 @@ sub _build_rss_file {
     return Path::Class::File->new(
         $self->publication_directory,
         'atom.xml',
+    );
+}
+
+sub _build_jsonfeed_file {
+    my $self = shift;
+
+    return Path::Class::File->new(
+        $self->publication_directory,
+        'feed.json',
     );
 }
 
