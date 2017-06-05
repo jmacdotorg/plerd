@@ -12,7 +12,7 @@ The generated website comprises a single directory containing only static files.
 
 That's it! That's all Plerd does.
 
-If you have the time and inclination, you may watch [a 20-minute presentation about my reasons for creating Plerd](http://blog.jmac.org/2015-06-09-my-yapcna-2015-talk-about-blogging.html).
+If you have the time and inclination, you may watch [a 20-minute presentation about my reasons for creating Plerd](http://fogknife.com/2015-06-09-my-yapcna-2015-talk-about-blogging.html).
 
 ## Project status
 
@@ -147,8 +147,10 @@ You can discuss or ask questions about Plerd at [the `#plerd` channel](irc://cha
 
 ## See Plerd at work
 
-This software powers [Jason McIntosh's blog at jmac.org](http://blog.jmac.org), for which it was written.
+This software powers Jason McIntosh's blog, [Fogknife](http://fogknife.com), for which it was written.
 
-## Author
+## Credits
 
-Plerd is by Jason McIntosh <jmac@jmac.org>. I would love to hear any thoughts about Plerd you would care to share.
+Plerd is by Jason McIntosh (<jmac@jmac.org>). I would love to hear any thoughts about Plerd you would care to share.
+
+This repository contains the image "Envelope" designed by <a href="http://www.thenounproject.com/jontesta">Jon Testa</a>, and the image "RSS" designed by [useiconic.com](https://thenounproject.com/useiconic.com). Both are shared through a [Creative Commons Attribution 3.0 United States](https://creativecommons.org/licenses/by/3.0/us/) license, and come to this project via [The Noun Project](https://thenounproject.com).
