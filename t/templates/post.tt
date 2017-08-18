@@ -2,7 +2,7 @@
 
 [% FOREACH post IN posts %]
 <div class="post">
-    <div class="title page-header"><h1><a href="[% post.uri %]">[% post.title %]<br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
+    <div class="title page-header"><h1><a href="[% post.uri %]">[% post.title %]<br /><small>[% post.month_name %] [% post.day %], [% post.year %] • [% post.reading_time %]-minute read</small></small></a></h1></div>
     <div class="byline">[% post.attributes.byline %]</div>
     <div class="body">[% post.body %]</div>
 </div>

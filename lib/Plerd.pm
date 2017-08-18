@@ -188,6 +188,9 @@ sub publish_all {
 sub publish_recent_page {
     my $self = shift;
 
+    open my $fh, '>:encoding(UTF-8)', $self->recent_file
+        or die "Can't write to " . $self->recent_file . ": $!\n";
+
     $self->template->process(
         $self->post_template_file->openr,
         {
@@ -195,7 +198,7 @@ sub publish_recent_page {
             posts => $self->recent_posts,
             title => $self->title,
         },
-        $self->recent_file->openw,
+        $fh,
     );
 }
 
@@ -225,6 +228,9 @@ sub _publish_feed {
         $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
     ;
 
+    open my $fh, '>:encoding(UTF-8)', $self->$file_method
+        or die "Can't write to " . $self->$file_method . ": $!\n";
+
     $self->template->process(
         $self->$template_file_method->openr,
         {
@@ -232,7 +238,7 @@ sub _publish_feed {
             posts => $self->recent_posts,
             timestamp => $timestamp,
         },
-        $self->$file_method->openw,
+        $fh,
     );
 }
 
@@ -241,13 +247,16 @@ sub publish_archive_page {
 
     my $posts_ref = $self->posts;
 
+    open my $fh, '>:encoding(UTF-8)', $self->archive_file
+        or die "Can't write to " . $self->archive_file . ": $!\n";
+
     $self->template->process(
         $self->archive_template_file->openr,
         {
             plerd => $self,
             posts => $posts_ref,
         },
-        $self->archive_file->openw,
+        $fh,
     );
 
 }
@@ -314,7 +323,7 @@ sub _build_template {
                 return $text;
             }
         },
-
+        ENCODING => 'utf8',
     } );
 }
 
