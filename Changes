@@ -1,3 +1,9 @@
+1.44 2017-08-18
+    
+     - Adding a reading_time method to post objects.
+     
+     - Improving how Plerd handles UTF-8 template files.
+
 1.43 2017-05-19
 
      - Adding experimental support for JSON Feed (http://jsonfeed.org). 
