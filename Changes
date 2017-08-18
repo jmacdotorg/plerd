@@ -1,3 +1,7 @@
+1.45 2017-08-18
+
+     - Emergency rollback of the UTF-8 "improving". O the embarrassment.
+
 1.44 2017-08-18
     
      - Adding a reading_time method to post objects.
