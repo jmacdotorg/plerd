@@ -61,6 +61,12 @@ is( scalar( $docroot_dir->children ),
             "Correct number of files generated in docroot."
 );
 
+### Test reading time
+{
+my $post = $plerd->posts->[-1];
+is ( $post->reading_time, 4, 'Reading time is as expected.' );
+}
+
 ### Test formatting in titles and filenames
 {
 my $post = Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' )->slurp;

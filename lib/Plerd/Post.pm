@@ -9,6 +9,9 @@ use URI;
 use HTML::Strip;
 use Data::GUID;
 
+use Readonly;
+Readonly my $WPM => 200; # The words-per-minute reading speed to assume
+
 has 'plerd' => (
     is => 'ro',
     required => 1,
@@ -94,6 +97,12 @@ has 'newer_post' => (
 has 'older_post' => (
     is => 'ro',
     isa => 'Maybe[Plerd::Post]',
+    lazy_build => 1,
+);
+
+has 'reading_time' => (
+    is => 'ro',
+    isa => 'Num',
     lazy_build => 1,
 );
 
@@ -196,6 +205,17 @@ sub _build_guid {
     my $self = shift;
 
     return Data::GUID->new;
+}
+
+sub _build_reading_time {
+    my $self = shift;
+
+    my $stripper = HTML::Strip->new;
+    my $body = $stripper->parse( $self->body );
+
+    my @words = $body =~ /(\w+)\W*/g;
+
+    return int ( scalar(@words) / $WPM ) + 1;
 }
 
 # This next internal method does a bunch of stuff.
@@ -429,6 +449,11 @@ A Plerd::Post object representing the next-newer post to the blog.
 
 Is the current object represents the newest post in the blog, then this method
 returns undef.
+
+=item reading_time
+
+An estimated reading-time for this post, measured in whole minutes, and based
+on an assumed (and fairly conservative) reading pace of 200 words per minute.
 
 =back
 
