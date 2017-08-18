@@ -367,9 +367,6 @@ sub publish {
     my $stripped_title = $self->title;
     $stripped_title =~ s{</?(em|strong)>}{}g;
 
-    open my $fh, '>:encoding(UTF-8)', $self->publication_file
-        or die "Can't write to " . $self->publication_file . ": $!\n";
-
     $self->plerd->template->process(
         $self->plerd->post_template_file->openr,
         {
@@ -377,7 +374,7 @@ sub publish {
             posts => [ $self ],
             title => $stripped_title,
         },
-        $fh,
+        $self->publication_file->openw,
     );
 }
 
