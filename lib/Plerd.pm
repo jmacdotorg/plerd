@@ -56,6 +56,24 @@ has 'author_email' => (
     isa => 'Str',
 );
 
+has 'twitter_id' => (
+    is => 'ro',
+    isa => 'Maybe[Str]',
+    default => undef,
+);
+
+has 'facebook_id' => (
+    is => 'ro',
+    isa => 'Maybe[Str]',
+    default => undef,
+);
+
+has 'image' => (
+    is => 'ro',
+    isa => 'Maybe[URI]',
+    default => undef,
+);
+
 has 'recent_posts_maxsize' => (
     is => 'ro',
     isa => 'Int',

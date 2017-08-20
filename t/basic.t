@@ -233,4 +233,44 @@ is( scalar( $docroot_dir->children ),
 );
 }
 
+### Test social-media metatags.
+{
+my $social_plerd = Plerd->new(
+    path         => $FindBin::Bin,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new ( 'http://blog.example.com/' ),
+    image        => URI->new ( 'http://blog.example.com/logo.png' ),
+    facebook_id  => 'This is a fake Facebook ID',
+    twitter_id   => 'This is a fake Twitter ID',
+);
+
+$social_plerd->publish_all;
+
+my $post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
+my $image_post = Path::Class::File->new( $docroot_dir, "$ymd-metatags-with-image.html" )->slurp;
+
+like( $post,
+    qr{name="twitter:image" content="http://blog.example.com/logo.png"},
+    'Metatags: Default image',
+);
+like( $image_post,
+    qr{name="twitter:image" content="http://blog.example.com/example.png"},
+    'Metatags: Post image',
+);
+
+like( $post,
+    qr{name="twitter:description" content="Fun with social metatags.},
+    'Metatags: Defined description',
+);
+
+like ( $image_post,
+    qr{name="twitter:description" content="This file sets up some attributes},
+    'Metatags: Default description',
+);
+
+
+}
+
 done_testing();

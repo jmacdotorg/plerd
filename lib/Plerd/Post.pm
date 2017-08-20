@@ -8,6 +8,8 @@ use Text::SmartyPants;
 use URI;
 use HTML::Strip;
 use Data::GUID;
+use HTML::SocialMeta;
+use Try::Tiny;
 
 use Readonly;
 Readonly my $WPM => 200; # The words-per-minute reading speed to assume
@@ -42,9 +44,27 @@ has 'body' => (
     isa => 'Str',
 );
 
+has 'stripped_body' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
 has 'attributes' => (
     is => 'rw',
     isa => 'HashRef',
+);
+
+has 'image' => (
+    is => 'rw',
+    isa => 'Maybe[URI]',
+    default => undef,
+);
+
+has 'description' => (
+    is => 'rw',
+    isa => 'Str',
+    default => '',
 );
 
 has 'date' => (
@@ -103,6 +123,18 @@ has 'older_post' => (
 has 'reading_time' => (
     is => 'ro',
     isa => 'Num',
+    lazy_build => 1,
+);
+
+has 'socialmeta' => (
+    is => 'ro',
+    isa => 'Maybe[HTML::SocialMeta]',
+    lazy_build => 1,
+);
+
+has 'social_meta_tags' => (
+    is => 'ro',
+    isa => 'Str',
     lazy_build => 1,
 );
 
@@ -210,12 +242,83 @@ sub _build_guid {
 sub _build_reading_time {
     my $self = shift;
 
+    my @words = $self->stripped_body =~ /(\w+)\W*/g;
+
+    return int ( scalar(@words) / $WPM ) + 1;
+}
+
+sub _build_stripped_body {
+    my $self = shift;
+
     my $stripper = HTML::Strip->new;
     my $body = $stripper->parse( $self->body );
 
-    my @words = $body =~ /(\w+)\W*/g;
+    return $body;
+}
 
-    return int ( scalar(@words) / $WPM ) + 1;
+sub _build_socialmeta {
+    my $self = shift;
+
+    unless ( $self->image ) {
+        # Neither this post nor this whole blog defines an image URL.
+        # So, no social meta-tags for this post.
+        return;
+    }
+
+    my %args = (
+        site_name   => $self->plerd->title,
+        title       => $self->title,
+        description => $self->description,
+        image       => $self->image->as_string,
+        url         => $self->uri->as_string,
+        fb_app_id   => $self->plerd->facebook_id || '',
+        site        => $self->plerd->twitter_id || '',
+    );
+
+    $args{ site } = '@' . $args{ site } if $args{ site };
+
+    my $socialmeta;
+
+    try {
+        $socialmeta = HTML::SocialMeta->new( %args );
+    }
+    catch {
+        warn "Couldn't build an HTML::SocialMeta object for post "
+             . $self->source_file->basename
+             . ": $_\n";
+    };
+
+    return $socialmeta;
+}
+
+sub _build_social_meta_tags {
+    my $self = shift;
+
+    my $tags = '';
+
+    my %targets = (
+        twitter => 'twitter_id',
+        opengraph => 'facebook_id',
+    );
+
+    if ( $self->socialmeta ) {
+        for my $target ( keys %targets ) {
+            my $id_method = $targets{ $target };
+            if ( $self->plerd->$id_method ) {
+                try {
+                    $tags .= $self->socialmeta->$target->create( 'summary' );
+                }
+                catch {
+                    warn "Couldn't create $target meta tags for "
+                         . $self->source_file->basename
+                         . ": $_\n";
+                };
+            }
+        }
+    }
+
+    return $tags;
+
 }
 
 # This next internal method does a bunch of stuff.
@@ -264,8 +367,26 @@ sub _process_source_file {
     }
     $self->body( $body );
 
+    if ( $attributes{ description } ) {
+        $self->description( $attributes{ description } );
+    }
+    else {
+        my $body = $self->stripped_body;
+        my ( $description ) = $body =~ /^(.*)\n/;
+        $self->description( $description || '' );
+    }
+
+    if ( $attributes{ image } ) {
+        $self->image( URI->new( $attributes{ image } ) );
+    }
+    else {
+        $self->image( $self->plerd->image );
+    }
+
     foreach ( qw( title body ) ) {
-        $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
+        if ( defined( $self->$_ ) ) {
+            $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
+        }
     }
 
     # Strip unnecessary <p> tags that the markdown processor just added to the title.
@@ -373,6 +494,7 @@ sub publish {
             plerd => $self->plerd,
             posts => [ $self ],
             title => $stripped_title,
+            context_post => $self,
         },
         $self->publication_file->openw,
     );

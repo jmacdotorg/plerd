@@ -14,8 +14,10 @@ use Plerd;
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
-unless ( ref $config_ref->{ base_uri } ) {
-    $config_ref->{ base_uri } = URI->new ( $config_ref->{ base_uri } );
+foreach (qw( base_uri image ) ) {
+    unless ( ref $config_ref->{ $_ } ) {
+        $config_ref->{ $_ } = URI->new ( $config_ref->{ $_ } );
+    }
 }
 
 my $plerd = Plerd->new( $config_ref );
