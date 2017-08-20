@@ -13,6 +13,7 @@ use Try::Tiny;
 
 use Readonly;
 Readonly my $WPM => 200; # The words-per-minute reading speed to assume
+Readonly my $SOCIALMETA_MODE => 'featured_image'; # SocialMeta image mode
 
 has 'plerd' => (
     is => 'ro',
@@ -306,7 +307,8 @@ sub _build_social_meta_tags {
             my $id_method = $targets{ $target };
             if ( $self->plerd->$id_method ) {
                 try {
-                    $tags .= $self->socialmeta->$target->create( 'summary' );
+                    $tags .=
+                        $self->socialmeta->$target->create( $SOCIALMETA_MODE );
                 }
                 catch {
                     warn "Couldn't create $target meta tags for "
