@@ -137,6 +137,33 @@ You can add any attributes you'd like to your posts, and then refer to them from
 
 Then you can refer to `post.attributes.byline` to fetch that value from within the `post.tt` template file, even though "byline" is not an attribute that Plerd otherwise recognizes. (If a template refers to an attribute key that a post's source file does not define, it will simply return a blank value.)
 
+### Social-media metatags
+
+By defining some extra attributes in both your blog's configuration file, you
+can direct Plerd to add [Open Graph](http://ogp.me) and [Twitter Card](https://dev.twitter.com/cards/overview)-enabling metadata tags to each of your posts.
+
+These blog configuration options (all optional) are:
+
+* __twitter_id__: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
+
+* __facebook_id__: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
+
+* __image__: If present, Plerd will use this URL as the location of a default image to use in the metadata for any post that doesn't define its own _image_ attribute.
+
+    If _not_ present, Plerd will _not_ generate any social-media metadata for any post lacking an _image_ attribute.
+
+To see examples of all the above, please see the file `conf/plerd_example.conf`.
+
+Once you've configured your blog as described above, you can add these attributes to any post:
+
+* __description__: A very brief summary of this post.
+
+    If not defined, then Plerd will try to use the first paragraph of your post's text (after stripping out any markup) as the post's description.
+
+* __image__: The URL of an image to associate with this post within social-media links. (This could refer to image that also appears in your post by way of an HTML `<img>` tag, but it doesn't have to.) 
+
+    If not defined, then Plerd will instead use the blog's _image_ configuration directive. If _that_ is also undefined, then Plerd will not generate any social-media metadata for this post.
+
 ## Support
 
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
