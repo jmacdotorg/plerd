@@ -8,6 +8,9 @@
     <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    [% IF context_post %]
+        [% context_post.social_meta_tags %]
+    [% END %]
     <style>
         .page-header h1 :link, .page-header h1 :visited {
             color: black;
