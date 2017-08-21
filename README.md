@@ -128,6 +128,10 @@ In this way you could, for example, compose and edit blog posts via Markdown in 
 
 ## Advanced use
 
+### Customizing templates
+
+For a brief guide to the template files and how to customize them for your blog, please [see the Plerd wiki on GitHub](https://github.com/jmacdotorg/plerd/wiki/Plerd-template-guide).
+
 ### User-defined attributes
 
 You can add any attributes you'd like to your posts, and then refer to them from your templates via a hash named `attributes` attached to every post object. For example, if a post's metadata looks like this:
@@ -140,7 +144,7 @@ Then you can refer to `post.attributes.byline` to fetch that value from within t
 ### Social-media metatags
 
 By defining some extra attributes in both your blog's configuration file, you
-can direct Plerd to add [Open Graph](http://ogp.me) and [Twitter Card](https://dev.twitter.com/cards/overview)-enabling metadata tags to each of your posts.
+can direct Plerd to add [Open Graph](http://ogp.me) and [Twitter Card](https://dev.twitter.com/cards/overview)-enabling metadata tags to each of your posts. This will allow services like Facebook, Twitter, and Slack to present attractive little summaries of your blogposts when displaying links to them.
 
 These blog configuration options (all optional) are:
 

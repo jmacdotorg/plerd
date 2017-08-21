@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.45';
+our $VERSION = '1.5';
 
 use Moose;
 use Template;
@@ -524,9 +524,21 @@ author_email
 
 =back
 
-And, optional keys, with defaults:
+And, optional keys:
 
 =over
+
+=item *
+
+facebook_id
+
+=item *
+
+image
+
+=item *
+
+twitter_id
 
 =item *
 
@@ -542,17 +554,19 @@ recent_posts_maxsize I<Default value: 10>
 
 =over
 
-=item source_path
+=item base_uri
 
-The path to the filesystem directory containing this blog's source directory.
+L<URI> object representing the base URI for this blog, which the system will prepend
+to any absolute links it builds.
 
-=item template_path
+=item facebook_id
 
-The path to the filesystem directory containing this blog's templates directory.
+(Optional) This blog's Facebook app ID.
 
-=item publication_path
+=item image
 
-The path to the filesystem directory containing this blog's output directory.
+(Optional) L<URI> object representing this blog's default image, for use in
+social media metadata and such.
 
 =item path
 
@@ -562,14 +576,26 @@ The path to a filesystem directory within which Plerd will look for
 B<Caution:> If this is not defined I<and> any one of the previous three attributes
 is also undefined, then Plerd will die if you try to publish the blog.
 
+=item publication_path
+
+The path to the filesystem directory containing this blog's output directory.
+
+=item source_path
+
+The path to the filesystem directory containing this blog's source directory.
+
+=item template_path
+
+The path to the filesystem directory containing this blog's templates directory.
+
 =item title
 
 String representing this blog's title.
 
-=item base_uri
+=item twitter_id
 
-L<URI> object representing the base URI for this blog, which the system will prepend
-to any absolute links it builds.
+(Optional) This Twitter username associated with this blog. Does not include
+the leading '@' character.
 
 =item recent_posts_maxsize
 

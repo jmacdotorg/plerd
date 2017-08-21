@@ -542,23 +542,12 @@ A Path::Class::File object representing this post's Markdown source file.
 
 =over
 
-=item published_filename
+=item newer_post
 
-The local filename (without parent directory path) of the HTML file that this post
-will generate upon publication.
+A Plerd::Post object representing the next-newer post to the blog.
 
-=item uri
-
-The L<URI> of the of the HTML file that this post will generate upon publication.
-
-=item published_timestamp
-
-This post's date, in W3C format, set to midnight in the local timezone.
-
-=item updated_timestamp
-
-The modification time of this this post's source file, in W3C format, set to
-the local timezone.
+Is the current object represents the newest post in the blog, then this method
+returns undef.
 
 =item older_post
 
@@ -567,35 +556,34 @@ A Plerd::Post object representing the next-older post to the blog.
 Is the current object represents the oldest post in the blog, then this method
 returns undef.
 
-=item newer_post
+=item published_filename
 
-A Plerd::Post object representing the next-newer post to the blog.
+The local filename (without parent directory path) of the HTML file that this post
+will generate upon publication.
 
-Is the current object represents the newest post in the blog, then this method
-returns undef.
+=item published_timestamp
+
+This post's date, in W3C format, set to midnight in the local timezone.
 
 =item reading_time
 
 An estimated reading-time for this post, measured in whole minutes, and based
 on an assumed (and fairly conservative) reading pace of 200 words per minute.
 
+=item updated_timestamp
+
+The modification time of this this post's source file, in W3C format, set to
+the local timezone.
+
+=item uri
+
+The L<URI> of the of the HTML file that this post will generate upon publication.
+
 =back
 
 =head2 Read-write attributes
 
 =over
-
-=item title
-
-String representing this post's title.
-
-=item date
-
-L<DateTime> object representing this post's presented publication date.
-
-=item body
-
-String representing the post's body text.
 
 =item attributes
 
@@ -605,6 +593,33 @@ section, whether or not Plerd takes any special meaning from them.
 For example, if a source document defines both C<title> and C<favorite_color>
 key-value pairs in its metadata, both keys and values will appear in this
 hashref, even though Plerd pays no mind to the latter key.
+
+=item body
+
+String representing the post's body text.
+
+=item date
+
+L<DateTime> object representing this post's presented publication date.
+
+=item description
+
+String representing a short, descriptive summary of this post. This value affects
+the metadata attached to this post, for use by social media and such.
+
+If you don't set this value yourself by the time Plerd needs it, then it will
+set it to the first paragraph of the post's body text (with all markup removed).
+
+=item image
+
+(Optional) L<URI> object referencing an illustrative image for this post.
+
+Setting this value affects the metadata attached to this post, for use by social
+media and such.
+
+=item title
+
+String representing this post's title.
 
 =back
 
