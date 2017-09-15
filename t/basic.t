@@ -261,6 +261,15 @@ like( $image_post,
 );
 
 like( $post,
+    qr{name="twitter:card" content="summary"},
+    'Metatags: Default image is a thumbnail',
+);
+like( $image_post,
+    qr{name="twitter:card" content="summary_large_image"},
+    'Metatags: Post image is full-sized',
+);
+
+like( $post,
     qr{name="twitter:description" content="Fun with social metatags.},
     'Metatags: Defined description',
 );
