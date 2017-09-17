@@ -14,3 +14,4 @@ requires 'Try::Tiny';
 requires 'HTML::Strip';
 requires 'HTML::SocialMeta';
 requires 'List::Util' => '1.45';
+requires 'Readonly';
