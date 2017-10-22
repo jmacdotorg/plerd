@@ -12,6 +12,6 @@ requires 'File::ChangeNotify';
 requires 'App::Daemon';
 requires 'Try::Tiny';
 requires 'HTML::Strip';
-requires 'HTML::SocialMeta';
+requires 'HTML::SocialMeta' => '0.72';
 requires 'List::Util' => '1.45';
 requires 'Readonly';
