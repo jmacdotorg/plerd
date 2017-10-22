@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.51';
+our $VERSION = '1.52';
 
 use Moose;
 use Template;
@@ -71,6 +71,12 @@ has 'facebook_id' => (
 has 'image' => (
     is => 'ro',
     isa => 'Maybe[URI]',
+    default => undef,
+);
+
+has 'image_alt' => (
+    is => 'ro',
+    isa => 'Maybe[Str]',
     default => undef,
 );
 
@@ -538,6 +544,10 @@ image
 
 =item *
 
+image_alt
+
+=item *
+
 twitter_id
 
 =item *
@@ -566,6 +576,11 @@ to any absolute links it builds.
 =item image
 
 (Optional) L<URI> object representing this blog's default image, for use in
+social media metadata and such.
+
+=item image_alt
+
+(Optional) A text description of this blog's default image, for use in
 social media metadata and such.
 
 =item path

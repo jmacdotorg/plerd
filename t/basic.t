@@ -205,7 +205,7 @@ my $plerd = Plerd->new(
 
 $plerd->publish_all;
 like ( Path::Class::File->new( $docroot_dir, 'recent.html' )->slurp,
-     qr{http://www.example.com/blog/1999-01-01-backdated.html},
+     qr{http://www.example.com/blog/2017-10-21-metatags.html},
      'Base URIs missing trailing slashes work',
 );
 
@@ -250,6 +250,8 @@ $social_plerd->publish_all;
 
 my $post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
 my $image_post = Path::Class::File->new( $docroot_dir, "$ymd-metatags-with-image.html" )->slurp;
+my $alt_image_post = Path::Class::File->new( $docroot_dir, "$ymd-metatags-with-image-and-alt.html" )->slurp;
+
 
 like( $post,
     qr{name="twitter:image" content="http://blog.example.com/logo.png"},
@@ -258,6 +260,14 @@ like( $post,
 like( $image_post,
     qr{name="twitter:image" content="http://blog.example.com/example.png"},
     'Metatags: Post image',
+);
+like( $alt_image_post,
+    qr{name="twitter:image:alt" content="A lovely bunch of coconuts."},
+    'Metatags: Post-specific alt-text',
+);
+like( $image_post,
+    qr{name="twitter:image:alt" content=""},
+    'Metatags: Empty default alt-text',
 );
 
 like( $post,
@@ -279,6 +289,25 @@ like ( $image_post,
     'Metatags: Default description',
 );
 
+# Now add some alt text...
+$social_plerd = Plerd->new(
+    path         => $FindBin::Bin,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new ( 'http://blog.example.com/' ),
+    image        => URI->new ( 'http://blog.example.com/logo.png' ),
+    facebook_id  => 'This is a fake Facebook ID',
+    twitter_id   => 'This is a fake Twitter ID',
+    image_alt    => 'Just a test image.',
+);
+
+$social_plerd->publish_all;
+$post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
+like( $post,
+    qr{name="twitter:image:alt" content="Just a test image."},
+    'Metatags: Defined default alt-text',
+);
 
 }
 

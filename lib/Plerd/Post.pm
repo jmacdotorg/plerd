@@ -61,6 +61,12 @@ has 'image' => (
     default => undef,
 );
 
+has 'image_alt' => (
+    is => 'rw',
+    isa => 'Maybe[Str]',
+    default => undef,
+);
+
 has 'description' => (
     is => 'rw',
     isa => 'Str',
@@ -279,6 +285,7 @@ sub _build_socialmeta {
         url         => $self->uri->as_string,
         fb_app_id   => $self->plerd->facebook_id || '',
         site        => $self->plerd->twitter_id || '',
+        image_alt   => $self->image_alt,
     );
 
     $args{ site } = '@' . $args{ site } if $args{ site };
@@ -387,10 +394,12 @@ sub _process_source_file {
 
     if ( $attributes{ image } ) {
         $self->image( URI->new( $attributes{ image } ) );
+        $self->image_alt( $attributes{ image_alt } || '' );
         $self->socialmeta_mode( 'featured_image' );
     }
     else {
         $self->image( $self->plerd->image );
+        $self->image_alt( $self->plerd->image_alt || '' );
     }
 
     foreach ( qw( title body ) ) {
@@ -621,6 +630,13 @@ set it to the first paragraph of the post's body text (with all markup removed).
 =item image
 
 (Optional) L<URI> object referencing an illustrative image for this post.
+
+Setting this value affects the metadata attached to this post, for use by social
+media and such.
+
+=item image_alt
+
+(Optional) A text description of the image referenced by the C<image> atribute.
 
 Setting this value affects the metadata attached to this post, for use by social
 media and such.
