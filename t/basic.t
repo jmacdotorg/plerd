@@ -205,7 +205,7 @@ my $plerd = Plerd->new(
 
 $plerd->publish_all;
 like ( Path::Class::File->new( $docroot_dir, 'recent.html' )->slurp,
-     qr{http://www.example.com/blog/2017-10-21-metatags.html},
+     qr{http://www.example.com/blog/1999-01-02-unicode.html},
      'Base URIs missing trailing slashes work',
 );
 
