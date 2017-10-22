@@ -1,3 +1,9 @@
+1.52 2017-10-22
+
+     - Social-media metadata tags will choose "featured image" style for posts that explicitly define an image, and "thumbnail" style for posts that use the blog's default image.
+     
+     - Adding support for image alt-text in social-media metadata tags.
+
 1.5  2017-08-20
 
      - Adding support for social-media metadata tags.
