@@ -383,6 +383,18 @@ sub _process_source_file {
     }
     $self->body( $body );
 
+    foreach ( qw( title body ) ) {
+        if ( defined( $self->$_ ) ) {
+            $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
+        }
+    }
+
+    # Strip unnecessary <p> tags that the markdown processor just added to the title.
+    my $stripped_title = $self->title;
+    $stripped_title =~ s{</?p>\s*}{}g;
+    $self->title( $stripped_title );
+
+    # Check and tune attributes used to render social-media metatags.
     if ( $attributes{ description } ) {
         $self->description( $attributes{ description } );
     }
@@ -401,17 +413,6 @@ sub _process_source_file {
         $self->image( $self->plerd->image );
         $self->image_alt( $self->plerd->image_alt || '' );
     }
-
-    foreach ( qw( title body ) ) {
-        if ( defined( $self->$_ ) ) {
-            $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
-        }
-    }
-
-    # Strip unnecessary <p> tags that the markdown processor just added to the title.
-    my $stripped_title = $self->title;
-    $stripped_title =~ s{</?p>\s*}{}g;
-    $self->title( $stripped_title );
 
     # Note whether the filename asserts the post's publication date.
     my ( $filename_year, $filename_month, $filename_day ) =

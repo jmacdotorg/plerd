@@ -286,7 +286,7 @@ like( $post,
 
 like ( $image_post,
     qr{name="twitter:description" content="This file sets up some attributes},
-    'Metatags: Default description',
+    'Metatags: Default description (with markup stripped)',
 );
 
 # Now add some alt text...

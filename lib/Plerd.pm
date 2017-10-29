@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.52';
+our $VERSION = '1.53';
 
 use Moose;
 use Template;
