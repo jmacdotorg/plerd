@@ -1,3 +1,9 @@
+1.53 2017-10-29
+
+     - Fixing a bug where Markdown symbols, if present in the first paragraph of a post's source file, would appear in default social-media description tags.
+
+     - Now requiring a minimum HTML::SocialMeta version.
+
 1.52 2017-10-22
 
      - Social-media metadata tags will choose "featured image" style for posts that explicitly define an image, and "thumbnail" style for posts that use the blog's default image.
