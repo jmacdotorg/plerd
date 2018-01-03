@@ -156,6 +156,8 @@ These blog configuration options (all optional) are:
 
     If _not_ present, Plerd will _not_ generate any social-media metadata for any post lacking an _image_ attribute.
 
+* __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
+
 To see examples of all the above, please see the file `conf/plerd_example.conf`.
 
 Once you've configured your blog as described above, you can add these attributes to any post:
@@ -167,6 +169,8 @@ Once you've configured your blog as described above, you can add these attribute
 * __image__: The URL of an image to associate with this post within social-media links. (This could refer to image that also appears in your post by way of an HTML `<img>` tag, but it doesn't have to.) 
 
     If not defined, then Plerd will instead use the blog's _image_ configuration directive. If _that_ is also undefined, then Plerd will not generate any social-media metadata for this post.
+    
+* __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
 
 ## Support
 
