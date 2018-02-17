@@ -172,6 +172,10 @@ Once you've configured your blog as described above, you can add these attribute
     
 * __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
 
+## A note about encoding
+
+Plerd assumes that all your source and template files are encoded as UTF-8.
+
 ## Support
 
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).

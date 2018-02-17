@@ -348,7 +348,7 @@ sub _process_source_file {
     my $self = shift;
 
     # Slurp the file, storing the title and time metadata, and the body.
-    my $fh = $self->source_file->openr;
+    my $fh = $self->source_file->open('<:encoding(utf8)');
     my %attributes;
     my @ordered_attribute_names = qw( title time published_filename guid );
     while ( my $line = <$fh> ) {
@@ -497,7 +497,7 @@ sub _process_source_file {
             $new_content .= "$attribute_name: $attributes{ $attribute_name }\n";
         }
         $new_content .= "\n$body\n";
-        $self->source_file->spew( $new_content );
+        $self->source_file->spew( iomode=>'>:encoding(utf8)', $new_content );
     }
 }
 
@@ -508,15 +508,20 @@ sub publish {
     my $stripped_title = $self->title;
     $stripped_title =~ s{</?(em|strong)>}{}g;
 
+    my $html_fh = $self->publication_file->openw;
+    my $template_fh = $self->plerd->post_template_file->openr;
+    foreach( $html_fh, $template_fh ) {
+	$_->binmode(':utf8');
+    }
     $self->plerd->template->process(
-        $self->plerd->post_template_file->openr,
+        $template_fh,
         {
             plerd => $self->plerd,
             posts => [ $self ],
             title => $stripped_title,
             context_post => $self,
         },
-        $self->publication_file->openw,
+	    $html_fh,
     );
 }
 

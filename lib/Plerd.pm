@@ -213,13 +213,13 @@ sub publish_recent_page {
     my $self = shift;
 
     $self->template->process(
-        $self->post_template_file->openr,
+        $self->post_template_file->open('<:encoding(utf8)'),
         {
             plerd => $self,
             posts => $self->recent_posts,
             title => $self->title,
         },
-        $self->recent_file->openw,
+        $self->recent_file->open('>:encoding(utf8)'),
     );
 }
 
@@ -250,13 +250,13 @@ sub _publish_feed {
     ;
 
     $self->template->process(
-        $self->$template_file_method->openr,
+        $self->$template_file_method->open('<:encoding(utf8)'),
         {
             plerd => $self,
             posts => $self->recent_posts,
             timestamp => $timestamp,
         },
-        $self->$file_method->openw,
+        $self->$file_method->open('>:encoding(utf8)'),
     );
 }
 
@@ -266,12 +266,12 @@ sub publish_archive_page {
     my $posts_ref = $self->posts;
 
     $self->template->process(
-        $self->archive_template_file->openr,
+        $self->archive_template_file->open('<:encoding(utf8)'),
         {
             plerd => $self,
             posts => $posts_ref,
         },
-        $self->archive_file->openw,
+        $self->archive_file->open('>:encoding(utf8)'),
     );
 
 }
@@ -336,9 +336,9 @@ sub _build_template {
                 $text =~ s/"/\\"/g;
                 $text =~ s/\n/\\n/g;
                 return $text;
-            }
+            },
         },
-
+        ENCODING => 'utf8',
     } );
 }
 
