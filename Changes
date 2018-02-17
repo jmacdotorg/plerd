@@ -1,3 +1,9 @@
+1.54 2018-02-17
+
+     - Improving how Plerd handles UTF-8 source and template files. (Much like v1.44, except I think I got it right this time.)
+
+     - Adding mention of v1.52's alt-text improvement to the documentation.
+     
 1.53 2017-10-29
 
      - Fixing a bug where Markdown symbols, if present in the first paragraph of a post's source file, would appear in default social-media description tags.
