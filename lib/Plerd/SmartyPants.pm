@@ -426,6 +426,12 @@ sub EducateQuotes {
 
     my $close_class = qr![^\ \t\r\n\[\{\(]!;
 
+    # XXX Shutting off warnings here, lest $1 often being undef in the
+    #     substitution below trips it. The best thing to do would involve
+    #     substituting with e.g. {$1 // q[] . q[']}e, but that would require
+    #     Perl 5.10 or above and I'm not prepared to require that just yet.
+    no warnings 'uninitialized';
+
     # Single closing quotes:
     s {
         ($close_class)?
@@ -450,6 +456,8 @@ sub EducateQuotes {
 
     # Double opening quotes:
     s/"/“/g;
+
+    use warnings;
 
     return $_;
 }
