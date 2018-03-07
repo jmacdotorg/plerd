@@ -4,7 +4,7 @@ use Moose;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use Text::Markdown qw( markdown );
-use Text::SmartyPants;
+use Plerd::SmartyPants;
 use URI;
 use HTML::Strip;
 use Data::GUID;
@@ -385,7 +385,7 @@ sub _process_source_file {
 
     foreach ( qw( title body ) ) {
         if ( defined( $self->$_ ) ) {
-            $self->$_( Text::SmartyPants::process( markdown( $self->$_ ) ) );
+            $self->$_( Plerd::SmartyPants::process( markdown( $self->$_ ) ) );
         }
     }
 
