@@ -71,7 +71,7 @@ is ( $post->reading_time, 4, 'Reading time is as expected.' );
 {
 my $post = Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' )->slurp;
 like ( $post,
-       qr{an <em>example</em> of a &#8220;backdated},
+       qr{an <em>example</em> of a “backdated},
        'Post title is formatted.'
      );
 }
