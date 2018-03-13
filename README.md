@@ -1,4 +1,4 @@
-# Plerd
+# Plerd 
 
 Plerd is meant to be an ultralight blogging platform for Markdown fans that plays well with (but does not require) Dropbox.
 
@@ -15,6 +15,8 @@ That's it! That's all Plerd does.
 If you have the time and inclination, you may watch [a 20-minute presentation about my reasons for creating Plerd](http://fogknife.com/2015-06-09-my-yapcna-2015-talk-about-blogging.html).
 
 ## Project status
+
+Travis says, "[![Build Status](https://travis-ci.org/jmacdotorg/plerd.svg?branch=master)](https://travis-ci.org/jmacdotorg/plerd)!"
 
 Plerd is released and stable. It still has plenty of room for improvement, and I welcome community feedback and patch proposals, but it will continue to do what it does now, in more or less the same fashion, for the foreseeable future.
 
