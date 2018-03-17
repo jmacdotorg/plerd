@@ -1,8 +1,9 @@
 package Plerd;
 
-our $VERSION = '1.55';
+our $VERSION = '1.6b';
 
 use Moose;
+use MooseX::Types::URI qw(Uri);
 use Template;
 use Path::Class::Dir;
 use DateTime;
@@ -32,10 +33,16 @@ has 'publication_path' => (
     isa => 'Str',
 );
 
+has 'database_path' => (
+    is => 'ro',
+    isa => 'Str',
+);
+
 has 'base_uri' => (
     is => 'ro',
     required => 1,
-    isa => 'URI',
+    isa => Uri,
+    coerce => 1,
 );
 
 has 'title' => (
@@ -70,8 +77,8 @@ has 'facebook_id' => (
 
 has 'image' => (
     is => 'ro',
-    isa => 'Maybe[URI]',
-    default => undef,
+    isa => Uri,
+    coerce => 1,
 );
 
 has 'image_alt' => (
@@ -99,6 +106,12 @@ has 'source_directory' => (
 );
 
 has 'template_directory' => (
+    is => 'ro',
+    isa => 'Path::Class::Dir',
+    lazy_build => 1,
+);
+
+has 'database_directory' => (
     is => 'ro',
     isa => 'Path::Class::Dir',
     lazy_build => 1,
@@ -191,6 +204,13 @@ has 'index_of_post_with_guid' => (
     clearer => 'clear_post_index_hash',
 );
 
+has 'index_of_post_with_url' => (
+    is => 'ro',
+    isa  => 'HashRef',
+    lazy_build => 1,
+    clearer => 'clear_post_url_index_hash',
+);
+
 sub publish_all {
     my $self = shift;
 
@@ -207,6 +227,7 @@ sub publish_all {
     $self->clear_recent_posts;
     $self->clear_posts;
     $self->clear_post_index_hash;
+    $self->clear_post_url_index_hash;
 }
 
 sub publish_recent_page {
@@ -233,6 +254,13 @@ sub publish_jsonfeed {
     my $self = shift;
 
     $self->_publish_feed( 'jsonfeed' );
+}
+
+sub post_with_url {
+    my $self = shift;
+    my ( $url ) = @_;
+
+    return $self->posts->[ $self->index_of_post_with_url->{ $url } ];
 }
 
 sub _publish_feed {
@@ -302,7 +330,7 @@ sub _build_subdirectory {
         );
     }
     else {
-        die "Can't build source directory! Neither a '$path_method' nor"
+        die "Can't build $subdir_name directory! Neither a '$path_method' nor "
             . "a 'path' attribute is defined.\n";
     }
 }
@@ -311,6 +339,12 @@ sub _build_source_directory {
     my $self = shift;
 
     return $self->_build_subdirectory( 'source_path', 'source' );
+}
+
+sub _build_database_directory {
+    my $self = shift;
+
+    return $self->_build_subdirectory( 'database_path', 'db' );
 }
 
 sub _build_publication_directory {
@@ -462,6 +496,20 @@ sub _build_index_of_post_with_guid {
 
     for my $post ( @{ $self->posts } ) {
         $index_of_post{ $post->guid } = $current_index++;
+    }
+
+    return \%index_of_post;
+}
+
+sub _build_index_of_post_with_url {
+    my $self = shift;
+
+    my %index_of_post;
+
+    my $current_index = 0;
+
+    for my $post ( @{ $self->posts } ) {
+        $index_of_post{ $post->uri } = $current_index++;
     }
 
     return \%index_of_post;

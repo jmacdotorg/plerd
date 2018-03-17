@@ -4,15 +4,20 @@ use Moose;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use Text::Markdown qw( markdown );
-use Plerd::SmartyPants;
 use URI;
 use HTML::Strip;
 use Data::GUID;
 use HTML::SocialMeta;
 use Try::Tiny;
+use JSON;
+use Path::Class::File;
+
+use Plerd::SmartyPants;
+use Plerd::Webmention;
 
 use Readonly;
 Readonly my $WPM => 200; # The words-per-minute reading speed to assume
+Readonly my $WEBMENTIONS_STORE_FILENAME => 'webmentions.json';
 
 has 'plerd' => (
     is => 'ro',
@@ -148,6 +153,18 @@ has 'socialmeta_mode' => (
     is => 'rw',
     isa => 'Str',
     default => 'summary',
+);
+
+has 'webmentions_by_source' => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy_build => 1,
+);
+
+has 'json' => (
+    is => 'ro',
+    isa => 'JSON',
+    default => sub { JSON->new->convert_blessed },
 );
 
 sub _build_publication_file {
@@ -525,6 +542,98 @@ sub publish {
     );
 }
 
+sub add_webmention {
+    my $self = shift;
+    my ( $webmention ) = @_;
+
+    $self->webmentions_by_source->{ $webmention->source } = $webmention;
+    $self->serialize_webmentions;
+}
+
+sub update_webmention {
+    return add_webmention( @_ );
+}
+
+sub delete_webmention {
+    my $self = shift;
+    my ( $webmention ) = @_;
+
+    delete $self->webmentions_by_source->{ $webmention->source };
+    $self->serialize_webmentions;
+}
+
+sub serialize_webmentions {
+    my $self = shift;
+
+    $self->_store( $WEBMENTIONS_STORE_FILENAME, $self->webmentions_by_source );
+}
+
+sub ordered_webmentions {
+    my $self = shift;
+
+    return sort
+        {$a->time_received <=> $b->time_received }
+        values( %{ $self->webmentions_by_source } )
+    ;
+}
+
+sub _build_webmentions_by_source {
+    my $self = shift;
+
+    my $webmentions_ref =
+        $self->_retrieve(
+            $WEBMENTIONS_STORE_FILENAME,
+        )
+        || {}
+    ;
+
+    for my $source_url ( keys( %{ $webmentions_ref } ) ) {
+        my $webmention = Plerd::Webmention->FROM_JSON(
+            $webmentions_ref->{ $source_url }
+        );
+        $webmentions_ref->{ $source_url } = $webmention;
+    }
+
+    return $webmentions_ref;
+}
+
+sub _store {
+    my $self = shift;
+    my ($filename, $data_ref) = @_;
+
+    my $post_dir =  Path::Class::Dir->new(
+        $self->plerd->database_directory,
+        $self->guid,
+    );
+
+    unless ( -e $post_dir ) {
+        $post_dir->mkpath;
+    }
+
+    my $file = Path::Class::File->new(
+        $post_dir,
+        $filename,
+    );
+    $file->spew( $self->json->encode( $data_ref ) );
+}
+
+sub _retrieve {
+    my $self = shift;
+    my ($filename) = @_;
+
+    my $file = Path::Class::File->new(
+        $self->plerd->database_directory,
+        $self->guid,
+        $filename,
+    );
+
+    if ( -e $file ) {
+        return $self->json->decode( $file->slurp );
+    }
+    else {
+        return undef;
+    }
+}
 
 1;
 

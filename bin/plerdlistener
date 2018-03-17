@@ -1,0 +1,62 @@
+use Mojolicious::Lite;
+use Try::Tiny;
+use FindBin;
+use YAML qw( LoadFile );
+
+use Readonly;
+Readonly my $ACCEPTED => 202;
+Readonly my $BAD_REQUEST => 400;
+
+use lib ("$FindBin::Bin/../lib");
+use Plerd::Webmention;
+
+use Plerd;
+
+my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+my $plerd = Plerd->new( $config_ref );
+
+
+post '/' => sub {
+    my $c = shift;
+
+    my $webmention;
+    try {
+        $webmention = Plerd::Webmention->new (
+            source => $c->param( 'source' ),
+            target => $c->param( 'target' ),
+        );
+    }
+    catch {
+        $c->render( status => $BAD_REQUEST, text => "Malformed webmention." );
+    };
+    return unless $webmention;
+
+    my $post = $plerd->post_with_url( $webmention->target );
+    warn "Got $post.\n";
+
+    unless ( $post ) {
+        $c->render( status => $BAD_REQUEST, text => "Unrecognized target." );
+        return;
+    }
+
+    $c->render( status => $ACCEPTED, text => "Thanks dude." );
+
+    queue( $webmention, $post );
+};
+
+sub queue {
+    my ( $webmention, $post ) = @_;
+    # XXX Let's be messy and non-async for now.
+    if ( $webmention->is_verified ) {
+        warn "It's verified!\n";
+        $post->add_webmention( $webmention );
+    }
+    else {
+        warn "This is some bullshit.\n";
+        $post->delete_webmention( $webmention );
+    }
+
+
+}
+
+app->start;
