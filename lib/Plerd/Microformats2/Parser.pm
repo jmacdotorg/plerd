@@ -6,6 +6,7 @@ use HTML::TreeBuilder::XPath;
 use v5.10;
 use Scalar::Util;
 use JSON;
+use DateTime::Format::ISO8601;
 
 use Plerd::Microformats2::Item;
 
@@ -60,6 +61,8 @@ sub parse {
 
     my $tree = HTML::TreeBuilder::XPath->new;
     $tree->ignore_unknown( 0 );
+    $tree->no_space_compacting( 1 );
+    $tree->ignore_ignorable_whitespace( 0 );
 
     $tree->parse( $html );
 
@@ -107,20 +110,63 @@ sub analyze_element {
                     elsif ( my $alt = $element->findvalue( './@title|@value|@alt' ) ) {
                         $current_item->add_property( $property, $alt );
                     }
-                    elsif ( my $text = $element->as_trimmed_text ) {
+                    elsif ( my $text = _trim( $element->as_text ) ) {
                         $current_item->add_property( $property, $text );
                     }
                 }
             }
         }
         elsif ( $mf2_type eq 'u' ) {
-            for my $property ( @$properties_ref ) {
-                if ( my $url = $self->_tease_out_url( $element ) ) {
-                    $current_item->add_property( $property, $url );
+            unless ( $new_item ) {
+                for my $property ( @$properties_ref ) {
+                    if ( my $url = $self->_tease_out_url( $element ) ) {
+                        $current_item->add_property( $property, $url );
+                    }
                 }
             }
         }
-        # XXX More types go here.
+        elsif ( $mf2_type eq 'e' ) {
+            for my $property ( @$properties_ref ) {
+                my %e_data;
+                for my $content_piece ( $element->content_list ) {
+                    if ( ref $content_piece ) {
+                        $e_data{html} .= $content_piece->as_HTML( '<>&', undef, {} );
+                    }
+                    else {
+                        $e_data{html} .= $content_piece;
+                    }
+                }
+                $e_data{ value } = _trim ($element->as_text);
+                $e_data{ html } =~ s/\n\s+$/\n/;
+                $current_item->add_property( $property, \%e_data );
+            }
+        }
+        elsif ( $mf2_type eq 'dt' ) {
+            for my $property ( @$properties_ref ) {
+                my $dt_string;
+                my $vcp_fragments_ref =
+                    $self->_seek_value_class_pattern( $element );
+                if ( @$vcp_fragments_ref ) {
+                    $dt_string = join q{}, @$vcp_fragments_ref;
+                }
+                elsif ( my $alt = $element->findvalue( './@datetime|@title|@value' ) ) {
+                    $dt_string = $alt;
+                }
+                elsif ( my $text = $element->as_trimmed_text ) {
+                    $dt_string = $text;
+                }
+                if ( defined $dt_string ) {
+                    my $dt = DateTime::Format::ISO8601->new
+                              ->parse_datetime( $dt_string );
+                    # XXX Needs to check for & set timezone offset
+                    my $format = '%Y-%m-%d %H:%M:%S';
+                    $current_item->add_property(
+                        $property,
+                        $dt->strftime( $format ),
+                    );
+                }
+            }
+        }
     }
 
     if ( $new_item ) {
@@ -132,7 +178,9 @@ sub analyze_element {
         # some post-processing.
         # First, add any implied properties.
         for my $impliable_property (qw(name photo url)) {
+            warn "Maybe $impliable_property?\n";
             unless ( $new_item->has_property( $impliable_property ) ) {
+                warn "Yeah, let's check.\n";
                 my $method = "_set_implied_$impliable_property";
                 $self->$method( $new_item, $element );
             }
@@ -149,7 +197,11 @@ sub analyze_element {
 
         # Put this onto the parent item's property-list, or its children-list,
         # depending on context.
-        if ( my $item_property = $mf2_attrs->{p}->[0] ) {
+        my $item_property;
+        if (
+            ( $item_property = $mf2_attrs->{p}->[0] )
+            || ( $item_property = $mf2_attrs->{u}->[0] )
+        ) {
             $current_item->add_property( $item_property, $new_item );
         }
         elsif ($current_item) {
@@ -423,7 +475,7 @@ sub _seek_value_class_pattern {
         my $html;
         for my $content_piece ( $element->content_list ) {
             if ( ref $content_piece ) {
-                $html .= $content_piece->as_html;
+                $html .= $content_piece->as_HTML;
             }
             else {
                 $html .= $content_piece;
@@ -440,6 +492,13 @@ sub _seek_value_class_pattern {
     }
 
     return $vcp_fragments_ref;
+}
+
+sub _trim {
+    my ($string) = @_;
+    $string =~ s/^\s+//;
+    $string =~ s/\s+$//;
+    return $string;
 }
 
 1;
