@@ -95,6 +95,7 @@ sub analyze_element {
     }
 
     while (my ($mf2_type, $properties_ref ) = each( %$mf2_attrs ) ) {
+        next unless $current_item;
         next unless @{ $properties_ref };
         if ( $mf2_type eq 'p' ) {
             unless ( $new_item ) {
@@ -137,7 +138,11 @@ sub analyze_element {
                     }
                 }
                 $e_data{ value } = _trim ($element->as_text);
-                $e_data{ html } =~ s/\n\s+$/\n/;
+
+                # The official tests specifically trim space-glyphs per se;
+                # all other trailing whitespace stays. Shrug.
+                $e_data{ html } =~ s/ +$//;
+
                 $current_item->add_property( $property, \%e_data );
             }
         }
@@ -338,7 +343,7 @@ sub _set_implied_name {
     }
 
     unless ( defined $name ) {
-        $name = $element->as_trimmed_text;
+        $name = _trim( $element->as_text );
     }
 
     if ( length $name > 0 ) {
