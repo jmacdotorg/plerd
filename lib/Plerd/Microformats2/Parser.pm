@@ -75,6 +75,8 @@ sub parse {
     return $self;
 }
 
+# analyze_element: Recursive method that scans an element for new microformat
+# definitions (h-*) or properties (u|dt|e|p-*) and then does the right thing.
 sub analyze_element {
     my $self = shift;
     my ( $element, $current_item ) = @_;
@@ -98,6 +100,12 @@ sub analyze_element {
         next unless $current_item;
         next unless @{ $properties_ref };
         if ( $mf2_type eq 'p' ) {
+            # p-property:
+            # A catch-all generic property to store on the current
+            # MF2 item being defined.
+            # (If this same element begins an h-* microformat, we don't parse
+            # this p-* any further; instead we'll store the new item under
+            # this property name.)
             unless ( $new_item ) {
                 for my $property ( @$properties_ref ) {
                     my $vcp_fragments_ref =
@@ -118,6 +126,13 @@ sub analyze_element {
             }
         }
         elsif ( $mf2_type eq 'u' ) {
+            # u-property:
+            # Look for a URL in child attributes, and store it as a property.
+
+            # (But not if a new h-format has been defined, in which case we'll
+            # just use the u-property's name to store it. Why would you do that
+            # instead of using a p-property? I don't know, but the tests demand
+            # it.)
             unless ( $new_item ) {
                 for my $property ( @$properties_ref ) {
                     if ( my $url = $self->_tease_out_url( $element ) ) {
@@ -127,10 +142,27 @@ sub analyze_element {
             }
         }
         elsif ( $mf2_type eq 'e' ) {
+            # e-property:
+            # Create a struct with keys "html" and "value", and then
+            # store this in a new property.
             for my $property ( @$properties_ref ) {
                 my %e_data;
                 for my $content_piece ( $element->content_list ) {
+
+                    # Make sure all URLs found in certain HTML attrs are
+                    # absolute.
                     if ( ref $content_piece ) {
+                        # XXX This is probably a bit too loose about what tags
+                        #     these attrs can appear on.
+                        for my $href_element ( $content_piece, $content_piece->findnodes('.//*[@href|@src]') ) {
+                            foreach ( qw( href src ) ) {
+                                my $url = $href_element->attr($_);
+                                if ( $url ) {
+                                    my $abs_url = URI->new_abs( $url, $self->url_context)->as_string;
+                                    $href_element->attr( $_=> $abs_url );
+                                }
+                            }
+                        }
                         $e_data{html} .= $content_piece->as_HTML( '<>&', undef, {} );
                     }
                     else {
@@ -147,6 +179,9 @@ sub analyze_element {
             }
         }
         elsif ( $mf2_type eq 'dt' ) {
+            # dt-property:
+            # Read a child attribute as an ISO-8601 date-time string.
+            # Store it as a property in the MF2 date-time representation format.
             for my $property ( @$properties_ref ) {
                 my $dt_string;
                 my $vcp_fragments_ref =
