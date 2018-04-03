@@ -1,5 +1,6 @@
 package Plerd::Microformats2::Item;
 use Moose;
+use Carp;
 
 has 'properties' => (
     is => 'ro',
@@ -10,6 +11,11 @@ has 'properties' => (
         has_properties => 'count',
         has_property   => 'get',
     },
+);
+
+has 'parent' => (
+    is => 'ro',
+    isa => 'Maybe[Plerd::Microformats2::Item]',
 );
 
 has 'children' => (
@@ -26,6 +32,11 @@ has 'types' => (
     is => 'ro',
     isa => 'ArrayRef[Str]',
     required => 1,
+    traits => ['Array'],
+    handles => {
+        find_type => 'first',
+    },
+
 );
 
 has 'value' => (
@@ -49,6 +60,28 @@ sub get_properties {
     my ( $key ) = @_;
 
     return $self->{properties}->{$key} || [];
+}
+
+sub get_property {
+    my $self = shift;
+
+    my $properties_ref = $self->get_properties( @_ );
+
+    if ( @$properties_ref > 1 ) {
+        carp "get_property called with multiple properties set\n";
+    }
+
+    return $properties_ref->[0];
+
+}
+
+sub has_type {
+    my $self = shift;
+    my ( $type ) = @_;
+
+    $type =~ s/^h-//;
+
+    return $self->find_type( sub { $_ eq $type } );
 }
 
 sub TO_JSON {

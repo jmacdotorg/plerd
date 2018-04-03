@@ -3,45 +3,16 @@ package Plerd::Microformats2::Parser;
 use Moose;
 use MooseX::Types::URI qw(Uri);
 use HTML::TreeBuilder::XPath;
+use HTML::Entities;
 use v5.10;
 use Scalar::Util;
 use JSON;
 use DateTime::Format::ISO8601;
 
 use Plerd::Microformats2::Item;
+use Plerd::Microformats2::Document;
 
 use Readonly;
-
-has 'items' => (
-    is => 'ro',
-    traits => ['Array'],
-    isa => 'ArrayRef[Plerd::Microformats2::Item]',
-    default => sub { [] },
-    lazy => 1,
-    clearer => '_clear_items',
-    handles => {
-        all_top_level_items => 'elements',
-        add_top_level_item => 'push',
-        count_top_level_items => 'count',
-        has_top_level_items => 'count',
-    },
-);
-
-has 'rels' => (
-    is => 'ro',
-    isa => 'HashRef',
-    lazy => 1,
-    clearer => '_clear_rels',
-    default => sub { {} },
-);
-
-has 'rel_urls' => (
-    is => 'ro',
-    isa => 'HashRef',
-    lazy => 1,
-    clearer => '_clear_rel_urls',
-    default => sub { {} },
-);
 
 has 'url_context' => (
     is => 'rw',
@@ -63,6 +34,12 @@ sub parse {
     $tree->ignore_unknown( 0 );
     $tree->no_space_compacting( 1 );
     $tree->ignore_ignorable_whitespace( 0 );
+    $tree->no_expand_entities( 1 );
+
+    # Adding HTML5 elements because it's 2018.
+    foreach (qw(article aside details figcaption figure footer header main mark nav section summary time)) {
+        $HTML::TreeBuilder::isBodyElement{$_}=1;
+    }
 
     $tree->parse( $html );
 
@@ -70,16 +47,16 @@ sub parse {
         $self->url_context( $base_url );
     }
 
-    $self->analyze_element( $tree );
-
-    return $self;
+    my $document = Plerd::Microformats2::Document->new;
+    $self->analyze_element( $document, $tree );
+    return $document;
 }
 
 # analyze_element: Recursive method that scans an element for new microformat
 # definitions (h-*) or properties (u|dt|e|p-*) and then does the right thing.
 sub analyze_element {
     my $self = shift;
-    my ( $element, $current_item ) = @_;
+    my ( $document, $element, $current_item ) = @_;
 
     return unless blessed( $element) && $element->isa( 'HTML::Element' );
 
@@ -90,9 +67,11 @@ sub analyze_element {
     if ( $h_attrs->[0] ) {
         $new_item = Plerd::Microformats2::Item->new( {
             types => $h_attrs,
+            parent => $current_item,
         } );
+        $document->add_item( $new_item );
         unless ( $current_item ) {
-            $self->add_top_level_item( $new_item );
+            $document->add_top_level_item( $new_item );
         }
     }
 
@@ -119,7 +98,7 @@ sub analyze_element {
                     elsif ( my $alt = $element->findvalue( './@title|@value|@alt' ) ) {
                         $current_item->add_property( $property, $alt );
                     }
-                    elsif ( my $text = _trim( $element->as_text ) ) {
+                    elsif ( my $text = _trim( decode_entities($element->as_text) ) ) {
                         $current_item->add_property( $property, $text );
                     }
                 }
@@ -135,8 +114,25 @@ sub analyze_element {
             # it.)
             unless ( $new_item ) {
                 for my $property ( @$properties_ref ) {
+                    my $vcp_fragments_ref =
+                        $self->_seek_value_class_pattern( $element );
                     if ( my $url = $self->_tease_out_url( $element ) ) {
                         $current_item->add_property( $property, $url );
+                    }
+                    elsif ( @$vcp_fragments_ref ) {
+                        $current_item->add_property(
+                            $property,
+                            join q{}, @$vcp_fragments_ref,
+                        )
+                    }
+                    elsif ( $url = $self->_tease_out_unlikely_url($element)) {
+                        $current_item->add_property( $property, $url );
+                    }
+                    else {
+                        $current_item->add_property(
+                            $property,
+                            _trim( $element->as_text ),
+                        );
                     }
                 }
             }
@@ -164,12 +160,14 @@ sub analyze_element {
                             }
                         }
                         $e_data{html} .= $content_piece->as_HTML( '<>&', undef, {} );
+
                     }
                     else {
+
                         $e_data{html} .= $content_piece;
                     }
                 }
-                $e_data{ value } = _trim ($element->as_text);
+                $e_data{ value } = _trim (decode_entities( $element->as_text) );
 
                 # The official tests specifically trim space-glyphs per se;
                 # all other trailing whitespace stays. Shrug.
@@ -196,8 +194,12 @@ sub analyze_element {
                     $dt_string = $text;
                 }
                 if ( defined $dt_string ) {
-                    my $dt = DateTime::Format::ISO8601->new
+                    my $dt;
+                    eval {
+                    $dt = DateTime::Format::ISO8601->new
                               ->parse_datetime( $dt_string );
+                    };
+                    next if $@;
                     # XXX Needs to check for & set timezone offset
                     my $format = '%Y-%m-%d %H:%M:%S';
                     $current_item->add_property(
@@ -211,17 +213,15 @@ sub analyze_element {
 
     if ( $new_item ) {
         for my $child_element ( $element->content_list ) {
-            $self->analyze_element( $child_element, $new_item );
+            $self->analyze_element( $document, $child_element, $new_item );
         }
 
         # Now that the new item's been recursively scanned, perform
         # some post-processing.
         # First, add any implied properties.
         for my $impliable_property (qw(name photo url)) {
-            warn "Maybe $impliable_property?\n";
-            unless ( $new_item->has_property( $impliable_property ) ) {
-                warn "Yeah, let's check.\n";
-                my $method = "_set_implied_$impliable_property";
+             unless ( $new_item->has_property( $impliable_property ) ) {
+                 my $method = "_set_implied_$impliable_property";
                 $self->$method( $new_item, $element );
             }
         }
@@ -251,23 +251,10 @@ sub analyze_element {
     }
     else {
         for my $child_element ( $element->content_list ) {
-            $self->analyze_element( $child_element, $current_item );
+            $self->analyze_element( $document, $child_element, $current_item );
         }
     }
 }
-
-sub as_json {
-    my $self = shift;
-
-    my $data_for_json = {
-        rels => $self->rels,
-        'rel-urls' => $self->rel_urls,
-        items => $self->items,
-    };
-
-    return JSON->new->convert_blessed->pretty->encode( $data_for_json );
-}
-
 
 sub _tease_out_mf2_attrs {
     my $self = shift;
@@ -280,7 +267,7 @@ sub _tease_out_mf2_attrs {
 
     my $class_attr = $element->attr('class');
     if ( $class_attr ) {
-        while ($class_attr =~ /\b(h|e|u|dt|p)-(\S+)/g ) {
+        while ($class_attr =~ /\b(h|e|u|dt|p)-([a-z]+(\-[a-z]+)*)($|\s)/g ) {
             my $mf2_type = $1;
             my $mf2_attr = $2;
 
@@ -304,10 +291,10 @@ sub _tease_out_url {
         $xpath = './@src';
     }
     elsif ( $element->tag eq 'video' ) {
-        $xpath = '/@src|@poster';
+        $xpath = './@src|@poster';
     }
     elsif ( $element->tag eq 'object' ) {
-        $xpath = '/@data';
+        $xpath = './@data';
     }
 
     if ( $xpath ) {
@@ -317,8 +304,25 @@ sub _tease_out_url {
     if ( defined $url ) {
         $url = URI->new_abs( $url, $self->url_context )->as_string;
     }
-    else {
-        $url = $element->as_trimmed_text;
+
+    return $url;
+}
+
+sub _tease_out_unlikely_url {
+    my $self = shift;
+    my ( $element ) = @_;
+
+    my $xpath;
+    my $url;
+    if ( $element->tag eq 'abbr' ) {
+        $xpath = './@title';
+    }
+    elsif ( $element->tag =~ /^(data|input)$/ ) {
+        $xpath = './@value';
+    }
+
+    if ( $xpath ) {
+        $url = $element->findvalue( $xpath );
     }
 
     return $url;
@@ -365,16 +369,12 @@ sub _set_implied_name {
 
     my $foo = $kid || $element;
 
-    warn "***I will check " . $foo->tag . " for $xpath.\n";
-
     if ( $xpath ) {
         my $element_to_check = $kid || $element;
         my $value = $element_to_check->findvalue( $xpath );
-        warn "***I got $value!\n";
-        if ( ( $value ne q{} ) || $accept_if_empty ) {
+         if ( ( $value ne q{} ) || $accept_if_empty ) {
             $name = $value;
-            warn "***Hell yeah let's assign it!\n";
-        }
+         }
     }
 
     unless ( defined $name ) {
@@ -382,8 +382,7 @@ sub _set_implied_name {
     }
 
     if ( length $name > 0 ) {
-        warn "***Assigning $name!!!!!\n";
-        $item->add_property( 'name', $name );
+         $item->add_property( 'name', $name );
     }
 
 }
@@ -497,9 +496,6 @@ sub _non_h_unique_grandchild {
 sub _clear {
     my $self = shift;
 
-    $self->_clear_items;
-    $self->_clear_rels;
-    $self->_clear_rel_urls;
     $self->_clear_url_context;
 }
 
@@ -511,17 +507,22 @@ sub _seek_value_class_pattern {
     $vcp_fragments_ref ||= [];
 
     my $class = $element->attr( 'class' );
-    if ( $class && $class =~ /\bvalue\b/ ) {
-        my $html;
-        for my $content_piece ( $element->content_list ) {
-            if ( ref $content_piece ) {
-                $html .= $content_piece->as_HTML;
-            }
-            else {
-                $html .= $content_piece;
-            }
+    if ( $class && $class =~ /\bvalue(-title)?\b/ ) {
+        if ( $1 ) {
+            push @$vcp_fragments_ref, $element->attr( 'title' );
         }
-        push @$vcp_fragments_ref, $html;
+        else {
+            my $html;
+            for my $content_piece ( $element->content_list ) {
+                if ( ref $content_piece ) {
+                    $html .= $content_piece->as_HTML;
+                }
+                else {
+                    $html .= $content_piece;
+                }
+            }
+            push @$vcp_fragments_ref, $html;
+        }
     }
     else {
         for my $child_element ( grep { ref $_ } $element->content_list ) {
