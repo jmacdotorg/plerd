@@ -1,6 +1,6 @@
 package Plerd::Microformats2::Document;
 use Moose;
-use JSON;
+use JSON qw(decode_json);
 
 has 'top_level_items' => (
     is => 'ro',
@@ -56,6 +56,56 @@ sub as_json {
     return JSON->new->convert_blessed->pretty->encode( $data_for_json );
 }
 
+sub from_json {
+    my $class = shift;
+
+    my ( $json ) = @_;
+
+    my $data_ref = decode_json ($json);
+
+    my @items;
+    for my $deflated_item ( @{ $data_ref->{items} } ) {
+        push @items, $class->_inflate_item( $deflated_item );
+    }
+
+    return $class->new(
+        items => \@items,
+    );
+}
+
+sub _inflate_item {
+    my $class = shift;
+
+    my ( $deflated_item ) = @_;
+
+    foreach ( @{ $deflated_item->{type} } ) {
+        s/^h-//;
+    }
+
+    my $item = $class->new(
+        types => $deflated_item->{type},
+    );
+
+    if ( defined $deflated_item->{value} ) {
+        $item->value( $deflated_item->{value} );
+    }
+
+    for my $deflated_child ( @{ $deflated_item->{children} } ) {
+        $item->add_child ( $class->_inflate_item( $deflated_child ) );
+    }
+
+    for my $property ( keys %{ $deflated_item->{properties} } ) {
+        my $properties_ref = $deflated_item->{properties}->{$property};
+        for my $property_value ( @{ $properties_ref } ) {
+            if ( ref( $property_value ) ) {
+                $property_value = $class->_inflate_item( $property_value );
+            }
+            $item->add_property( $property, $property_value );
+        }
+    }
+
+    return $item;
+}
 
 sub get_first {
     my $self = shift;

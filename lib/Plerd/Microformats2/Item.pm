@@ -16,6 +16,7 @@ has 'properties' => (
 has 'parent' => (
     is => 'ro',
     isa => 'Maybe[Plerd::Microformats2::Item]',
+    weak_ref => 1,
 );
 
 has 'children' => (

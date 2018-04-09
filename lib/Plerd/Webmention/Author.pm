@@ -2,6 +2,7 @@ package Plerd::Webmention::Author;
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
+use MooseX::ClassAttribute;
 use Try::Tiny;
 use LWP::UserAgent;
 use List::Util qw(first);
@@ -25,9 +26,15 @@ has 'photo' => (
     coerce => 1,
 );
 
-sub new_from_html {
+class_has 'parser' => (
+    is => 'ro',
+    isa => 'Plerd::Microformats2::Parser',
+    default => sub { Plerd::Microformats2::Parser->new },
+);
+
+sub new_from_mf2_document {
     my $class = shift;
-    my ($html) = @_;
+    my ($doc) = @_;
 
     # This method implements the Indieweb Authorship Algorithm.
     # https://indieweb.org/authorship#How_to_determine
@@ -39,9 +46,6 @@ sub new_from_html {
 
     my $author;
     my $author_page;
-
-    my $parser = Plerd::Microformats2::Parser->new;
-    my $doc = $parser->parse( $html );
 
     my $h_entry = $doc->get_first( 'h-entry' );
 
@@ -95,7 +99,7 @@ sub new_from_html {
     #   "Get the author-page from that URL and parse it for Microformats-2."
     my $ua = LWP::UserAgent->new;
     my $response = $ua->get( $author_page );
-    my $author_doc = $parser->parse( $response );
+    my $author_doc = $class->parser->parse( $response );
 
     #   "If author-page has 1+ h-card with url == uid == author-page's URL,
     #   then use first such h-card, exit."
@@ -123,6 +127,16 @@ sub new_from_html {
             return $class->_new_with_h_card( $h_card );
         }
     }
+
+}
+
+sub new_from_html {
+    my $class = shift;
+    my ($html) = @_;
+
+    my $doc = $class->parser->parse( $html );
+
+    return $class->new_from_mf2_document( $doc );
 
 }
 

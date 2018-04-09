@@ -5,12 +5,27 @@ use MooseX::ClassAttribute;
 use MooseX::Types::URI qw(Uri);
 use LWP;
 use DateTime;
+use Try::Tiny;
+
+use Plerd::Microformats2::Parser;
+use Plerd::Webmention::Author;
 
 has 'source' => (
     isa => Uri,
     is => 'ro',
     required => 1,
     coerce => 1,
+);
+
+has 'source_html' => (
+    isa => 'Maybe[Str]',
+    is => 'rw',
+);
+
+has 'source_mf2_document' => (
+    isa => 'Maybe[Plerd::Microformats2::Document]',
+    is => 'rw',
+    lazy_build => 1,
 );
 
 has 'target' => (
@@ -37,6 +52,24 @@ has 'time_received' => (
     default => sub{ DateTime->now },
 );
 
+has 'author' => (
+    isa => 'Maybe[Plerd::Webmention::Author]',
+    is => 'ro',
+    lazy_build => 1,
+);
+
+has 'type' => (
+    isa => 'Str',
+    is => 'ro',
+    lazy_build => 1,
+);
+
+has 'content' => (
+    isa => 'Maybe[Str]',
+    is => 'ro',
+    lazy_build => 1,
+);
+
 class_has 'ua' => (
     isa => 'LWP::UserAgent',
     is => 'ro',
@@ -55,10 +88,67 @@ sub verify {
     my $response = $self->ua->get( $self->source );
     if ($response->content =~ $self->target ) {
         $self->time_verified( DateTime->now );
+        $self->source_html( $response->content );
         return 1;
     }
     else {
         return 0;
+    }
+}
+
+sub _build_source_mf2_document {
+    my $self = shift;
+
+    return unless $self->is_verified;
+    my $doc;
+    try {
+        my $parser = Plerd::Microformats2::Parser->new;
+        $doc = $parser->parse( $self->source_html );
+    }
+    catch {
+        die "Error parsing source HTML: $_";
+    };
+    return $doc;
+}
+
+sub _build_author {
+    my $self = shift;
+
+    return Plerd::Webmention::Author->new_from_mf2_document(
+        $self->source_mf2_document
+    );
+}
+
+sub _build_type {
+    my $self = shift;
+
+    my $item = $self->source_mf2_document->get_first( 'h-entry' );
+    return 'mention' unless $item;
+
+    if ( $item->get_property( 'in-reply-to' ) ) {
+        return 'reply';
+    }
+    elsif ( $item->get_property( 'like-of' ) ) {
+        return 'like';
+    }
+    elsif ( $item->get_property( 'repost-of' )) {
+        return 'repost';
+    }
+    else {
+        return 'mention';
+    }
+}
+
+sub _build_content {
+    my $self = shift;
+    # XXX This is inflexible and not on-spec
+
+    my $item = $self->source_mf2_document->get_first( 'h-entry' );
+    if ( $item->get_property( 'content' ) ) {
+        return $item->get_property( 'content' )->{value};
+    }
+    else {
+        return;
     }
 }
 
@@ -74,6 +164,11 @@ sub TO_JSON {
         is_verified => $self->is_verified,
         time_received => $self->time_received->epoch,
         time_verified => $self->time_verified->epoch,
+        type => $self->type,
+        mf2_document_json =>
+            $self->source_mf2_document
+            ? $self->source_mf2_document->as_json
+            : undef,
     };
 }
 
@@ -87,7 +182,14 @@ sub FROM_JSON {
         $data_ref->{ $_ } = DateTime->from_epoch( epoch => $data_ref->{ $_ } );
     }
 
-    return $class->new( $data_ref );
+    my $webmention = $class->new( $data_ref );
+
+    if ( my $mf2_json = $data_ref->{ mf2_document_json } ) {
+        my $doc = Plerd::Microformats2::Document->from_json( $mf2_json );
+        $webmention->source_mf2_document( $doc );
+    }
+
+    return $webmention;
 }
 
 1;
