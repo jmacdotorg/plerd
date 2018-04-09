@@ -1,4 +1,4 @@
-package Plerd::Microformats2::Parser;
+package Web::Microformats2::Parser;
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -9,8 +9,8 @@ use Scalar::Util;
 use JSON;
 use DateTime::Format::ISO8601;
 
-use Plerd::Microformats2::Item;
-use Plerd::Microformats2::Document;
+use Web::Microformats2::Item;
+use Web::Microformats2::Document;
 
 use Readonly;
 
@@ -47,7 +47,7 @@ sub parse {
         $self->url_context( $base_url );
     }
 
-    my $document = Plerd::Microformats2::Document->new;
+    my $document = Web::Microformats2::Document->new;
     $self->analyze_element( $document, $tree );
     return $document;
 }
@@ -65,7 +65,7 @@ sub analyze_element {
     my $h_attrs = delete $mf2_attrs->{h};
     my $new_item;
     if ( $h_attrs->[0] ) {
-        $new_item = Plerd::Microformats2::Item->new( {
+        $new_item = Web::Microformats2::Item->new( {
             types => $h_attrs,
             parent => $current_item,
         } );

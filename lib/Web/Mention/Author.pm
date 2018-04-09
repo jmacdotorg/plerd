@@ -1,4 +1,4 @@
-package Plerd::Webmention::Author;
+package Web::Mention::Author;
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -7,7 +7,7 @@ use Try::Tiny;
 use LWP::UserAgent;
 use List::Util qw(first);
 
-use Plerd::Microformats2::Parser;
+use Web::Microformats2::Parser;
 
 has 'name' => (
     is => 'ro',
@@ -28,8 +28,8 @@ has 'photo' => (
 
 class_has 'parser' => (
     is => 'ro',
-    isa => 'Plerd::Microformats2::Parser',
-    default => sub { Plerd::Microformats2::Parser->new },
+    isa => 'Web::Microformats2::Parser',
+    default => sub { Web::Microformats2::Parser->new },
 );
 
 sub new_from_mf2_document {

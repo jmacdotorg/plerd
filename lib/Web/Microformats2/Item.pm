@@ -1,4 +1,4 @@
-package Plerd::Microformats2::Item;
+package Web::Microformats2::Item;
 use Moose;
 use Carp;
 
@@ -15,13 +15,13 @@ has 'properties' => (
 
 has 'parent' => (
     is => 'ro',
-    isa => 'Maybe[Plerd::Microformats2::Item]',
+    isa => 'Maybe[Web::Microformats2::Item]',
     weak_ref => 1,
 );
 
 has 'children' => (
     is => 'ro',
-    isa => 'ArrayRef[Plerd::Microformats2::Item]',
+    isa => 'ArrayRef[Web::Microformats2::Item]',
     default => sub { [] },
     traits => ['Array'],
     handles => {

@@ -1,4 +1,4 @@
-package Plerd::Webmention;
+package Web::Mention;
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -7,8 +7,8 @@ use LWP;
 use DateTime;
 use Try::Tiny;
 
-use Plerd::Microformats2::Parser;
-use Plerd::Webmention::Author;
+use Web::Microformats2::Parser;
+use Web::Mention::Author;
 
 has 'source' => (
     isa => Uri,
@@ -23,7 +23,7 @@ has 'source_html' => (
 );
 
 has 'source_mf2_document' => (
-    isa => 'Maybe[Plerd::Microformats2::Document]',
+    isa => 'Maybe[Web::Microformats2::Document]',
     is => 'rw',
     lazy_build => 1,
 );
@@ -53,7 +53,7 @@ has 'time_received' => (
 );
 
 has 'author' => (
-    isa => 'Maybe[Plerd::Webmention::Author]',
+    isa => 'Maybe[Web::Mention::Author]',
     is => 'ro',
     lazy_build => 1,
 );
@@ -102,7 +102,7 @@ sub _build_source_mf2_document {
     return unless $self->is_verified;
     my $doc;
     try {
-        my $parser = Plerd::Microformats2::Parser->new;
+        my $parser = Web::Microformats2::Parser->new;
         $doc = $parser->parse( $self->source_html );
     }
     catch {
@@ -114,7 +114,7 @@ sub _build_source_mf2_document {
 sub _build_author {
     my $self = shift;
 
-    return Plerd::Webmention::Author->new_from_mf2_document(
+    return Web::Mention::Author->new_from_mf2_document(
         $self->source_mf2_document
     );
 }
@@ -185,7 +185,7 @@ sub FROM_JSON {
     my $webmention = $class->new( $data_ref );
 
     if ( my $mf2_json = $data_ref->{ mf2_document_json } ) {
-        my $doc = Plerd::Microformats2::Document->from_json( $mf2_json );
+        my $doc = Web::Microformats2::Document->from_json( $mf2_json );
         $webmention->source_mf2_document( $doc );
     }
 

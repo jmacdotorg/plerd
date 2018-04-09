@@ -1,11 +1,11 @@
-package Plerd::Microformats2::Document;
+package Web::Microformats2::Document;
 use Moose;
 use JSON qw(decode_json);
 
 has 'top_level_items' => (
     is => 'ro',
     traits => ['Array'],
-    isa => 'ArrayRef[Plerd::Microformats2::Item]',
+    isa => 'ArrayRef[Web::Microformats2::Item]',
     default => sub { [] },
     lazy => 1,
     handles => {
@@ -19,7 +19,7 @@ has 'top_level_items' => (
 has 'items' => (
     is => 'ro',
     traits => ['Array'],
-    isa => 'ArrayRef[Plerd::Microformats2::Item]',
+    isa => 'ArrayRef[Web::Microformats2::Item]',
     default => sub { [] },
     lazy => 1,
     handles => {
