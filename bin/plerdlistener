@@ -8,7 +8,7 @@ Readonly my $ACCEPTED => 202;
 Readonly my $BAD_REQUEST => 400;
 
 use lib ("$FindBin::Bin/../lib");
-use Plerd::Webmention;
+use Web::Mention;
 
 use Plerd;
 
@@ -21,7 +21,7 @@ post '/' => sub {
 
     my $webmention;
     try {
-        $webmention = Plerd::Webmention->new (
+        $webmention = Web::Mention->new (
             source => $c->param( 'source' ),
             target => $c->param( 'target' ),
         );

@@ -13,7 +13,7 @@ use JSON;
 use Path::Class::File;
 
 use Plerd::SmartyPants;
-use Plerd::Webmention;
+use Web::Mention;
 
 use Readonly;
 Readonly my $WPM => 200; # The words-per-minute reading speed to assume
@@ -588,7 +588,7 @@ sub _build_webmentions_by_source {
     ;
 
     for my $source_url ( keys( %{ $webmentions_ref } ) ) {
-        my $webmention = Plerd::Webmention->FROM_JSON(
+        my $webmention = Web::Mention->FROM_JSON(
             $webmentions_ref->{ $source_url }
         );
         $webmentions_ref->{ $source_url } = $webmention;
