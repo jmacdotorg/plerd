@@ -182,9 +182,11 @@ Plerd assumes that all your source and template files are encoded as UTF-8.
 
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
 
-[Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
+For now, the best way to ask questions about Plerd is to simply [email me, Jason McIntosh](mailto:jmac@jmac.org). I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
 
-You can discuss or ask questions about Plerd at [the `#plerd` channel](irc://chat.freenode.net:6667/plerd) on [Freenode IRC](http://freenode.net). Plerd's author and maintainer hangs out there as `jmac` and will gladly respond to queries sooner or later.
+You can also discuss or ask questions about Plerd at [the `#plerd` channel](irc://chat.freenode.net:6667/plerd) on [Freenode IRC](http://freenode.net). Plerd's author and maintainer hangs out there as `jmac` and will gladly respond to queries sooner or later.
+
+[Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
 
 ## See Plerd at work
 

@@ -539,7 +539,7 @@ sub publish {
             context_post => $self,
         },
 	    $html_fh,
-    );
+    ) || $self->plerd->_throw_template_exception( $self->plerd->post_template_file );
 }
 
 sub add_webmention {

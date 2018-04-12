@@ -241,7 +241,7 @@ sub publish_recent_page {
             title => $self->title,
         },
         $self->recent_file->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->post_template_file );
 }
 
 sub publish_rss {
@@ -260,7 +260,13 @@ sub post_with_url {
     my $self = shift;
     my ( $url ) = @_;
 
-    return $self->posts->[ $self->index_of_post_with_url->{ $url } ];
+    my $index = $self->index_of_post_with_url->{ $url };
+    if ( defined $index ) {
+        return $self->posts->[ $self->index_of_post_with_url->{ $url } ];
+    }
+    else {
+        return;
+    }
 }
 
 sub _publish_feed {
@@ -285,7 +291,7 @@ sub _publish_feed {
             timestamp => $timestamp,
         },
         $self->$file_method->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->$template_file_method );
 }
 
 sub publish_archive_page {
@@ -300,7 +306,7 @@ sub publish_archive_page {
             posts => $posts_ref,
         },
         $self->archive_file->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->archive_template_file );
 
 }
 
@@ -501,6 +507,7 @@ sub _build_index_of_post_with_guid {
     return \%index_of_post;
 }
 
+<<<<<<< HEAD
 sub _build_index_of_post_with_url {
     my $self = shift;
 
@@ -513,6 +520,16 @@ sub _build_index_of_post_with_url {
     }
 
     return \%index_of_post;
+=======
+sub _throw_template_exception {
+    my $self = shift;
+    my ( $template_file ) = @_;
+
+    my $error = $self->template->error;
+
+    die "Publication interrupted due to an error encountered while processing "
+        . "template file $template_file: $error\n";
+>>>>>>> master
 }
 
 sub generates_post_guids {
@@ -720,6 +737,11 @@ the blog's docroot -- in other words, the place Plerd will write HTML and XML fi
 
 Publishes every Markdown file in the blog's source directory.
 Also recreates the recent, archive, and syndication files.
+
+=item post_with_url( $absolute_url )
+
+Returns the Plerd::Post object that has the given absolute URL. Returns undef
+if there is no such post.
 
 =back
 
