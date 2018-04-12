@@ -235,6 +235,19 @@ sub publish_jsonfeed {
     $self->_publish_feed( 'jsonfeed' );
 }
 
+sub post_with_url {
+    my $self = shift;
+    my ( $url ) = @_;
+
+    my $index = $self->index_of_post_with_url->{ $url };
+    if ( defined $index ) {
+        return $self->posts->[ $self->index_of_post_with_url->{ $url } ];
+    }
+    else {
+        return;
+    }
+}
+
 sub _publish_feed {
     my $self = shift;
     my ( $feed_type ) = @_;
@@ -672,6 +685,11 @@ the blog's docroot -- in other words, the place Plerd will write HTML and XML fi
 
 Publishes every Markdown file in the blog's source directory.
 Also recreates the recent, archive, and syndication files.
+
+=item post_with_url( $absolute_url )
+
+Returns the Plerd::Post object that has the given absolute URL. Returns undef
+if there is no such post.
 
 =back
 
