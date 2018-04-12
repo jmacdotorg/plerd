@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.55';
+our $VERSION = '1.56b';
 
 use Moose;
 use Template;
@@ -220,7 +220,7 @@ sub publish_recent_page {
             title => $self->title,
         },
         $self->recent_file->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->post_template_file );
 }
 
 sub publish_rss {
@@ -270,7 +270,7 @@ sub _publish_feed {
             timestamp => $timestamp,
         },
         $self->$file_method->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->$template_file_method );
 }
 
 sub publish_archive_page {
@@ -285,7 +285,7 @@ sub publish_archive_page {
             posts => $posts_ref,
         },
         $self->archive_file->open('>:encoding(utf8)'),
-    );
+    ) || $self->_throw_template_exception( $self->archive_template_file );
 
 }
 
@@ -478,6 +478,16 @@ sub _build_index_of_post_with_guid {
     }
 
     return \%index_of_post;
+}
+
+sub _throw_template_exception {
+    my $self = shift;
+    my ( $template_file ) = @_;
+
+    my $error = $self->template->error;
+
+    die "Publication interrupted due to an error encountered while processing "
+        . "template file $template_file: $error\n";
 }
 
 sub generates_post_guids {
