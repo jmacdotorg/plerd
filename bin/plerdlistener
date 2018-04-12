@@ -31,13 +31,15 @@ post '/' => sub {
     };
     return unless $webmention;
 
-    my $post = $plerd->post_with_url( $webmention->target );
-    warn "Got $post.\n";
+    warn "Looking for " . $webmention->target . "\n";
 
+    my $post = $plerd->post_with_url( $webmention->target );
     unless ( $post ) {
         $c->render( status => $BAD_REQUEST, text => "Unrecognized target." );
         return;
     }
+
+    warn "Got $post, with GUID " . $post->guid . "\n";
 
     $c->render( status => $ACCEPTED, text => "Thanks dude." );
 
