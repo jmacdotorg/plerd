@@ -507,7 +507,6 @@ sub _build_index_of_post_with_guid {
     return \%index_of_post;
 }
 
-<<<<<<< HEAD
 sub _build_index_of_post_with_url {
     my $self = shift;
 
@@ -520,7 +519,7 @@ sub _build_index_of_post_with_url {
     }
 
     return \%index_of_post;
-=======
+
 sub _throw_template_exception {
     my $self = shift;
     my ( $template_file ) = @_;
@@ -529,7 +528,6 @@ sub _throw_template_exception {
 
     die "Publication interrupted due to an error encountered while processing "
         . "template file $template_file: $error\n";
->>>>>>> master
 }
 
 sub generates_post_guids {
