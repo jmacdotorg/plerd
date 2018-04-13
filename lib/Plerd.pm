@@ -519,6 +519,7 @@ sub _build_index_of_post_with_url {
     }
 
     return \%index_of_post;
+}
 
 sub _throw_template_exception {
     my $self = shift;
