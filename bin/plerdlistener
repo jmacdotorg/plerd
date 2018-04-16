@@ -1,3 +1,8 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
 use Mojolicious::Lite;
 use Try::Tiny;
 use FindBin;
@@ -31,34 +36,16 @@ post '/' => sub {
     };
     return unless $webmention;
 
-    warn "Looking for " . $webmention->target . "\n";
-
     my $post = $plerd->post_with_url( $webmention->target );
     unless ( $post ) {
-        $c->render( status => $BAD_REQUEST, text => "Unrecognized target." );
+        $c->render( status => $BAD_REQUEST, text => "Unrecognized target URL." );
         return;
     }
 
-    warn "Got $post, with GUID " . $post->guid . "\n";
+    $c->render( status => $ACCEPTED, text => "Webmention accepted. Thank you!" );
 
-    $c->render( status => $ACCEPTED, text => "Thanks dude." );
-
-    queue( $webmention, $post );
+    $plerd->webmention_queue->add_webmention( $webmention );
 };
 
-sub queue {
-    my ( $webmention, $post ) = @_;
-    # XXX Let's be messy and non-async for now.
-    if ( $webmention->is_verified ) {
-        warn "It's verified!\n";
-        $post->add_webmention( $webmention );
-    }
-    else {
-        warn "This is some bullshit.\n";
-        $post->delete_webmention( $webmention );
-    }
-
-
-}
 
 app->start;

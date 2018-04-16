@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use FindBin;
+use YAML qw( LoadFile );
+
+use lib ("$FindBin::Bin/../lib");
+use Plerd;
+
+my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+my $plerd = Plerd->new( $config_ref );
+
+$plerd->webmention_queue->process;
