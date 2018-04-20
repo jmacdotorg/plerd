@@ -26,10 +26,7 @@ post '/' => sub {
 
     my $webmention;
     try {
-        $webmention = Web::Mention->new (
-            source => $c->param( 'source' ),
-            target => $c->param( 'target' ),
-        );
+        $webmention = Web::Mention->new_from_request ( $c );
     }
     catch {
         $c->render( status => $BAD_REQUEST, text => "Malformed webmention." );
