@@ -25,10 +25,13 @@ has 'directory' => (
 sub process () {
     my $self = shift;
 
+    my $return_value = 0;
+
     for my $wm ( $self->all_webmentions ) {
         my $post = $self->plerd->post_with_url( $wm->target );
         if ( $wm->is_verified ) {
             $post->add_webmention( $wm );
+	    $return_value = 1;
         }
         else {
             # It's possible that the post has this webmention from earlier,
@@ -40,6 +43,8 @@ sub process () {
     }
 
     $self->clear_webmentions;
+
+    return $return_value;
 }
 
 sub add_webmention ( $ ) {
@@ -67,7 +72,10 @@ sub all_webmentions () {
     for my $file ( $self->directory->children(no_hidden=>1) ) {
         try {
             push @wms, Web::Mention->FROM_JSON( decode_json( $file->slurp(iomode => '<:encoding(UTF-8)')) );
-        };
+        }
+	catch {
+	    die "Failed to deserialize the webmention at $file: $_\n";
+	};
     }
 
     return @wms;

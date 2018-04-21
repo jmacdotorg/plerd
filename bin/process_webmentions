@@ -12,4 +12,8 @@ use Plerd;
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 my $plerd = Plerd->new( $config_ref );
 
-$plerd->webmention_queue->process;
+my $new_webmentions_were_added = $plerd->webmention_queue->process;
+
+if ( $new_webmentions_were_added ) {
+    $plerd->publish_all;
+}
