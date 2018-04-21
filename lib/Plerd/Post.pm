@@ -87,6 +87,7 @@ has 'date' => (
         day
         year
         ymd
+        hms
     ) ],
 );
 
