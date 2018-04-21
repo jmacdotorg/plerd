@@ -29,7 +29,7 @@ post '/' => sub {
         $webmention = Web::Mention->new_from_request ( $c );
     }
     catch {
-        $c->render( status => $BAD_REQUEST, text => "Malformed webmention." );
+        $c->render( status => $BAD_REQUEST, text => "Malformed webmention: $_" );
     };
     return unless $webmention;
 
@@ -39,7 +39,13 @@ post '/' => sub {
         return;
     }
 
-    $c->render( status => $ACCEPTED, text => "Webmention accepted. Thank you!" );
+    my $success_text = "Webmention accepted, and queued for verification and processing. Thank you!";
+
+    my $return_link_url = $c->param( 'target' );
+    my $return_link_text = 'Return to ' . $plerd->title . '.';
+    $success_text .= qq{ <a href="$return_link_url">$return_link_text</a>};
+
+    $c->render( status => $ACCEPTED, text => $success_text );
 
     $plerd->webmention_queue->add_webmention( $webmention );
 };
