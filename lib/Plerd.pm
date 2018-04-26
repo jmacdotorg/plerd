@@ -663,7 +663,7 @@ social media metadata and such.
 =item path
 
 The path to a filesystem directory within which Plerd will look for
-"source", "docroot", and "templates" directories as needed, using those names exactly.
+"source", "docroot", "templates", and "db" directories as needed, using those names exactly.
 
 B<Caution:> If this is not defined I<and> any one of the previous three attributes
 is also undefined, then Plerd will die if you try to publish the blog.
@@ -679,6 +679,10 @@ The path to the filesystem directory containing this blog's source directory.
 =item template_path
 
 The path to the filesystem directory containing this blog's templates directory.
+
+=item database_path
+
+The path to the filesystem directory containing this blog's database directory.
 
 =item title
 
@@ -738,6 +742,11 @@ the blog's Template Toolkit-based template files. (See also L<Template>.)
 
 A L<Path::Class::Dir> object representation of the Dropbox-synced directory that holds
 the blog's docroot -- in other words, the place Plerd will write HTML and XML files to.
+
+=item database_directory
+
+A L<Path::Class::Dir> object representation of the directory that holds
+the blogs's private, not-necessarily-human-readable data files.
 
 =back
 
