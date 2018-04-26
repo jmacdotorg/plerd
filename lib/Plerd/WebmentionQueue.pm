@@ -9,6 +9,9 @@ use JSON;
 use Try::Tiny;
 use Carp qw(croak);
 
+use Readonly;
+Readonly my $DEFAULT_DIR_NAME => 'webmention_inbox';
+
 has 'plerd' => (
     is => 'ro',
     required => 1,
@@ -94,7 +97,7 @@ sub _build_directory {
 
     my $dir = Path::Class::Dir->new(
         $self->plerd->database_directory,
-        'webmentions',
+        $DEFAULT_DIR_NAME,
     );
 
     unless (-e $dir) {
