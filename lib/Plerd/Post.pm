@@ -578,6 +578,12 @@ sub ordered_webmentions {
     ;
 }
 
+sub webmention_count {
+    my $self = shift;
+
+    return scalar keys %{ $self->webmentions_by_source };
+}
+
 sub _build_webmentions_by_source {
     my $self = shift;
 
