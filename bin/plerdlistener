@@ -18,8 +18,6 @@ use Web::Mention;
 use Plerd;
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
-my $plerd = Plerd->new( $config_ref );
-
 
 post '/' => sub {
     my $c = shift;
@@ -32,6 +30,8 @@ post '/' => sub {
         $c->render( status => $BAD_REQUEST, text => "Malformed webmention: $_" );
     };
     return unless $webmention;
+
+    my $plerd = Plerd->new( $config_ref );
 
     my $post = $plerd->post_with_url( $webmention->target );
     unless ( $post ) {
