@@ -1,9 +1,17 @@
 [% WRAPPER wrapper.tt %]
 
 [% FOREACH post IN posts %]
-<div class="post">
-    <div class="title page-header"><h1><a href="[% post.uri %]">[% post.title %]<br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
-    <div class="body">[% post.body %]</div>
+<div class="post h-entry">
+    <div class="title page-header"><h1><a href="[% post.uri %]"><span class="p-name">[% post.title %]</span><br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
+    
+    <data class="dt-published" value="[% post.ymd %] [% post.hms %]"></data>
+    <data class="p-author h-card">
+        <data class="p-name" value="[% post.plerd.author_name | html %]"></data>
+    </data>
+    <data class="p-summary" value="[% post.description | html %]"></data>
+    <data class="u-url u-uid" value="[% post.uri %]"></data>
+    
+    <div class="body e-content">[% post.body %]</div>
 </div>
 [% END %]
 
