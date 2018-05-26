@@ -635,7 +635,7 @@ sub _retrieve {
     );
 
     if ( -e $file ) {
-        return $self->json->decode( $file->slurp );
+        return $self->json->utf8->decode( $file->slurp );
     }
     else {
         return undef;
