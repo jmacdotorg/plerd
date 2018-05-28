@@ -541,6 +541,33 @@ sub publish {
         },
 	    $html_fh,
     ) || $self->plerd->_throw_template_exception( $self->plerd->post_template_file );
+
+}
+
+sub send_webmentions {
+    my $self = shift;
+
+    my @wms = Web::Mention->new_from_html(
+        source => $self->uri,
+        html => $self->body,
+    );
+
+    my %report = (
+        attempts => 0,
+        delivered => 0,
+        sent => 0,
+    );
+    foreach ( @wms ) {
+        $report{attempts}++;
+        if ( $_->send ) {
+            $report{delivered}++;
+        }
+        if ( $_->endpoint ) {
+            $report{sent}++;
+        }
+    }
+
+    return (\%report);
 }
 
 sub add_webmention {
@@ -659,7 +686,8 @@ Plerd-based blog, with Markdown source and HTML output.
 
 =item new( \%config )
 
-Object constructor. The single config hashref I<must> include the following keys:
+Object constructor. The single config hashref I<must> include the
+following keys:
 
 =over
 
@@ -669,7 +697,8 @@ The parent Plerd object.
 
 =item source_file
 
-A Path::Class::File object representing this post's Markdown source file.
+A Path::Class::File object representing this post's Markdown source
+file.
 
 =back
 
@@ -685,20 +714,20 @@ A Path::Class::File object representing this post's Markdown source file.
 
 A Plerd::Post object representing the next-newer post to the blog.
 
-Is the current object represents the newest post in the blog, then this method
-returns undef.
+Is the current object represents the newest post in the blog, then this
+method returns undef.
 
 =item older_post
 
 A Plerd::Post object representing the next-older post to the blog.
 
-Is the current object represents the oldest post in the blog, then this method
-returns undef.
+Is the current object represents the oldest post in the blog, then this
+method returns undef.
 
 =item published_filename
 
-The local filename (without parent directory path) of the HTML file that this post
-will generate upon publication.
+The local filename (without parent directory path) of the HTML file that
+this post will generate upon publication.
 
 =item published_timestamp
 
@@ -706,17 +735,19 @@ This post's date, in W3C format, set to midnight in the local timezone.
 
 =item reading_time
 
-An estimated reading-time for this post, measured in whole minutes, and based
-on an assumed (and fairly conservative) reading pace of 200 words per minute.
+An estimated reading-time for this post, measured in whole minutes, and
+based on an assumed (and fairly conservative) reading pace of 200 words
+per minute.
 
 =item updated_timestamp
 
-The modification time of this this post's source file, in W3C format, set to
-the local timezone.
+The modification time of this this post's source file, in W3C format,
+set to the local timezone.
 
 =item uri
 
-The L<URI> of the of the HTML file that this post will generate upon publication.
+The L<URI> of the of the HTML file that this post will generate upon
+publication.
 
 =back
 
@@ -726,12 +757,14 @@ The L<URI> of the of the HTML file that this post will generate upon publication
 
 =item attributes
 
-A hashref of all the attributes defined in the source document's metadata
-section, whether or not Plerd takes any special meaning from them.
+A hashref of all the attributes defined in the source document's
+metadata section, whether or not Plerd takes any special meaning from
+them.
 
-For example, if a source document defines both C<title> and C<favorite_color>
-key-value pairs in its metadata, both keys and values will appear in this
-hashref, even though Plerd pays no mind to the latter key.
+For example, if a source document defines both C<title> and
+C<favorite_color> key-value pairs in its metadata, both keys and values
+will appear in this hashref, even though Plerd pays no mind to the
+latter key.
 
 =item body
 
@@ -743,25 +776,29 @@ L<DateTime> object representing this post's presented publication date.
 
 =item description
 
-String representing a short, descriptive summary of this post. This value affects
-the metadata attached to this post, for use by social media and such.
+String representing a short, descriptive summary of this post. This
+value affects the metadata attached to this post, for use by social
+media and such.
 
-If you don't set this value yourself by the time Plerd needs it, then it will
-set it to the first paragraph of the post's body text (with all markup removed).
+If you don't set this value yourself by the time Plerd needs it, then it
+will set it to the first paragraph of the post's body text (with all
+markup removed).
 
 =item image
 
-(Optional) L<URI> object referencing an illustrative image for this post.
+(Optional) L<URI> object referencing an illustrative image for this
+post.
 
-Setting this value affects the metadata attached to this post, for use by social
-media and such.
+Setting this value affects the metadata attached to this post, for use
+by social media and such.
 
 =item image_alt
 
-(Optional) A text description of the image referenced by the C<image> atribute.
+(Optional) A text description of the image referenced by the C<image>
+atribute.
 
-Setting this value affects the metadata attached to this post, for use by social
-media and such.
+Setting this value affects the metadata attached to this post, for use
+by social media and such.
 
 =item title
 
@@ -771,11 +808,35 @@ String representing this post's title.
 
 =head1 OBJECT METHODS
 
-=over
+=head2 publish
 
-=item publish
+ $post->publish
 
 Publishes the post.
+
+=head2 send_webmentions
+
+ $report = $post->send_webmentions
+
+Attempts to send a webmention for every hyperlink contained in the post.
+
+The return value is a hashref with the following keys:
+
+=over
+
+=item attempts
+
+The number of webmentions this post attempted to send.
+
+=item sent
+
+The number of webmentions actually sent (due to webmention-endpoint URLs
+advertised by the links' targets).
+
+=item delivered
+
+The number of webmentions whose delivery was acknowledged by the
+receiving endpoint.
 
 =back
 

@@ -14,8 +14,12 @@ use Path::Class::File;
 use App::Daemon qw( daemonize );
 use Try::Tiny;
 use Log::Log4perl qw( :easy );
+use Getopt::Long;
 
 use Plerd;
+
+my $webmention_enabled = 0;
+GetOptions( webmention => \$webmention_enabled );
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
@@ -44,6 +48,26 @@ while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
         try {
             $plerd->publish_all;
+            for my $event ( @events ) {
+                if (
+                    (
+                        ( $event->type eq 'create' )
+                        or ( $event->type eq 'modify' )
+                    )
+                    and $webmention_enabled
+                ) {
+                    my $file = Path::Class::File->new( $event->path );
+                    my $post = Plerd::Post->new(
+                        source_file => $file,
+                        plerd => $plerd,
+                    );
+                    INFO "Sending webmentions for $file...";
+                    my $report = $post->send_webmentions;
+                    INFO "$report->{attempts} attempts, "
+                         . "$report->{sent} sent, "
+                         . "$report->{delivered} delivered.";
+                }
+            }
         }
         catch {
             ERROR "Failed to publish: $_\n";
@@ -53,15 +77,15 @@ while ( my @events = $watcher->wait_for_events ) {
 
 =head1 NAME
 
-plerdwatcher - Daemon that automatically updates a Plerd-based blog when needed
+plerdwatcher - Daemon that automatically updates a Plerd-based blog when
+needed
 
 =head1 SYNOPSIS
 
 In /path/to/plerd/conf/plerd.conf:
 
- base_uri: http://blog.example.com
- path: /home/me/Dropbox/plerd
- title: My Lovely Blog
+ base_uri: http://blog.example.com path: /home/me/Dropbox/plerd title:
+ My Lovely Blog
 
 And then, on the command line, while in the top-level plerd directory:
 
@@ -69,20 +93,29 @@ And then, on the command line, while in the top-level plerd directory:
 
 =head1 DESCRIPTION
 
-This script launches a simple daemon that monitors a Plerd blog's Dropbox-
-synced directory for changes. When it sees changes, it will direct Plerd
-to publish or republish files as needed.
+This script launches a simple daemon that monitors a Plerd blog's
+Dropbox- synced directory for changes. When it sees changes, it will
+direct Plerd to publish or republish files as needed.
 
-I<plerdwatcher> runs via L<App::Daemon>, and accepts all the command-line
-arguments documented there.
+I<plerdwatcher> runs via L<App::Daemon>, and accepts all the
+command-line arguments documented there.
 
-It stores its logs in a directory called C<log>
-and other run-time files in a C<run> directory, both of which it expects to
-find as siblings of its own parent directory (usually C<bin>).
+It stores its logs in a directory called C<log> and other run-time files
+in a C<run> directory, both of which it expects to find as siblings of
+its own parent directory (usually C<bin>).
 
-For instructions on installing and using Plerd, please see the README file that
-should have accompanied this distribution. It is also available online
-at L<https://github.com/jmacdotorg/plerd#plerd>.
+For instructions on installing and using Plerd, please see the README
+file that should have accompanied this distribution. It is also
+available online at L<https://github.com/jmacdotorg/plerd#plerd>.
+
+=head1 OPTIONS
+
+=head2 webmention
+
+ bin/plerdwatcher --webmention start
+
+Newly created or updated posts will also attempt to send webmentions to
+any URLs they link to.
 
 =head1 AUTHOR
 

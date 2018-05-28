@@ -9,8 +9,12 @@ use lib
 ;
 
 use YAML qw( LoadFile );
+use Getopt::Long;
 
 use Plerd;
+
+my $webmention_enabled = 0;
+GetOptions( webmention => \$webmention_enabled );
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
@@ -24,6 +28,17 @@ my $plerd = Plerd->new( $config_ref );
 
 $plerd->publish_all;
 
+if ( $webmention_enabled ) {
+    print "Sending webmentions for all posts!\n";
+    for my $post ( @{ $plerd->posts } ) {
+        print $post->source_file . "...\n";
+        my $report = $post->send_webmentions;
+        print "$report->{attempts} attempts, "
+              . "$report->{sent} sent, "
+              . "$report->{delivered} delivered.\n";
+    }
+}
+
 =head1 NAME
 
 plerdall - Publish an entire Plerd blog from source
@@ -32,9 +47,8 @@ plerdall - Publish an entire Plerd blog from source
 
 In /path/to/plerd/conf/plerd.conf:
 
- base_uri: http://blog.example.com
- path: /home/me/Dropbox/plerd
- title: My Lovely Blog
+ base_uri: http://blog.example.com path: /home/me/Dropbox/plerd title:
+ My Lovely Blog
 
 And then, on the command line, while in the top-level plerd directory:
 
@@ -42,13 +56,23 @@ And then, on the command line, while in the top-level plerd directory:
 
 =head1 DESCRIPTION
 
-This script directs Plerd to completely publish a blog, once, based configuration.
-If the blog's already been published, then it'll get wholly and freshly
-republished.
+This script directs Plerd to completely publish a blog, once, based
+configuration. If the blog's already been published, then it'll get
+wholly and freshly republished.
 
-For instructions on installing and using Plerd, please see the README file that
-should have accompanied this distribution. It is also available online
-at L<https://github.com/jmacdotorg/plerd#plerd>.
+For instructions on installing and using Plerd, please see the README
+file that should have accompanied this distribution. It is also
+available online at L<https://github.com/jmacdotorg/plerd#plerd>.
+
+=head1 OPTIONS
+
+=head2 webmention
+
+ bin/plerdall --webmention
+
+After publishing all the blog's posts, Plerd will then direct every post
+to scan itself for hyperlinks and attempt to send webmentions to each
+one.
 
 =head1 AUTHOR
 
