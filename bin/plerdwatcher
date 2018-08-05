@@ -166,18 +166,20 @@ available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
 
+All of these Webmention-related options are B<experimental>.
+
 =head2 send-webmentions
 
  bin/plerdwatcher --send-webmentions start
 
-B<Experimental.> Newly created or updated posts will also attempt to
+Newly created or updated posts will also attempt to
 send webmentions to any URLs they link to.
 
 =head2 receive-webmentions=I<port>
 
  bin/plerdwatcher --receive-webmentions=4000 start
 
-B<Experimental.> Launches a webserver that listens on the specified TCP
+Launches a webserver that listens on the specified TCP
 port. This will allow plerdwatcher to receive webmentions.
 
 =head1 SEE ALSO
