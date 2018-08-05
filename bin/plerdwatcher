@@ -83,7 +83,14 @@ post '/' => sub {
 if ( $webmention_port ) {
     $webserver_pid = fork;
     unless ( $webserver_pid ) {
-        app->start( 'daemon', '-l', "http://*:$webmention_port" );
+        app->log(
+            Mojo::Log->new( path => "$FindBin::Bin/../log/plerdweb.log" )
+        );
+        app->start(
+            'daemon',
+            '-l', "http://*:$webmention_port",
+            '-m', 'production',
+        );
     }
 }
 
@@ -172,15 +179,15 @@ All of these Webmention-related options are B<experimental>.
 
  bin/plerdwatcher --send-webmentions start
 
-Newly created or updated posts will also attempt to
-send webmentions to any URLs they link to.
+Newly created or updated posts will also attempt to send webmentions to
+any URLs they link to.
 
 =head2 receive-webmentions=I<port>
 
  bin/plerdwatcher --receive-webmentions=4000 start
 
-Launches a webserver that listens on the specified TCP
-port. This will allow plerdwatcher to receive webmentions.
+Launches a webserver that listens on the specified TCP port. This will
+allow plerdwatcher to receive webmentions.
 
 =head1 SEE ALSO
 
