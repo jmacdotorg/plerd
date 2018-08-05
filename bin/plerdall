@@ -15,9 +15,11 @@ use Plerd;
 
 my $webmention_enabled = 0;
 my $process_webmentions = 0;
+my $rebuild_webmentions = 0;
 GetOptions(
     'send-webmentions' => \$webmention_enabled,
     'process-webmentions' => \$process_webmentions,
+    'rebuild-webmentions' => \$rebuild_webmentions,
 );
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
@@ -29,6 +31,16 @@ foreach (qw( base_uri image ) ) {
 }
 
 my $plerd = Plerd->new( $config_ref );
+
+if ( $rebuild_webmentions ) {
+    for my $post ( @{ $plerd->posts } ) {
+        for my $wm ( values %{$post->webmentions_by_source} ) {
+            $wm->verify;
+            sleep 1;
+        }
+        $post->serialize_webmentions;
+    }
+}
 
 my $new_webmentions_were_added;
 if ( $process_webmentions ) {
@@ -82,19 +94,21 @@ available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
 
+All of these Webmention-related options are B<experimental>.
+
 =head2 send-webmentions
 
  bin/plerdall --send-webmentions
 
-B<Experimental.> After publishing all the blog's posts, Plerd will then
+After publishing all the blog's posts, Plerd will then
 direct every post to scan itself for hyperlinks and attempt to send
 webmentions to each one.
 
-=head2 process_webmentions
+=head2 process-webmentions
 
  bin/plerdall --process-webmentions
 
-B<Experimental.> Before publishing all the blog's posts, Plerd will
+Before publishing all the blog's posts, Plerd will
 check to see if any new webmentions are waiting in its webmention-inbox.
 If so, it will process those webmentions. Then, if at least one of those
 received webmentions is valid, Plerd will republish all the blog's
@@ -103,6 +117,32 @@ republish the blog.
 
 This flag makes plerdall suitable for use as a scheduled task, via e.g.
 cron.
+
+=head2 rebuild-webmentions
+
+ bin/plerdall --rebuild-webmentions
+
+Before publishing all the blog's posts, Plerd will re-verify every valid
+webmention that the blog has received and stored over its history,
+overwriting its old webmention database with the results. Then it will
+republish all the blog's posts.
+
+The script rate-limits itself to one verification request per second, so
+this might take a while.
+
+This is a utility function intended for use if the serialization format
+for Plerd's webmentions changes. You probably won't need to use it
+often, if ever.
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<Plerd>
+
+=back
 
 =head1 AUTHOR
 
