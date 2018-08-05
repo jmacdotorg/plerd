@@ -9,6 +9,6 @@ before_install:
   - build-perl
   - perl -V
 install:
-  - cpanm --installdeps .
+  - cpanm --notest --quiet --installdeps .
 script:
   - prove -l $(test-files)
