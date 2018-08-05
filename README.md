@@ -1,17 +1,5 @@
 # Plerd 
 
-```
-.---------------------------------------------------------------------------.
-| Please note this is an EXPERIMENTAL BRANCH of Plerd under rapid and messy |
-| development. Testing and documentation may be variously incomplete or     |
-| inaccurate. If you just want to use Plerd, please use the master branch   |
-| instead.                                                                  |
-| If you're feeling brave and/or are super-interested in Webmention and     |
-| other IndieWeb technologies, enough to actually try this branch yourself, |
-| feel free to contact me for more information about it. Thanks!            |
-'---------------------------------------------------------------------------'
-```
-
 Plerd is meant to be an ultralight blogging platform for Markdown fans that plays well with (but does not require) Dropbox.
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
