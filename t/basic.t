@@ -220,6 +220,7 @@ my $alt_config_plerd = Plerd->new(
     source_path       => "$FindBin::Bin/source",
     publication_path  => "$FindBin::Bin/docroot",
     template_path     => "$FindBin::Bin/templates",
+    database_path     => "$FindBin::Bin/db",
     title             => 'Test Blog',
     author_name       => 'Nobody',
     author_email      => 'nobody@example.com',

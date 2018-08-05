@@ -1,11 +1,116 @@
 [% WRAPPER wrapper.tt %]
 
 [% FOREACH post IN posts %]
-<div class="post">
-    <div class="title page-header"><h1><a href="[% post.uri %]">[% post.title %]<br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
-    <div class="byline">[% post.attributes.byline %]</div>
-    <div class="body">[% post.body %]</div>
+<div class="post h-entry">
+    <div class="title page-header"><h1><a href="[% post.uri %]"><span class="p-name">[% post.title %]</span><br /><small>[% post.month_name %] [% post.day %], [% post.year %]</small></a></h1></div>
+    
+    <data class="dt-published" value="[% post.ymd %] [% post.hms %]"></data>
+    <data class="p-author h-card">
+        <data class="p-name" value="[% post.plerd.author_name | html %]"></data>
+    </data>
+    <data class="p-summary" value="[% post.description | html %]"></data>
+    <data class="u-url u-uid" value="[% post.uri %]"></data>
+    <div class="byline">[% post.attributes.byline %]</div>    
+    <div class="body e-content">[% post.body %]</div>
 </div>
 [% END %]
 
+[% IF posts.size == 1 %]
+
+    <div>
+        <hr />
+        [% IF post.newer_post %]
+            <p>Next post: <a href="[% post.newer_post.uri %]">[% post.newer_post.title %]</a></p>
+        [% END %]
+        [% IF post.older_post %]
+            <p>Previous post: <a href="[% post.older_post.uri %]">[% post.older_post.title %]</a></p>
+        [% END %]
+    </div>
+
+    [% IF post.ordered_webmentions && post.ordered_webmentions.size > 0 %]
+    <hr />
+    <h3>Responses from around the web...</h3>
+        <div class="row">
+            <div class="col-xs-6">
+                [% INCLUDE likes %]
+            </div>
+            <div class="col-xs-6">
+                [% INCLUDE reposts %]
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                [% INCLUDE responses %]
+            </div>
+        </div>
+    [% END %]
+
+
 [% END %]
+
+
+[% END %]
+
+[% BLOCK likes %]
+<h4>Likes</h4>
+[% INCLUDE facepile type="like" %]
+[% END %]
+
+[% BLOCK reposts %]
+<h4>Reposts</h4>
+[% INCLUDE facepile type="repost" %]
+[% END %]
+
+[% BLOCK facepile %]
+    <p>
+    [% count = 0 %]
+    [% FOREACH webmention IN post.ordered_webmentions %]
+        [% IF webmention.type == type %]
+            <a href="[% webmention.author.url %]"><img class="facepile" src="[% webmention.author.photo %]" alt="[% webmention.author.name %] avatar" style="width:32px"></a>
+            [% count = count + 1 %]
+        [% END %]
+    [% END %]
+    [% UNLESS count %]
+        (None yet!)
+    [% END %]
+    </p>
+[% END %]
+
+[% BLOCK responses %]
+    <h4>Replies and mentions</h4>
+    [% count = 0 %]
+    [% FOREACH webmention IN post.ordered_webmentions %]
+        [% UNLESS webmention.type == 'like' || webmention.type == 'repost' %]
+        [% count = count + 1 %]
+        <div class="media">
+            <div class="media-left">
+                [% IF webmention.type == 'mention' %]
+                <a rel="nofollow" href="[% webmention.original_source %]">
+                <img class="media-object" src="http://fogknife.com/images/comment.png" alt="A generic word balloon" style="max-width:32px; max-height:32px;">
+                </a>
+                [% ELSE %]
+                <a rel="nofollow" href="[% webmention.author.url %]">
+                <img class="media-object" src="[% webmention.author.photo %]" alt="[% webmention.author.name %] avatar" style="max-width:32px; max-height:32px;">
+                </a>
+                [% END %]
+            </div>
+            <div class="media-body">
+                [% IF webmention.type == 'mention' %]
+                <h4 class="media-heading">Mentioned on <a href="[% webmention.original_source %]">[% webmention.original_source.host %]</a>...</h4>
+                [% ELSE %]
+                <h4 class="media-heading"><a href="[% webmention.author.url %]">[% webmention.author.name %]</a></h4>
+                [% END %]
+                    [% webmention.content %] <a rel="nofollow" href="[% webmention.original_source %]"><span class="glyphicon glyphicon-share" style="text-decoration:none; color:black;"></a>
+            </div>
+        </div>
+        [% END %]
+    [% END %]
+    [% UNLESS count %]
+        (None yet!)
+    [% END %]
+[% END %]
+
+
+<style>
+/* img.media-object { max-width: 64px } */
+</style>

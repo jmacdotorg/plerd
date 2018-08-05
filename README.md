@@ -51,16 +51,17 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
     * `source`: This will hold your blog's Markdown-based source files.
     * `templates`: Holds your blog's templates.
     * `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
+    * `db`: Will contain metadata about your blog's posts.
     
     You can freely add other files or directories in this directory if you wish (a `drafts` folder, perhaps?). Plerd will happily ignore them.
     
-    *Alternately*, you can simply choose three directories anywhere on your  filesystem to serve these purposes. Just make sure that whatever user runs Plerd's processes has write access to both the source and docroot directories.
+    *Alternately*, you can simply choose four directories anywhere on your  filesystem to serve these purposes. Just make sure that whatever user runs Plerd's processes has write access to both the source and docroot directories.
 
 1. Copy `conf/plerd_example.conf` to `conf/plerd.conf`, and then update it to best suit your blog. 
 
     * Set the `path` attribute to the full path of the directory you created in the first step.
     
-        (If you took the alternate route of choosing different directories, then set the `source_path`, `publication_path`, and `template_path` directories instead, just like the commented-out lines in `conf/plerd_example.conf` demonstrate.)
+        (If you took the alternate route of choosing different directories, then set the `source_path`, `publication_path`, `template_path`, and `database_path` directories instead, just like the commented-out lines in `conf/plerd_example.conf` demonstrate.)
     
     * Set the other attributes as should be obvious, based on the provided examples.
 
@@ -185,6 +186,18 @@ Once you've configured your blog as described above, you can add these attribute
     If not defined, then Plerd will instead use the blog's _image_ configuration directive. If _that_ is also undefined, then Plerd will not generate any social-media metadata for this post.
     
 * __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
+
+### Webmention
+
+Plerd includes experimental support for [Webmention](https://www.w3.org/TR/webmention/), an open technology that allows websites to send simple "Hey, this page of mine contains a link to that page of yours!" messages to other websites.
+
+Plerd can send webmentions to websites that new or updated blog posts link to, and it can also receive and display webmentions from elsewhere on the internet.
+
+These features are _essentially undocumented_ at this time, but I expect that to improve presently. Adding Webmention support has been the focus of my Plerd development since the start of 2018, and I expect it to receive more complete documentation and test coverage by the end of the year.
+
+For the time being, you can consult the documentation of the `plerdwatcher` script for a list of Webmention-related options, and see `post.tt` in the included sample templates for an example of webmention display technique.
+
+If you are interested in helping me test Webmention support working with your own Plerd setup while it's still in this experimental stage, please do feel free to get in touch via email.
 
 ## A note about encoding
 

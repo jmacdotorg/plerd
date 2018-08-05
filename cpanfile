@@ -15,3 +15,5 @@ requires 'HTML::Strip';
 requires 'HTML::SocialMeta' => '0.72';
 requires 'List::Util' => '1.45';
 requires 'Readonly';
+requires 'Web::Mention';
+requires 'Mojolicious::Lite';

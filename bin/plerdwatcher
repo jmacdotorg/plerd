@@ -15,11 +15,23 @@ use App::Daemon qw( daemonize );
 use Try::Tiny;
 use Log::Log4perl qw( :easy );
 use Getopt::Long;
+use Mojolicious::Lite;
+
+use Readonly;
+Readonly my $ACCEPTED => 202;
+Readonly my $BAD_REQUEST => 400;
 
 use Plerd;
 
 my $webmention_enabled = 0;
-GetOptions( webmention => \$webmention_enabled );
+my $webmention_port  = 0;
+GetOptions(
+    'send-webmentions'      => \$webmention_enabled,
+    'receive-webmentions=i' => \$webmention_port,
+);
+
+my $webserver_pid;
+$SIG{TERM} = \&handle_term_signal;
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
@@ -39,6 +51,44 @@ foreach (qw( base_uri image ) ) {
 
 my $plerd = Plerd->new( $config_ref );
 
+post '/' => sub {
+    my $c = shift;
+
+    my $webmention;
+    try {
+        $webmention = Web::Mention->new_from_request ( $c );
+    }
+    catch {
+        $c->render( status => $BAD_REQUEST, text => "Malformed webmention: $_" );
+    };
+    return unless $webmention;
+
+    my $post = $plerd->post_with_url( $webmention->target );
+    unless ( $post ) {
+        $c->render( status => $BAD_REQUEST, text => "Unrecognized target URL." );
+        return;
+    }
+
+    my $success_text = "Webmention accepted, and queued for verification and processing. Thank you!";
+
+    my $return_link_url = $c->param( 'target' );
+    my $return_link_text = 'Return to ' . $plerd->title . '.';
+    $success_text .= qq{ <a href="$return_link_url">$return_link_text</a>};
+
+    $c->render( status => $ACCEPTED, text => $success_text );
+
+    $plerd->webmention_queue->add_webmention( $webmention );
+};
+
+if ( $webmention_port ) {
+    INFO "App start (tryna fork)?\n";
+    $webserver_pid = fork;
+    unless ( $webserver_pid ) {
+        app->start( 'daemon', '-l', "http://*:$webmention_port" );
+    }
+    INFO "App start (as a fork - $webserver_pid)!\n";
+}
+
 my $watcher = File::ChangeNotify->instantiate_watcher (
     directories => [ $plerd->source_directory . '' ],
     filter      => qr/\.(md|markdown)$/,
@@ -46,6 +96,7 @@ my $watcher = File::ChangeNotify->instantiate_watcher (
 
 while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
+        INFO "Event spotted.";
         try {
             $plerd->publish_all;
             for my $event ( @events ) {
@@ -75,6 +126,13 @@ while ( my @events = $watcher->wait_for_events ) {
     }
 }
 
+sub handle_term_signal {
+    INFO "We get signal. Also, $webserver_pid";
+    kill ('KILL', $webserver_pid) if $webserver_pid;
+    INFO "okeydoke.";
+    exit;
+}
+
 =head1 NAME
 
 plerdwatcher - Daemon that automatically updates a Plerd-based blog when
@@ -94,8 +152,11 @@ And then, on the command line, while in the top-level plerd directory:
 =head1 DESCRIPTION
 
 This script launches a simple daemon that monitors a Plerd blog's
-Dropbox- synced directory for changes. When it sees changes, it will
-direct Plerd to publish or republish files as needed.
+directory of Markdown-based source documents for changes. When it sees
+changes, it will direct Plerd to publish or republish files as needed.
+
+It also supports options to send and receive webmentions, as described
+in L<"OPTIONS">, below.
 
 I<plerdwatcher> runs via L<App::Daemon>, and accepts all the
 command-line arguments documented there.
@@ -110,12 +171,29 @@ available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
 
-=head2 webmention
+=head2 send-webmentions
 
- bin/plerdwatcher --webmention start
+ bin/plerdwatcher --send-webmentions start
 
-Newly created or updated posts will also attempt to send webmentions to
-any URLs they link to.
+B<Experimental.> Newly created or updated posts will also attempt to
+send webmentions to any URLs they link to.
+
+=head2 receive-webmentions=I<port>
+
+ bin/plerdwatcher --receive-webmentions=4000 start
+
+B<Experimental.> Launches a webserver that listens on the specified TCP
+port. This will allow plerdwatcher to receive webmentions.
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<Plerd>
+
+=back
 
 =head1 AUTHOR
 

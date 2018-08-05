@@ -10,6 +10,7 @@ use DateTime;
 use DateTime::Format::W3CDTF;
 use URI;
 use Carp;
+use Try::Tiny;
 
 use Plerd::Post;
 use Plerd::WebmentionQueue;
@@ -217,6 +218,25 @@ has 'webmention_queue' => (
     isa => 'Plerd::WebmentionQueue',
     lazy_build => 1,
 );
+
+sub BUILD {
+    my $self = shift;
+
+    unless ( $self->path ) {
+        for my $subdir_type ( qw( source template publication database ) ) {
+            try {
+                my $method = "${subdir_type}_directory";
+                my $dir = $self->$method;
+            }
+            catch {
+                die "Can't create a new Plerd object, due to insufficient "
+                    . "configuration: $_";
+            };
+        }
+    }
+
+    return $self;
+}
 
 sub publish_all {
     my $self = shift;
