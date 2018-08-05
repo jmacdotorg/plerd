@@ -14,7 +14,11 @@ use Getopt::Long;
 use Plerd;
 
 my $webmention_enabled = 0;
-GetOptions( webmention => \$webmention_enabled );
+my $process_webmentions = 0;
+GetOptions(
+    'send-webmentions' => \$webmention_enabled,
+    'process-webmentions' => \$process_webmentions,
+);
 
 my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
 
@@ -25,6 +29,18 @@ foreach (qw( base_uri image ) ) {
 }
 
 my $plerd = Plerd->new( $config_ref );
+
+my $new_webmentions_were_added;
+if ( $process_webmentions ) {
+    $new_webmentions_were_added = $plerd->webmention_queue->process;
+}
+
+# Proceed to republish all posts (and possibly send out webmentions) only if
+# we're run without the "process-webmentions" flag, or we are processing
+# received webmentions and found some new ones to publish.
+unless ( $new_webmentions_were_added or !$process_webmentions ) {
+    exit;
+}
 
 $plerd->publish_all;
 
@@ -66,13 +82,27 @@ available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
 
-=head2 webmention
+=head2 send-webmentions
 
- bin/plerdall --webmention
+ bin/plerdall --send-webmentions
 
-After publishing all the blog's posts, Plerd will then direct every post
-to scan itself for hyperlinks and attempt to send webmentions to each
-one.
+B<Experimental.> After publishing all the blog's posts, Plerd will then
+direct every post to scan itself for hyperlinks and attempt to send
+webmentions to each one.
+
+=head2 process_webmentions
+
+ bin/plerdall --process-webmentions
+
+B<Experimental.> Before publishing all the blog's posts, Plerd will
+check to see if any new webmentions are waiting in its webmention-inbox.
+If so, it will process those webmentions. Then, if at least one of those
+received webmentions is valid, Plerd will republish all the blog's
+posts. If neither of the prior conditions are true, Plerd will not
+republish the blog.
+
+This flag makes plerdall suitable for use as a scheduled task, via e.g.
+cron.
 
 =head1 AUTHOR
 
