@@ -81,12 +81,10 @@ post '/' => sub {
 };
 
 if ( $webmention_port ) {
-    INFO "App start (tryna fork)?\n";
     $webserver_pid = fork;
     unless ( $webserver_pid ) {
         app->start( 'daemon', '-l', "http://*:$webmention_port" );
     }
-    INFO "App start (as a fork - $webserver_pid)!\n";
 }
 
 my $watcher = File::ChangeNotify->instantiate_watcher (
@@ -96,7 +94,6 @@ my $watcher = File::ChangeNotify->instantiate_watcher (
 
 while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
-        INFO "Event spotted.";
         try {
             $plerd->publish_all;
             for my $event ( @events ) {
@@ -127,9 +124,7 @@ while ( my @events = $watcher->wait_for_events ) {
 }
 
 sub handle_term_signal {
-    INFO "We get signal. Also, $webserver_pid";
     kill ('KILL', $webserver_pid) if $webserver_pid;
-    INFO "okeydoke.";
     exit;
 }
 
