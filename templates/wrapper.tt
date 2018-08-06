@@ -7,6 +7,14 @@
     <link href="atom.xml" rel="alternate" title="Atom feed" type="application/atom+xml">
     <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
 
+<!--
+    Uncomment the following <link> tag if you set up a Webmention receiver
+    using plerdwatcher. Update the href's port number as needed.
+-->
+<!--
+    <link rel="webmention" href="[% plerd.base_uri %]:4000" />
+-->
+
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     [% IF context_post %]
         [% context_post.social_meta_tags %]
