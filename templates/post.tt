@@ -86,7 +86,7 @@
             <div class="media-left">
                 [% IF webmention.type == 'mention' %]
                 <a rel="nofollow" href="[% webmention.original_source %]">
-                <img class="media-object" src="http://fogknife.com/images/comment.png" alt="A generic word balloon" style="max-width:32px; max-height:32px;">
+                <img class="media-object" src="[% webmention.author.photo || 'http://fogknife.com/images/comment.png' %]" alt="[% IF webmention.author.photo %][% webmention.author.name %] avatar[% ELSE %]A generic word balloon[% END %]" style="max-width:32px; max-height:32px;">
                 </a>
                 [% ELSE %]
                 <a rel="nofollow" href="[% webmention.author.url %]">
