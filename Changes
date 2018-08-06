@@ -1,6 +1,12 @@
 1.6  2018-08-05
 
      - Adding experimental support for Webmention sending, receiving, and display.
+     
+     - If a template fails to process, Plerd will now die with a meaningful error message.
+     
+     - Adding a post_with_url method to Plerd objects.
+     
+     - Adding Microformats2 metadata to the sample templates.
 
 1.55 2018-03-07
 
