@@ -12,7 +12,9 @@
     using plerdwatcher. Update the href's port number as needed.
 -->
 <!--
-    <link rel="webmention" href="[% plerd.base_uri %]:4000" />
+    [% webmention_uri = plerd.base_uri.clone %]
+    [% webmention_uri.port( 4000 ) %]
+    <link rel="webmention" href="[% webmention_uri %]" />
 -->
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
