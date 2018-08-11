@@ -51,6 +51,11 @@ foreach (qw( base_uri image ) ) {
 
 my $plerd = Plerd->new( $config_ref );
 
+my $watcher = File::ChangeNotify->instantiate_watcher (
+    directories => [ $plerd->source_directory . '' ],
+    filter      => qr/\.(md|markdown)$/,
+);
+
 post '/' => sub {
     my $c = shift;
 
@@ -62,6 +67,13 @@ post '/' => sub {
         $c->render( status => $BAD_REQUEST, text => "Malformed webmention: $_" );
     };
     return unless $webmention;
+
+    # If the list of blog source files has changed, force a lazy rebuild of
+    # the plerd object's internal database of posts before continuing.
+    if ( $watcher->new_events ) {
+        $plerd->clear_posts;
+        $plerd->clear_post_url_index_hash;
+    }
 
     my $post = $plerd->post_with_url( $webmention->target );
     unless ( $post ) {
@@ -93,11 +105,6 @@ if ( $webmention_port ) {
         );
     }
 }
-
-my $watcher = File::ChangeNotify->instantiate_watcher (
-    directories => [ $plerd->source_directory . '' ],
-    filter      => qr/\.(md|markdown)$/,
-);
 
 while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
