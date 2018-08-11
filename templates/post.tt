@@ -77,29 +77,45 @@
 [% END %]
 
 [% BLOCK responses %]
-    <h4>Replies and mentions</h4>
+    <h4>Replies</h4>
+    [% INCLUDE mention_list types=['reply', 'quotation'] %]
+    <h4>Other webpages that mention this post</h4>
+    [% INCLUDE mention_list types=['mention'] %]
+
+[% END %]
+
+[% BLOCK mention_list %]
     [% count = 0 %]
     [% FOREACH webmention IN post.ordered_webmentions %]
-        [% UNLESS webmention.type == 'like' || webmention.type == 'repost' %]
+        [% match = 0 %]
+        [% FOREACH type IN types %]
+            [% IF webmention.type == type %]
+                [% match = 1 %]
+            [% END %]
+        [% END %]
+        [% IF match %]
         [% count = count + 1 %]
         <div class="media">
             <div class="media-left">
-                [% IF webmention.type == 'mention' %]
-                <a rel="nofollow" href="[% webmention.original_source %]">
+                [% IF webmention.author %]
+                <a rel="nofollow" href="[% webmention.author.url %]">
                 <img class="media-object" src="[% webmention.author.photo || 'http://fogknife.com/images/comment.png' %]" alt="[% IF webmention.author.photo %][% webmention.author.name %] avatar[% ELSE %]A generic word balloon[% END %]" style="max-width:32px; max-height:32px;">
                 </a>
                 [% ELSE %]
-                <a rel="nofollow" href="[% webmention.author.url %]">
-                <img class="media-object" src="[% webmention.author.photo %]" alt="[% webmention.author.name %] avatar" style="max-width:32px; max-height:32px;">
+                <a rel="nofollow" href="[% webmention.original_source %]">
+                <img class="media-object" src="http://fogknife.com/images/comment.png" alt="A generic word balloon" style="max-width:32px; max-height:32px;">
                 </a>
                 [% END %]
             </div>
             <div class="media-body">
-                [% IF webmention.type == 'mention' %]
-                <h4 class="media-heading">Mentioned on <a href="[% webmention.original_source %]">[% webmention.original_source.host %]</a>...</h4>
-                [% ELSE %]
+                [% IF webmention.author %]
                 <h4 class="media-heading"><a href="[% webmention.author.url %]">[% webmention.author.name %]</a></h4>
+                [% ELSE %]
+                <h4 class="media-heading"><a href="[% webmention.original_source %]">[% webmention.original_source.host %]</a></h4>
                 [% END %]
+                    [% IF type == 'mention' %]
+                    <p><strong>[% webmention.source_mf2_document.get_first('entry').get_property('name') %]</strong></p>
+                    [% END %]
                     [% webmention.content %] <a rel="nofollow" href="[% webmention.original_source %]"><span class="glyphicon glyphicon-share" style="text-decoration:none; color:black;"></a>
             </div>
         </div>
