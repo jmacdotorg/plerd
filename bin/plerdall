@@ -22,7 +22,23 @@ GetOptions(
     'rebuild-webmentions' => \$rebuild_webmentions,
 );
 
-my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+my $config_ref = eval { LoadFile( "$FindBin::Bin/../conf/plerd.conf" ) };
+if (!$config_ref) {
+    use Cwd;
+    use Path::Class::Dir;
+    my $config_path = Path::Class::Dir->new(cwd());
+    until ($config_ref) {
+        $config_ref = eval { LoadFile("$config_path/conf/plerd.conf") };
+        unless ($config_ref) {
+            $config_ref = eval { LoadFile("$config_path/plerd.conf") };
+        }
+    } continue {
+        my $new_path = $config_path->parent;
+        die "Could not find plerd.conf in " . Path::Class::Dir->new($FindBin::Bin, '../conf') . " or in " . cwd() . " or any of its parent directories"
+            if $new_path eq $config_path;
+        $config_path = $new_path;
+    }
+}
 
 foreach (qw( base_uri image ) ) {
     unless ( ref $config_ref->{ $_ } ) {
