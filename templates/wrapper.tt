@@ -3,7 +3,7 @@
 <head>
     <title>[% title %]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="atom.xml" rel="alternate" title="Atom feed" type="application/atom+xml">
     <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
 
@@ -97,6 +97,6 @@
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
-    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
     </body>
 </html>
