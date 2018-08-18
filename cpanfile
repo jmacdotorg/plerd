@@ -9,6 +9,7 @@ requires 'Text::Markdown';
 requires 'YAML';
 requires 'FindBin';
 requires 'File::ChangeNotify';
+requires 'File::HomeDir';
 requires 'App::Daemon';
 requires 'Try::Tiny';
 requires 'HTML::Strip';

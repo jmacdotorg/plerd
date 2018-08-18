@@ -8,7 +8,6 @@ use lib
     "$FindBin::Bin/../lib",
 ;
 
-use YAML qw( LoadFile );
 use File::ChangeNotify;
 use Path::Class::File;
 use App::Daemon qw( daemonize );
@@ -22,10 +21,13 @@ Readonly my $ACCEPTED => 202;
 Readonly my $BAD_REQUEST => 400;
 
 use Plerd;
+use Plerd::Util;
 
 my $webmention_enabled = 0;
 my $webmention_port  = 0;
+my $config_file;
 GetOptions(
+    'config=s'              => \$config_file,
     'send-webmentions'      => \$webmention_enabled,
     'receive-webmentions=i' => \$webmention_port,
 );
@@ -33,13 +35,21 @@ GetOptions(
 my $webserver_pid;
 $SIG{TERM} = \&handle_term_signal;
 
-my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+my $config_ref = Plerd::Util::read_config_file( $config_file );
 
-foreach ( qw( run log ) ) {
-    mkdir "$FindBin::Bin/../$_/" unless -e "$FindBin::Bin/../$_/";
+for my $dir_type ( qw( run log ) ) {
+    $config_ref->{ "${dir_type}_directory" } ||= "$FindBin::Bin/../$dir_type";
+    my $dir = $config_ref->{ "${dir_type}_directory" };
+    mkdir $dir unless -e $dir;
+    unless (-w $dir) {
+        die "Can't start $0: I don't have write permission to $dir_type "
+            . "directory '$dir'. Either make that directory writeable, "
+            . "or change Plerd's configuration to use a different "
+            . "location as the $dir_type directory.\n";
+    }
 }
-$App::Daemon::logfile = "$FindBin::Bin/../log/plerdwatcher.log";
-$App::Daemon::pidfile = "$FindBin::Bin/../run/plerdwatcher.pid";
+$App::Daemon::logfile = "$$config_ref{log_directory}/plerdwatcher.log";
+$App::Daemon::pidfile = "$$config_ref{run_directory}/plerdwatcher.pid";
 
 daemonize();
 
@@ -49,12 +59,19 @@ foreach (qw( base_uri image ) ) {
     }
 }
 
-my $plerd = Plerd->new( $config_ref );
+my $plerd;
+my $watcher;
+try {
+    $plerd = Plerd->new( $config_ref );
 
-my $watcher = File::ChangeNotify->instantiate_watcher (
-    directories => [ $plerd->source_directory . '' ],
-    filter      => qr/\.(md|markdown)$/,
-);
+    $watcher = File::ChangeNotify->instantiate_watcher (
+        directories => [ $plerd->source_directory . '' ],
+        filter      => qr/\.(md|markdown)$/,
+    );
+}
+catch {
+    ERROR "Couldn't start Plerd: $_";
+};
 
 post '/' => sub {
     my $c = shift;
@@ -81,7 +98,8 @@ post '/' => sub {
         return;
     }
 
-    my $success_text = "Webmention accepted, and queued for verification and processing. Thank you!";
+    my $success_text = "Webmention accepted, and queued for verification and "
+                     . "processing. Thank you!";
 
     my $return_link_url = $c->param( 'target' );
     my $return_link_text = 'Return to ' . $plerd->title . '.';
@@ -179,6 +197,19 @@ file that should have accompanied this distribution. It is also
 available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
+
+=head2 config
+
+ bin/plerdall --config=/path/to/plerd.conf
+
+Specify the location of a valid Plerd config file.
+
+Defaults to C<.plerd> in your home directory.
+
+Consult the <plerd_example.conf> file that accompanied this distribution to
+learn more about the config file format.
+
+=head1 EXPERIMENTAL OPTIONS
 
 All of these Webmention-related options are B<experimental>.
 

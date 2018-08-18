@@ -8,21 +8,23 @@ use lib
     "$FindBin::Bin/../lib",
 ;
 
-use YAML qw( LoadFile );
 use Getopt::Long;
 
 use Plerd;
+use Plerd::Util;
 
 my $webmention_enabled = 0;
 my $process_webmentions = 0;
 my $rebuild_webmentions = 0;
+my $config_file;
 GetOptions(
-    'send-webmentions' => \$webmention_enabled,
+    'send-webmentions'    => \$webmention_enabled,
     'process-webmentions' => \$process_webmentions,
     'rebuild-webmentions' => \$rebuild_webmentions,
+    'config=s'            => \$config_file,
 );
 
-my $config_ref = LoadFile( "$FindBin::Bin/../conf/plerd.conf" );
+my $config_ref = Plerd::Util::read_config_file( $config_file );
 
 foreach (qw( base_uri image ) ) {
     unless ( ref $config_ref->{ $_ } ) {
@@ -94,7 +96,20 @@ available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
 
-All of these Webmention-related options are B<experimental>.
+=head2 config
+
+ bin/plerdall --config=/path/to/plerd.conf
+
+Specify the location of a valid Plerd config file.
+
+Defaults to C<.plerd> in your home directory.
+
+Consult the <plerd_example.conf> file that accompanied this distribution to
+learn more about the config file format.
+
+=head1 EXPERIMENTAL OPTIONS
+
+All of the following Webmention-related options are B<experimental>.
 
 =head2 send-webmentions
 
