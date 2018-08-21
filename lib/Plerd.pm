@@ -40,12 +40,25 @@ has 'database_path' => (
     isa => 'Str',
 );
 
+has 'tags_publication_path' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
 has 'base_uri' => (
     is => 'ro',
     required => 1,
     isa => Uri,
     coerce => 1,
 );
+
+has 'tags_index_uri' => (
+    is => 'ro',
+    isa => Uri,
+    lazy_build => 1,
+);
+
 
 has 'title' => (
     is => 'ro',
@@ -125,6 +138,12 @@ has 'publication_directory' => (
     lazy_build => 1,
 );
 
+has 'tags_publication_directory' => (
+    is => 'ro',
+    isa => 'Path::Class::Dir',
+    lazy_build => 1,
+);
+
 has 'template' => (
     is => 'ro',
     isa => 'Template',
@@ -144,6 +163,12 @@ has 'archive_template_file' => (
 );
 
 has 'rss_template_file' => (
+    is => 'ro',
+    isa => 'Path::Class::File',
+    lazy_build => 1,
+);
+
+has 'tags_template_file' => (
     is => 'ro',
     isa => 'Path::Class::File',
     lazy_build => 1,
@@ -245,6 +270,8 @@ sub publish_all {
         $post->publish;
     }
 
+    $self->publish_tag_indexes;
+
     $self->publish_archive_page;
 
     $self->publish_recent_page;
@@ -255,6 +282,60 @@ sub publish_all {
     $self->clear_posts;
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
+}
+
+# Return a structure of tags to post objects
+#  { TAG1 => [ post1, post2, ...],
+#    TAG2 => [],
+#    ...
+#  }
+sub get_tags_map_from_posts {
+    my $self = shift;
+    my %tags;
+    for my $post ( @{ $self->posts } ) {
+        for my $tag (@{$post->tags}) {
+            push @{ $tags{ $tag } }, $post;
+        }
+    }
+    return \%tags;
+}
+
+# Create a page that lists all available tags with
+# links to those pages that list the articles that
+# have those tags
+sub publish_tag_indexes {
+    my $self = shift;
+
+    my $tag_map = $self->get_tags_map_from_posts;
+
+    # Create all the individual tag pages
+    for my $tag (keys %$tag_map) {
+
+        $self->template->process(
+            $self->tags_template_file->open('<:encoding(utf8)'),
+            {
+                self_uri => $self->tag_uri($tag),
+                is_tags_page => 1,
+                tags => { $tag => $tag_map->{$tag} },
+                plerd => $self,
+            },
+            $self->tags_publication_file($tag)->open('>:encoding(utf8)'),
+            ) || $self->_throw_template_exception( $self->tags_template_file );
+    }
+
+    # Create the tag index
+    $self->template->process(
+        $self->tags_template_file->open('<:encoding(utf8)'),
+        {
+            self_uri => $self->tag_uri(),
+            is_tags_index_page => 1,
+            is_tags_page => 1,
+            tags => $tag_map,
+            plerd => $self,
+        },
+        $self->tags_publication_file->open('>:encoding(utf8)'),
+        ) || $self->_throw_template_exception( $self->tags_template_file );
+
 }
 
 sub publish_recent_page {
@@ -568,6 +649,68 @@ sub generates_post_guids {
     carp "generates_post_guids() is deprecated. (Also, it doesn't do anything "
          . "anyway.)";
 }
+
+# Tag-related builders & methods
+sub _build_tags_index_uri {
+    my $self = shift;
+    return $self->tag_uri("");
+}
+
+sub _build_tags_publication_path { 'tags' }
+
+sub _build_tags_publication_directory {
+    my $self = shift;
+
+    return $self->_build_subdirectory( 'tags_publication_path', 'docroot' );
+}
+
+sub _build_tags_template_file {
+    my $self = shift;
+
+    return Path::Class::File->new(
+        $self->template_directory,
+        'tags.tt',
+    );
+}
+
+# Return either the tags/index.html file
+# or a tags/TAGNAME.html file if given a tag
+sub tags_publication_file {
+    my ($self, $tag) = @_;
+
+    my $encoded;
+    if (!$tag) {
+        $encoded = URI->new("index.html");
+    } else {
+        $encoded = URI->new("$tag.html");
+    }
+
+    my $file = Path::Class::File->new($self->publication_directory,
+                                      $self->tags_publication_directory,
+                                      $encoded->as_string);
+
+    my $dir = $file->parent->stringify;
+    if ( !-d $dir) {
+        mkdir $dir || die ("Cannot make directory: '$dir'. Create it manually, please.");
+    }
+
+    return $file;
+}
+
+sub tag_uri {
+    my ($self, $tag) = @_;
+    my $uri = $self->base_uri->clone;
+    if (!$tag) {
+        # master tag list
+        $uri->path($uri->path . $self->tags_publication_path . "/");
+        return $uri;
+    }
+
+    # individual tag page
+    $uri->path($uri->path . $self->tags_publication_path . "/$tag.html");
+    return $uri;
+}
+
 
 sub publish {
     my $self = shift;

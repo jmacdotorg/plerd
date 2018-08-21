@@ -1,0 +1,8 @@
+<section>
+    <h3><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a></h3>
+    <ul>
+        [% FOREACH post = posts %]
+            <li><a href="[% post.uri %]">[% post.title %]</a></li>
+        [% END %]
+    </ul>
+</section>

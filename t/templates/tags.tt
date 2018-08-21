@@ -1,0 +1,20 @@
+[% WRAPPER wrapper.tt title = 'Tags' %]
+
+[%   IF is_tag_index_page %]
+<section>
+    <h2>Tags</h2>
+
+    [% FOREACH tag = tags.keys.sort %]
+        [% INCLUDE _tag.tt tag=tag posts => tags.$tag plerd=plerd %]
+    [% END %]
+
+</section>
+[%   ELSE %]
+
+    [% FOREACH tag = tags.keys.sort %]
+        [% INCLUDE _tag.tt tag=tag posts => tags.$tag plerd=plerd %]
+    [% END %]
+
+[%   END %]
+
+[% END %]

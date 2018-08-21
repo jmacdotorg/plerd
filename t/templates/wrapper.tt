@@ -3,11 +3,23 @@
 <head>
     <title>[% title %]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="atom.xml" rel="alternate" title="[% plerd.title %]" type="application/atom+xml">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="atom.xml" rel="alternate" title="Atom feed" type="application/atom+xml">
+    <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
+
+<!--
+    Uncomment the following <link> tag if you set up a Webmention receiver
+    using plerdwatcher. Update the href's port number as needed.
+-->
+<!--
+    [% webmention_uri = plerd.base_uri.clone %]
+    [% webmention_uri.port( 4000 ) %]
+    <link rel="webmention" href="[% webmention_uri %]" />
+-->
+
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     [% IF context_post %]
-    [% context_post.social_meta_tags %]
+        [% context_post.social_meta_tags %]
     [% END %]
     <style>
         .page-header h1 :link, .page-header h1 :visited {
@@ -21,6 +33,9 @@
         }
         .sidebar section {
             margin-top: 2em;
+        }
+        img {
+            width: 100%;
         }
     </style>
 </head>
@@ -39,6 +54,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="archive.html">Archive</a></li>
+                    <li><a href="[% plerd.tag_uri("") %]">Tags</a></li>
                     <li><a href="atom.xml">RSS</a></li>
                 </ul>
             </div><!--/.navbar-collapse -->
@@ -77,11 +93,11 @@
     </div>
      <footer style="font-size:small; font-style:italic" class="container">
         <hr /> 
-        <p>Powered by <a href="https://github.com/jmacdotorg/plerd">Plerd</a>.</p>
+        <p>Powered by <a href="http://jmac.org/plerd">Plerd</a>.</p>
         </footer>
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery.js"></script>
-    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
     </body>
 </html>

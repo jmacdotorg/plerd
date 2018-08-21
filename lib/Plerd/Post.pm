@@ -60,6 +60,12 @@ has 'attributes' => (
     isa => 'HashRef',
 );
 
+has 'tags' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub {[]}
+);
+
 has 'image' => (
     is => 'rw',
     isa => 'Maybe[URI]',
@@ -368,7 +374,7 @@ sub _process_source_file {
     # Slurp the file, storing the title and time metadata, and the body.
     my $fh = $self->source_file->open('<:encoding(utf8)');
     my %attributes;
-    my @ordered_attribute_names = qw( title time published_filename guid );
+    my @ordered_attribute_names = qw( title time published_filename guid tags);
     while ( my $line = <$fh> ) {
         chomp $line;
         last unless $line =~ /\S/;
@@ -420,6 +426,13 @@ sub _process_source_file {
         my $body = $self->stripped_body;
         my ( $description ) = $body =~ /^(.*)\n/;
         $self->description( $description || '' );
+    }
+
+    if ( $attributes{ tags } ) {
+        my @tags = split /\s*,\s*/, $attributes{ tags };
+        if (@tags) {
+            @{ $self->tags } = @tags;
+        }
     }
 
     if ( $attributes{ image } ) {
@@ -512,7 +525,9 @@ sub _process_source_file {
     if ( $attributes_need_to_be_written_out ) {
         my $new_content = '';
         for my $attribute_name ( @ordered_attribute_names ) {
-            $new_content .= "$attribute_name: $attributes{ $attribute_name }\n";
+            if (exists $attributes{ $attribute_name } && defined $attributes{ $attribute_name } ) {
+                $new_content .= "$attribute_name: $attributes{ $attribute_name }\n";
+            }
         }
         $new_content .= "\n$body\n";
         $self->source_file->spew( iomode=>'>:encoding(utf8)', $new_content );

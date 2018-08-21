@@ -54,8 +54,9 @@ unlink "$FindBin::Bin/source/no-title.md";
 
 $plerd->publish_all;
 
-# The "+3" below accounts for the generated recent, archive, and RSS files.
-my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 3;
+# The "+3" below accounts for the generated recent, archive, tag
+# index, two tag index files, and RSS files.
+my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 4;
 is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."
@@ -205,7 +206,7 @@ my $plerd = Plerd->new(
 
 $plerd->publish_all;
 like ( Path::Class::File->new( $docroot_dir, 'recent.html' )->slurp,
-     qr{http://www.example.com/blog/1999-01-02-unicode.html},
+     qr{http://www.example.com/blog/\d{4}-\d{2}-\d{2}-blah.html},
      'Base URIs missing trailing slashes work',
 );
 
