@@ -682,7 +682,8 @@ sub tags_publication_file {
     if (!$tag) {
         $encoded = URI->new("index.html");
     } else {
-        $encoded = URI->new("$tag.html");
+        (my $escaped = $tag) =~ s/ /_/g;
+        $encoded = URI->new("$escaped.html");
     }
 
     my $file = Path::Class::File->new($self->publication_directory,
@@ -706,8 +707,9 @@ sub tag_uri {
         return $uri;
     }
 
+    (my $escaped = $tag) =~ s/ /_/g;
     # individual tag page
-    $uri->path($uri->path . $self->tags_publication_path . "/$tag.html");
+    $uri->path($uri->path . $self->tags_publication_path . "/$escaped.html");
     return $uri;
 }
 
