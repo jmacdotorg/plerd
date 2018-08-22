@@ -110,3 +110,7 @@
     [% END %]
 [% END %]
 
+
+<style>
+/* img.media-object { max-width: 64px } */
+</style>
