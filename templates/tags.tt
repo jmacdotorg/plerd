@@ -1,12 +1,12 @@
 [% WRAPPER wrapper.tt title = 'Tags' %]
 
-[%   IF is_tag_index_page %]
+[%   IF is_tags_index_page %]
 <section>
     <h1>All Tags</h1>
 
     <ul>
     [% FOREACH tag = tags.keys.sort %]
-        <li><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a> ([% posts.size %])</li>
+        <li><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a> ([% tags.$tag.size %])</li>
     [% END %]
     </ul>
 </section>
