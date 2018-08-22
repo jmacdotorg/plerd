@@ -525,7 +525,7 @@ sub _process_source_file {
     if ( $attributes_need_to_be_written_out ) {
         my $new_content = '';
         for my $attribute_name ( @ordered_attribute_names ) {
-            if (exists $attributes{ $attribute_name } && defined $attributes{ $attribute_name } ) {
+            if (defined $attributes{ $attribute_name } ) {
                 $new_content .= "$attribute_name: $attributes{ $attribute_name }\n";
             }
         }
