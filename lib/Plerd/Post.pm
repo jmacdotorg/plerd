@@ -819,6 +819,11 @@ by social media and such.
 
 String representing this post's title.
 
+=item tags
+
+An array reference to the list of tags associated with this post as
+set in the source file using the 'tags:' header.
+
 =back
 
 =head1 OBJECT METHODS

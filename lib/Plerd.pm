@@ -849,6 +849,11 @@ The path to the filesystem directory containing this blog's templates directory.
 
 The path to the filesystem directory containing this blog's database directory.
 
+=item tags_publication_path
+
+The path to the filesystem directory containing this blog's out
+directory for tag index files.
+
 =item title
 
 String representing this blog's title.
@@ -912,6 +917,21 @@ the blog's docroot -- in other words, the place Plerd will write HTML and XML fi
 
 A L<Path::Class::Dir> object representation of the directory that holds
 the blogs's private, not-necessarily-human-readable data files.
+
+=item tags_publication_directory
+
+A L<Path::Class::Dir> object representation of the directory within the docroot that holds
+tag index HTML files.
+
+=item tag_index_uri
+
+This is a L<URI> object that points to the tag index.  It is
+particularly helpful when creating navigation.
+
+=item tag_uri TAG
+
+This method takes a tag name and returns a L<URI> object that points
+to that a view of all the posts associated with that tag.
 
 =back
 
