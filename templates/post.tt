@@ -17,7 +17,7 @@
         <ul class="list-inline tag-list">
             <li class="list-inline-item">Tags:</li>
             [% FOREACH tag = post.tags.sort %]
-                <li class="list-inline-item"><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a></li>
+                <li class="list-inline-item p-category"><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a></li>
             [% END %]
         </ul>
     [% END %]
