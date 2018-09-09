@@ -199,8 +199,6 @@ To report bugs or file pull requests, visit [Plerd's GitHub repository](https://
 
 For now, the best way to ask questions about Plerd is to simply [email me, Jason McIntosh](mailto:jmac@jmac.org). I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
 
-You can also discuss or ask questions about Plerd at [the `#plerd` channel](irc://chat.freenode.net:6667/plerd) on [Freenode IRC](http://freenode.net). Plerd's author and maintainer hangs out there as `jmac` and will gladly respond to queries sooner or later.
-
 [Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
 
 ## See Plerd at work
@@ -209,6 +207,15 @@ This software powers Jason McIntosh's blog, [Fogknife](http://fogknife.com), for
 
 ## Credits
 
-Plerd is by Jason McIntosh (<jmac@jmac.org>). I would love to hear any thoughts about Plerd you would care to share.
+Plerd is by Jason McIntosh (<jmac@jmac.org>). I would love to hear any thoughts about Plerd you would care to share, and welcome any questions or suggestions about it.
+
+Contributors include:
+
+* Christian Sánchez (<http://www.chsanch.info/>)
+
+* David Turner (<novalis@novalis.org>)
+
+* Rebecca Turner (<me@re-becca.org>)
+
 
 This repository contains the image "Envelope" designed by <a href="http://www.thenounproject.com/jontesta">Jon Testa</a>, and the image "RSS" designed by [useiconic.com](https://thenounproject.com/useiconic.com). Both are shared through a [Creative Commons Attribution 3.0 United States](https://creativecommons.org/licenses/by/3.0/us/) license, and come to this project via [The Noun Project](https://thenounproject.com).
