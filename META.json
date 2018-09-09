@@ -1,0 +1,78 @@
+{
+   "abstract" : "Ultralight blogging with Markdown and Dropbox",
+   "author" : [
+      "Jason McIntosh <jmac@jmac.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150005",
+   "license" : [
+      "unknown"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Plerd",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.64"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.04",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "App::Daemon" : "0",
+            "Data::GUID" : "0",
+            "DateTime" : "0",
+            "DateTime::Format::W3CDTF" : "0",
+            "File::ChangeNotify" : "0",
+            "File::HomeDir" : "0",
+            "FindBin" : "0",
+            "HTML::SocialMeta" : "0.72",
+            "HTML::Strip" : "0",
+            "List::Util" : "1.45",
+            "Mojolicious::Lite" : "0",
+            "Moose" : "0",
+            "Path::Class" : "0",
+            "Readonly" : "0",
+            "Template" : "0",
+            "Text::Markdown" : "0",
+            "Try::Tiny" : "0",
+            "URI" : "0",
+            "Web::Mention" : "0.6",
+            "YAML" : "0"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "version" : "1.602",
+   "x_authority" : "cpan:JMAC",
+   "x_contributors" : [
+      "Christian Sánchez <sanchezchristian@gmail.com>",
+      "David Turner <novalis@novalis.org>",
+      "Rebecca Turner <me@re-becca.org>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27300_01",
+   "x_static_install" : 0
+}
