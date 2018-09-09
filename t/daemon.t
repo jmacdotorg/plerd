@@ -62,8 +62,6 @@ path:          $test_dir_path
 title:         My Cool Blog
 author_name:   Sam Handwich
 author_email:  s.handwich\@example.com
-run_directory: $run_dir_path
-log_directory: $log_dir_path
 END
 
 $config_file_path->spew( $config );

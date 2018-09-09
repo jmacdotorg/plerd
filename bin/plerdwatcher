@@ -38,8 +38,20 @@ $SIG{TERM} = \&handle_term_signal;
 my $config_ref = Plerd::Util::read_config_file( $config_file );
 
 for my $dir_type ( qw( run log ) ) {
-    $config_ref->{ "${dir_type}_directory" } ||= "$FindBin::Bin/../$dir_type";
-    my $dir = $config_ref->{ "${dir_type}_directory" };
+    unless ( $config_ref->{ "${dir_type}_path" } ) {
+        if ( $config_ref->{ path } ) {
+            $config_ref->{ "${dir_type}_path" } =
+                Path::Class::File->new(
+                    $config_ref->{path},
+                    $dir_type,
+                )->stringify;
+        }
+        else {
+            $config_ref->{ "${dir_type}_path" } =
+                "$FindBin::Bin/../$dir_type";
+        }
+    }
+    my $dir = $config_ref->{ "${dir_type}_path" };
     mkdir $dir unless -e $dir;
     unless (-w $dir) {
         die "Can't start $0: I don't have write permission to $dir_type "
@@ -48,8 +60,8 @@ for my $dir_type ( qw( run log ) ) {
             . "location as the $dir_type directory.\n";
     }
 }
-$App::Daemon::logfile = "$$config_ref{log_directory}/plerdwatcher.log";
-$App::Daemon::pidfile = "$$config_ref{run_directory}/plerdwatcher.pid";
+$App::Daemon::logfile = "$$config_ref{log_path}/plerdwatcher.log";
+$App::Daemon::pidfile = "$$config_ref{run_path}/plerdwatcher.pid";
 
 daemonize();
 

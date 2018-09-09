@@ -40,10 +40,10 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
     * `templates`: Holds your blog's templates.
     * `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
     * `db`: Will contain metadata about your blog's posts.
-    
+
     You can freely add other files or directories in this directory if you wish (a `drafts` folder, perhaps?). Plerd will happily ignore them.
     
-    *Alternately*, you can simply choose four directories anywhere on your  filesystem to serve these purposes. Just make sure that whatever user runs Plerd's processes has write access to both the source and docroot directories.
+    *Alternately*, you can put these directories separately and anywhere on your  filesystem, specifying their locations in your config file (as described below). Just make sure that whatever user runs Plerd's processes has read and write access to all of them.
 
 1. Copy `conf/plerd_example.conf` to `conf/plerd.conf`, and then update it to best suit your blog. 
 
