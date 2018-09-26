@@ -4,3 +4,6 @@ authority="cpan:JMAC"
 
 module_maker="ExtUtilsMakeMaker"
 readme_from="README.pod"
+
+[FileGatherer]
+exclude_match = ['^Build.PL']
