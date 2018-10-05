@@ -126,7 +126,7 @@ if ( $webmention_port ) {
     $webserver_pid = fork;
     unless ( $webserver_pid ) {
         app->log(
-            Mojo::Log->new( path => "$FindBin::Bin/../log/plerdweb.log" )
+            Mojo::Log->new( path => "$$config_ref{log_path}/plerdweb.log" )
         );
         app->start(
             'daemon',
