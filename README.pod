@@ -7,6 +7,7 @@ Plerd is meant to be an ultralight blogging platform for Markdown fans that play
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
 
+Optional and experimental Plerd features add support for IndieWeb technologies, such as sending and receiving webmentions.
 
 =head2 Purpose
 
@@ -21,24 +22,27 @@ If you have the time and inclination, you may watch L<a 20-minute presentation a
 
 =head2 Project status
 
-Travis says, "L<![Build Status](https://travis-ci.org/jmacdotorg/plerd.svg?branch=master)|https://travis-ci.org/jmacdotorg/plerd>!"
-
 Plerd is released and stable. It still has plenty of room for improvement, and I welcome community feedback and patch proposals, but it will continue to do what it does now, in more or less the same fashion, for the foreseeable future.
 
+I reserve the right to add new features to it, but I will do my best not to break existing functionality when doing so. If you'd like to stay informed of Plerd changes, consider joining L<the plerd-announce mailing list|http://lists.jmac.org/listinfo/plerd-announce>.
 
 =head2 Setup
 
 
 =head3 Installation
 
-This version of Plerd is intended to run directly from its own source directory, rather than from a formally installed location on your system. You will likely need to install its various library dependencies, however, and you'll need to do a little bit of further configuration and customization.
+The best way to install Plerd is via CPAN. Use the CPAN command-line tool of your choice to install C<Plerd>. Or, if the previous sentence was meaningless to you, just do this:
 
-To install Plerd's dependencies, run the following command from the top level of your Plerd repository (the directory that contains this here README file):
+    curl -fsSL https://cpanmin.us | perl - Plerd
+
+If you have a copy of Plerd's source handy, you can install it this way (after setting the current working directory to the same directory containing this README file):
 
     curl -fsSL https://cpanmin.us | perl - --installdeps .
-
-This should crunch though the installation of a bunch of Perl modules that Plerd needs. It'll take a few minutes. When it's all done, Plerd will be ready for configuration.
-
+    perl Makefile.PL
+    make
+    make install
+    
+If everything installed as it should, then you should have the C<plerdall> and C<plerdwatcher> programs in your command path.
 
 =head3 Configuration
 
@@ -46,8 +50,11 @@ This should crunch though the installation of a bunch of Perl modules that Plerd
 
 =item 1.
 
-Create a new directory for Plerd's sake. Then, create these subdirectories inside of it:
+Run C<plerdall --init> to create a new directory called C<plerd/> in your current working directory, populated with all the special files and directories that Plerd requires. This includes a sample config file in C<plerd/plerd.conf>.
 
+If you'd like the directory named something else or located somewhere else, you can provide it as an argument, e.g. C<plerdall --init=/some/other/location>. See the C<plerdall> man page for full details.
+
+Here's the purpose of the subdirectories that C<plerdall --init> creates:
 
 =over
 
@@ -58,65 +65,50 @@ C<source>: This will hold your blog's Markdown-based source files.
 
 =item *
 
-C<templates>: Holds your blog's templates.
+C<templates>: Holds your blog's templates. C<plerdall --init> will place a full complement of sample templates in this directory for you.
 
 
 =item *
 
 C<docroot>: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
 
+=item *
+
+C<conf>: Holds your blog's configuration files. C<plerdall --init> will place an example C<plerd.conf> file in this directory for you.
 
 =item *
 
 C<db>: Will contain metadata about your blog's posts.
 
+=item *
+
+C<run>: Holds PID files and such.
+
+=item *
+
+C<log>: The C<plerdwatcher> program will write logs here.
 
 =back
 
 You can freely add other files or directories in this directory if you wish (a C<drafts> folder, perhaps?). Plerd will happily ignore them.
 
-I<Alternately>, you can put these directories separately and anywhere on your  filesystem, specifying their locations in your config file (as described below). Just make sure that whatever user runs Plerd's processes has read and write access to all of them.
-
-
-
 =item 2.
 
-Copy C<conf/plerd_example.conf> to C<conf/plerd.conf>, and then update it to best suit your blog. 
+Edit the C<plerd.conf> file in the directory that you created in the previous step to best suit your needs. The file itself is extensively commented and self-documenting.
 
-
-=over
-
-=item *
-
-Set the C<path> attribute to the full path of the directory you created in the first step.
-
-(If you took the alternate route of choosing different directories, then set the C<source_path>, C<publication_path>, C<template_path>, and C<database_path> directories instead, just like the commented-out lines in C<conf/plerd_example.conf> demonstrate.)
-
-
-
-=item *
-
-Set the other attributes as should be obvious, based on the provided examples.
-
-
-
-=back
-
-
+You can optionally move or copy the file to C<.plerd> in your home directory. If you do, that new copy of the file becomes the default configuration file that Plerd's command-line programs will refer to.
 
 =item 3.
 
-Copy the contents of this repository's C<templates> directory into the new C<templates> subdirectory you created in the first step.
-
-These are sample templates that you can customize as much as you'd like. They are rendered using L<Template Toolkit|http://www.template-toolkit.org>. You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via L<the [% INCLUDE %] directive|http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE>, and so on.
+As noted above, the C<templates> directory that you created in the first step of this process contains sample templates that you can customize as much as you'd like. They are rendered using L<Template Toolkit|http://www.template-toolkit.org>. You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via L<the [% INCLUDE %] directive|http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE>, and so on.
 
 
 
 =item 4.
 
-Configure the webserver of your choice such that it treats the synced C<docroot> subdirectory (which you created as part of the first step) as your new blog's own docroot.
+Configure the webserver of your choice such that it treats the C<docroot> subdirectory (which you created as part of the first step) as your new blog's own docroot.
 
-Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up.
+When running in its basic mode, Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up. (Plerd I<does> provide a webserver specifically for handling incoming webmentions, but this is an experimental and entirely optional feature; see L<"Webmention">, below.)
 
 
 
@@ -128,13 +120,13 @@ Plerd does not provide a webserver; it simply generates static HTML & XML files,
 
 =head3 Running Plerd
 
-Plerd includes two command-line programs, both found in this distribution's C<bin> directory:
+Plerd includes two command-line programs:
 
 =over
 
 =item *
 
-B<plerdall> creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
+B<plerdall> creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories. (It also provides a few other "one-off" utility functions, including the C<--init> feature referred to above.)
 
 Run this program (with no arguments) to initially populate your blog's docroot, and at any other time you wish to manually regenerate your blog's served files.
 
@@ -218,7 +210,7 @@ To have Plerd work with Dropbox, just place its working directory (the one conta
 
 Now, you can create, update, and delete blog posts just by moving and editing files, I<no matter what computer you're using>, so long as it has access to that Dropbox folder.
 
-In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting I<File E<rarr> Save> in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way. L<What what.|https://vine.co/v/OB5j0jdn1Pt>
+In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting I<File E<rarr> Save> in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way.
 
 
 =head2 Advanced use
@@ -250,13 +242,13 @@ These blog configuration options (all optional) are:
 
 =item *
 
-__twitterI<id>_: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
+B<twitter_id>: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
 
 
 
 =item *
 
-__facebookI<id>_: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
+B<facebook_id>: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
 
 
 
@@ -270,7 +262,7 @@ If I<not> present, Plerd will I<not> generate any social-media metadata for any 
 
 =item *
 
-__imageI<alt>_: A textual description of the image referenced by the C<image> attribute. (Equivalent in usage to the "alt" attribute in an HTML C<<< <img> >>> tag.) Plerd will just leave this blank, if you don't define it yourself.
+B<image_alt>: A textual description of the image referenced by the C<image> attribute. (Equivalent in usage to the "alt" attribute in an HTML C<<< <img> >>> tag.) Plerd will just leave this blank, if you don't define it yourself.
 
 
 
@@ -331,7 +323,9 @@ Plerd assumes that all your source and template files are encoded as UTF-8.
 
 To report bugs or file pull requests, visit L<Plerd's GitHub repository|https://github.com/jmacdotorg/plerd>.
 
-For now, the best way to ask questions about Plerd is to simply L<email me, Jason McIntosh|mailto:jmac@jmac.org>. I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
+To keep up to date on Plerd news, or to discuss the software with other users or developers, please join L<one of the project's mailing lists|http://fogknife.com/2018-09-16-plerd-has-some-mailing-lists.html>.
+
+You may also simply simply L<email me, Jason McIntosh|mailto:jmac@jmac.org>, directly. I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
 
 L<Plerd has a homepage at its creator's website.|http://jmac.org/plerd>
 
@@ -343,7 +337,7 @@ This software powers Jason McIntosh's blog, L<Fogknife|http://fogknife.com>, for
 
 =head2 Credits
 
-Plerd is by Jason McIntosh (). I would love to hear any thoughts about Plerd you would care to share, and welcome any questions or suggestions about it.
+Plerd is by Jason McIntosh (jmac@jmac.org). I would love to hear any thoughts about Plerd you would care to share, and welcome any questions or suggestions about it.
 
 Contributors include:
 
@@ -351,19 +345,19 @@ Contributors include:
 
 =item *
 
-Christian Sánchez (L<http://www.chsanch.info/>)
+Christian Sánchez
 
 
 
 =item *
 
-David Turner ()
+David Turner
 
 
 
 =item *
 
-Rebecca Turner ()
+Rebecca Turner
 
 
 
