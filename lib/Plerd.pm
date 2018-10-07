@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.602';
+our $VERSION = '1.7';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -590,8 +590,9 @@ For instructions on installing and using Plerd, please see the README file that
 should have accompanied this distribution. It is also available online
 at L<https://github.com/jmacdotorg/plerd#plerd>.
 
-The remainder of this document describes method calls and other information
-specific to the Plerd object class.
+The remainder of this document describes method calls and other
+information specific to the Plerd object class. (If you are using Plerd
+to run a blog, you don't necessarily have to know any of this!)
 
 =head1 CLASS METHODS
 
