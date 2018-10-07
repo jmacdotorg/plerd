@@ -3,3 +3,10 @@ t/source
 t/log
 t/run
 t/test.conf
+run
+db
+source
+docroot
+templates
+log
+conf
