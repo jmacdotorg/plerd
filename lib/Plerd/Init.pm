@@ -318,11 +318,11 @@ wrapper => <<EOF,
 
 <!--
     Uncomment the following <link> tag if you set up a Webmention receiver
-    using plerdwatcher. Update the href's port number as needed.
+    using plerdwatcher. Update the port number as needed.
 -->
 <!--
     [% webmention_uri = plerd.base_uri.clone %]
-    [% webmention_uri.port( 4000 ) %]
+    [% old_port = webmention_uri.port( 4000 ) %]
     <link rel="webmention" href="[% webmention_uri %]" />
 -->
 
