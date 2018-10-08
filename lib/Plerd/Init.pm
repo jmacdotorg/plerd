@@ -411,19 +411,38 @@ wrapper => <<EOF,
 </html>
 EOF
 config => <<"EOF",
-# This is an example configuration file for Plerd!
-# Use it as a model to create a new config file, which you can either store
-# as .plerd in your home directory, or put wherever you'd like and then
-# specify to Plerd scripts thorough the --config command-line option.
+# This is a configuration file for a single Plerd-based blog!
+#
+# Update the values below to best suit your blogging needs. After that,
+# you can then either copy (or symlink) this file to .plerd in your home
+# directory for use as a system-wide default, or you can specify this
+# file when running the `plerd` or `plerdwatcher` programs through their
+# --config command-line option. (See these programs' respective man
+# pages for more details.)
 
 #####################
 # Required setup
 #####################
 # Values for these fields are all required for Plerd to work properly.
+
+# base_uri: The URI base that this blog will use when generating various
+#           self-pointing links. Generally, this should be the same as your
+#           blog's "front page" URL.
 base_uri:     http://blog.example.com/
+
+# path: The path on your filesystem where Plerd will find this blog's
+# source, docroot, and other important sub-directories. (If you don't
+# want to keep all these under a single master directory, see
+# "Split-location setup", below.)
 path:         $dir
+
+# title: This blog's title.
 title:        My Cool Blog
+
+# author_name: The name of this blog's author.
 author_name:  Sam Handwich
+
+# author_email: The email address of this blog's author.
 author_email: s.handwich\@example.com
 
 ######################
