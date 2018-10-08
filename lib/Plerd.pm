@@ -269,6 +269,10 @@ sub publish_recent_page {
         },
         $self->recent_file->open('>:encoding(utf8)'),
     ) || $self->_throw_template_exception( $self->post_template_file );
+
+    my $index_file =
+        Path::Class::File->new( $self->publication_directory, 'index.html' );
+    symlink $self->recent_file, $index_file;
 }
 
 sub publish_rss {

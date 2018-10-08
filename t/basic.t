@@ -54,8 +54,8 @@ unlink "$FindBin::Bin/source/no-title.md";
 
 $plerd->publish_all;
 
-# The "+3" below accounts for the generated recent, archive, and RSS files.
-my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 3;
+# The "+4" below accounts for various non-post generated files.
+my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 4;
 is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."

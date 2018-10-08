@@ -5,6 +5,8 @@ Revision history for Plerd
       - Adding support for "dist"-style installation and configuration of Plerd, making it appropriate for distribution via CPAN.
       
       - Adding an --init command to plerdall. (Thanks to Rebecca Turner for the suggestion.)
+      
+      - Plerd now automatically generates a symbolic link from recent.html to index.html on blog publication.
 
 1.601 2018-08-11
 
