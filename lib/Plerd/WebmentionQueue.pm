@@ -108,3 +108,20 @@ sub _build_directory {
 }
 
 1;
+
+=head1 NAME
+
+Plerd::WebmentionQueue
+
+=head1 DESCRIPTION
+
+This class provides some internal methods used by Plerd to manage its "inbox"
+queue of received but unprocessed webmentions. It offers no public API.
+
+=head1 SEE ALSO
+
+L<Plerd>
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>

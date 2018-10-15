@@ -57,3 +57,20 @@ sub read_config_file {
 }
 
 1;
+
+=head1 NAME
+
+Plerd::Util
+
+=head1 DESCRIPTION
+
+This class provides some utility functions common to Plerd's
+command-line programs. It has no public API.
+
+=head1 SEE ALSO
+
+L<Plerd>
+
+=head1 AUTHOR
+
+Jason McIntosh <jmac@jmac.org>
