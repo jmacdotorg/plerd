@@ -138,9 +138,9 @@ B<plerdwatcher> runs a daemon that monitors the Dropbox-synced source directory 
 
 B<I<This is where the magic happens.>> While both I<plerdwatcher> and Dropbox's own daemon process run on your webserver's machine, any changes you make to your blog's source directory will instantly update your blog's published static files as appropriate.
 
-Launch plerdwatcher through this command (assuming your working directory is Plerd's top-level directory):
+Launch plerdwatcher through this command:
 
-    bin/plerdwatcher start
+    plerdwatcher start
 
 It also accepts the verbs C<stop>, C<restart>, and C<status>, as well as L<all the command-line options listed in the App::Daemon documentation|https://metacpan.org/pod/App::Daemon#Command-Line-Options>.
 
@@ -292,7 +292,7 @@ If not defined, then Plerd will instead use the blog's I<image> configuration di
 
 =item *
 
-__imageI<alt>_: A textual description of the image referenced by the C<image> attribute. (Equivalent in usage to the "alt" attribute in an HTML C<<< <img> >>> tag.) Plerd will just leave this blank, if you don't define it yourself.
+B<image_alt>: A textual description of the image referenced by the C<image> attribute. (Equivalent in usage to the "alt" attribute in an HTML C<<< <img> >>> tag.) Plerd will just leave this blank, if you don't define it yourself.
 
 
 
@@ -307,7 +307,7 @@ Thus, with certain options enabled, Plerd can send webmentions to websites that 
 
 These features are sparsely documented or tested as of August 2018, but I expect that to improve presently. Adding Webmention support has been the focus of my Plerd development since March, and I expect it to receive more complete documentation and test coverage by the end of the year.
 
-For the time being, you can consult the documentation of the C<bin/plerdwatcher> and C<bin/plerdall> programs for a list of Webmention-related options, and see C<templates/post.tt> among the included sample templates for an example of webmention display technique. Note also the commented-out C<rel="webmention"> line in C<templates/wrapper.tt>, which requires uncommenting for webmention receipt to work.
+For the time being, you can consult the documentation of the C<plerdwatcher> and C<plerdall> programs for a list of Webmention-related options, and see C<post.tt> among the starter templates (the ones created for you via C<plerdall --init>) for an example of webmention display technique. Note also the commented-out C<rel="webmention"> line in C<wrapper.tt>, which requires uncommenting for webmention receipt to work.
 
 You can see a variety of real-life displayed webmentions on L<this post|http://fogknife.com/2018-04-22-announcing-two-new-indieweb-modules-for-perl.html#webmentions>, part of my own Plerd-powered blog. (Note that this includes mentions from other, subsequent posts within the same blog, making for an organic sort of "Related Posts" feature.)
 
