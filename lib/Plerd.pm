@@ -13,6 +13,7 @@ use Carp;
 use Try::Tiny;
 
 use Plerd::Post;
+use InstaPlerd::Post;
 use Plerd::WebmentionQueue;
 
 has 'path' => (
