@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.7 2018-11-05T00:58:38Z
+
       - Adding support for "dist"-style installation and configuration of Plerd, making it appropriate for distribution via CPAN.
       
       - Adding an --init command to plerdall. (Thanks to Rebecca Turner for the suggestion.)
