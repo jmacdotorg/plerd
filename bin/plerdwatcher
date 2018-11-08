@@ -78,7 +78,7 @@ try {
 
     $watcher = File::ChangeNotify->instantiate_watcher (
         directories => [ $plerd->source_directory . '' ],
-        filter      => qr/\.(md|markdown)$/,
+        filter      => qr/\.(md|markdown|jpe?g)$/,
     );
 }
 catch {
