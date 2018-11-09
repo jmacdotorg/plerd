@@ -8,6 +8,7 @@ use DateTime;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/lib";
 
 use_ok( 'Plerd' );
 
@@ -56,7 +57,8 @@ $plerd->publish_all;
 
 # The "+5" below accounts for the generated recent, archive, and RSS files,
 # a index.html symlink, and a tags directory.
-my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 5;
+my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 4;
+
 is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."
@@ -329,6 +331,30 @@ $post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
 like( $post,
     qr{name="twitter:image:alt" content="Just a test image."},
     'Metatags: Defined default alt-text',
+);
+
+}
+{
+### Test extension-support
+use lib 'src';
+use TestExtension;
+my $extension_plerd = Plerd->new(
+    path         => $FindBin::Bin,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    extensions   => ['TestExtension'],
+    base_uri     => URI->new ( 'http://blog.example.com/' ),
+    image        => URI->new ( 'http://blog.example.com/logo.png' ),
+
+);
+
+$extension_plerd->publish_all;
+
+my $post = Path::Class::File->new( $docroot_dir, "2018-11-10-a-very-special-source-file.html" )->slurp;
+like( $post,
+    qr{.dm which is .md backwards.},
+    'Extensions: Plerd can publish with extensions',
 );
 
 }
