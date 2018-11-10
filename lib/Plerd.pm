@@ -261,12 +261,12 @@ has 'tags_map' => (
 
 has 'extensions' => (
     is => 'ro',
-    isa => 'ArrayRef[Str]',
+    isa => 'Maybe[ArrayRef[Str]]',
 );
 
 has 'post_triggers' => (
     is => 'ro',
-    isa => 'HashRef[Str]',
+    isa => 'Maybe[HashRef[Str]]',
     lazy_build => 1,
     );
 
@@ -286,15 +286,14 @@ sub BUILD {
             };
         }
     }
-    if ($self->extensions){
-        foreach my $extension (@{$self->extensions}) {
-            try {
-                load $extension;
-            }
-            catch {
-                die "Can't load extension: '$extension'.: $@";
-            };
+
+    foreach my $extension (@{$self->extensions // []}) {
+        try {
+            load $extension;
         }
+        catch {
+            die "Can't load extension: '$extension'.: $@";
+        };
     }
 
     return $self;
@@ -699,13 +698,13 @@ sub _throw_template_exception {
 sub _build_post_triggers {
     my $self = shift;
     my %triggers;
-    if ($self->extensions){
-        foreach my $classref (@{$self->extensions}){
-            if ($classref->can('file_type')) {
-                $triggers{ $classref->file_type } = $classref;
-            }
+
+    foreach my $classref (@{$self->extensions // []}){
+        if ($classref->can('file_type')) {
+            $triggers{ $classref->file_type } = $classref;
         }
     }
+
     return \%triggers;
 }
 

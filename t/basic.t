@@ -336,8 +336,6 @@ like( $post,
 }
 {
 ### Test extension-support
-use lib 'src';
-use TestExtension;
 my $extension_plerd = Plerd->new(
     path         => $FindBin::Bin,
     title        => 'Test Blog',
