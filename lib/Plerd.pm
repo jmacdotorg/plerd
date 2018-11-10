@@ -642,6 +642,7 @@ sub _build_posts {
             foreach my $trigger (keys %{$triggers}) {
                 if ($file =~ m/\.$trigger$/i) {
                     push @posts, $$triggers{$trigger}->new(plerd => $self, source_file => $file);
+                    last;
                 }
             }
         }

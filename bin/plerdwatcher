@@ -71,13 +71,6 @@ foreach (qw( base_uri image ) ) {
     }
 }
 
-my @extensions = $config_ref->{ extensions }
-    ? split(',', $config_ref->{ extensions })
-    : ();
-
-$config_ref->{ extensions } = \@extensions;
-
-
 my $plerd;
 my $watcher;
 try {

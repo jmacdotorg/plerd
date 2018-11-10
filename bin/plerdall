@@ -57,13 +57,6 @@ foreach (qw( base_uri image ) ) {
     }
 }
 
-
-my @extensions = $config_ref->{ extensions }
-    ? split(',', $config_ref->{ extensions })
-    : ();
-
-$config_ref->{ extensions } = \@extensions;
-
 my $plerd = Plerd->new( $config_ref );
 
 if ( $rebuild_webmentions ) {
