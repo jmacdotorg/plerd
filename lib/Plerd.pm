@@ -640,7 +640,7 @@ sub _build_posts {
             push @posts, Plerd::Post->new( plerd => $self, source_file => $file )
         } else {
             foreach my $trigger (keys %{$triggers}) {
-                if ($file =~ m/$trigger/i) {
+                if ($file =~ m/\.$trigger$/i) {
                     push @posts, $$triggers{$trigger}->new(plerd => $self, source_file => $file);
                 }
             }
