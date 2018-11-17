@@ -55,7 +55,7 @@ sub populate_directory ( $$ ) {
     my %file_content = file_content( $dir );
 
     try {
-        foreach ( qw( docroot source templates log run db conf ) ) {
+        foreach ( qw( docroot source templates log run db conf assets ) ) {
             my $subdir = Path::Class::Dir->new( $dir, $_ );
             mkdir $subdir or die "Can't create subdir $subdir: $!";
         }
@@ -489,6 +489,7 @@ image_alt: "My Cool Blog's logo -- a photograph of Fido, the author's gray tabby
 # database_path:    /opt/plerd/db
 # run_path:         /tmp/plerd/run
 # log_path:         /var/log/plerd/
+# asset_path:       /home/me/Dropbox/plerd/assets
 EOF
 );
 return %file_content;
