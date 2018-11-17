@@ -259,7 +259,9 @@ sub publish_all {
         $post->publish;
     }
 
-    $self->publish_assets;
+    if (-d $self->asset_directory) {
+        $self->publish_assets;
+    }
 
     $self->publish_archive_page;
 
