@@ -261,14 +261,19 @@ has 'tags_map' => (
 
 has 'extensions' => (
     is => 'ro',
-    isa => 'Maybe[ArrayRef[Str]]',
+    isa => 'Maybe[ArrayRef[Str]]'
+);
+
+has 'extension_preferences' => (
+    is => 'ro',
+    isa => 'Maybe[HashRef]',
 );
 
 has 'post_triggers' => (
     is => 'ro',
     isa => 'Maybe[HashRef[Str]]',
     lazy_build => 1,
-    );
+);
 
 
 sub BUILD {
@@ -1003,6 +1008,11 @@ particularly helpful when creating navigation.
 
 An arrayref of L<Str> objects, representing the plugins to load when a new Pled
 instance is created.
+
+=item extension_preferences
+
+A hashref of config options for extensions. It is up to each individual extension
+to decide how to act upon the contents therein.
 
 =item post_triggers
 
