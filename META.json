@@ -66,7 +66,18 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "1.7",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/jmacdotorg/plerd/issues"
+      },
+      "homepage" : "https://github.com/jmacdotorg/plerd",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/jmacdotorg/plerd.git",
+         "web" : "https://github.com/jmacdotorg/plerd"
+      }
+   },
+   "version" : "1.71",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",

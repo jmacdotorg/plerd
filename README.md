@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/jmacdotorg/plerd.svg?branch=master)](https://travis-ci.org/jmacdotorg/plerd)
 # Plerd 
 
 Plerd is meant to be an ultralight blogging platform for Markdown fans that plays well with (but does not require) Dropbox.
