@@ -67,7 +67,7 @@ END
 $config_file_path->spew( $config );
 
 system(
-    'perl',
+    $^X,
     '-I', "$FindBin::Bin/../lib/",
     $daemon,
     "--config=$config_file_path",

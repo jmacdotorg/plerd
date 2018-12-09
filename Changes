@@ -2,9 +2,7 @@ Revision history for Plerd
 
 {{$NEXT}}
 
-1.71 2018-12-09T03:34:36Z
-
-      - Tweaking some internal bits so that Plerd sits better with CPAN's amazing and celebrated testing army.
+      - Tweaking some internal bits so that Plerd sits better with CPAN's amazing and celebrated testing army. (Thanks to Slaven Rezic for advice and guidance.)
 
 1.7 2018-11-05T00:58:38Z
 

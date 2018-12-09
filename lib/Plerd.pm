@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.71';
+our $VERSION = '1.72';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
