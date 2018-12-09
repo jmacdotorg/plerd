@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.7';
+our $VERSION = '1.71';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -517,6 +517,7 @@ sub _build_posts {
 
     my @posts = sort { $b->date <=> $a->date }
                 map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
+                sort { $a->basename cmp $b->basename }
                 grep { /\.markdown$|\.md$/ }
                 $self->source_directory->children
     ;
