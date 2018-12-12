@@ -6,9 +6,12 @@ use Moose;
 use MooseX::Types::URI qw(Uri);
 use Template;
 use Path::Class::Dir;
+use File::Path;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use URI;
+use File::Find;
+use File::Copy;
 use Carp;
 use Try::Tiny;
 
@@ -26,6 +29,11 @@ has 'source_path' => (
 );
 
 has 'template_path' => (
+    is => 'ro',
+    isa => 'Str',
+);
+
+has 'asset_path' => (
     is => 'ro',
     isa => 'Str',
 );
@@ -102,6 +110,12 @@ has 'directory' => (
 );
 
 has 'source_directory' => (
+    is => 'ro',
+    isa => 'Path::Class::Dir',
+    lazy_build => 1,
+);
+
+has 'asset_directory' => (
     is => 'ro',
     isa => 'Path::Class::Dir',
     lazy_build => 1,
@@ -223,7 +237,7 @@ sub BUILD {
     my $self = shift;
 
     unless ( $self->path ) {
-        for my $subdir_type ( qw( source template publication database ) ) {
+        for my $subdir_type ( qw( source template publication database asset ) ) {
             try {
                 my $method = "${subdir_type}_directory";
                 my $dir = $self->$method;
@@ -245,6 +259,10 @@ sub publish_all {
         $post->publish;
     }
 
+    if (-d $self->asset_directory) {
+        $self->publish_assets;
+    }
+
     $self->publish_archive_page;
 
     $self->publish_recent_page;
@@ -255,6 +273,12 @@ sub publish_all {
     $self->clear_posts;
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
+}
+
+sub publish_assets {
+    my $self = shift;
+
+    find(sub { $self->_publish_asset($File::Find::name) if -f }, $self->asset_directory);
 }
 
 sub publish_recent_page {
@@ -323,6 +347,34 @@ sub _publish_feed {
         },
         $self->$file_method->open('>:encoding(utf8)'),
     ) || $self->_throw_template_exception( $self->$template_file_method );
+}
+
+sub _publish_asset {
+    my $self = shift;
+
+    my ($asset) = @_;
+
+    my $pub_dir = Path::Class::File->new(
+        $self->publication_directory
+    );
+
+    my $asset_dir = Path::Class::File->new($self->asset_directory);
+
+    my $new_asset = Path::Class::File->new(
+        $self->publication_directory,
+        substr $asset, length $asset_dir
+    );
+
+
+    # Create directories if they dont exist
+    my @new_asset_split = grep { $_ ne '' } (split "/", substr $new_asset, length $pub_dir);
+    pop @new_asset_split;
+    if (@new_asset_split > 0) {
+        my $missing_directory = Path::Class::File->new($self->publication_directory, join "/", @new_asset_split);
+        File::Path::make_path($missing_directory);
+    }
+
+    copy($asset, $new_asset);
 }
 
 sub publish_archive_page {
@@ -394,6 +446,12 @@ sub _build_template_directory {
     my $self = shift;
 
     return $self->_build_subdirectory( 'template_path', 'templates' );
+}
+
+sub _build_asset_directory {
+    my $self = shift;
+
+    return $self->_build_subdirectory( 'asset_path', 'assets' );
 }
 
 sub _build_template {
