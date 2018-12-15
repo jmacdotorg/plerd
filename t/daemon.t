@@ -96,9 +96,9 @@ close $fh or quit( "Couldn't close $good_source_file for testing: $!" );
 diag "Giving the Plerd daemon a a few seconds to process a change...";
 sleep(5);
 
-# Magic number "5" below accounts for the 1 post plus various auto-generated
+# Magic number "6" below accounts for the 1 post plus various auto-generated
 # files.
-is ( $docroot_dir->children( visible => 1 ), 5, "Success!" );
+is ( $docroot_dir->children( visible => 1 ), 6, "Success!" );
 
 kill ('KILL', $pid) or die "Could not kill test plerdwatcher instance ($pid): $!";
 done_testing();
