@@ -14,6 +14,8 @@ my $smartypants_attr = "1";
 # Globals:
 my $tags_to_skip = qr!<(/?)(?:pre|code|kbd|script)[\s>]!;
 
+=encoding utf8
+
 =head1 Methods
 
 =head2 process

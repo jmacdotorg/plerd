@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.601';
+our $VERSION = '1.72';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -350,6 +350,10 @@ sub publish_recent_page {
         },
         $self->recent_file->open('>:encoding(utf8)'),
     ) || $self->_throw_template_exception( $self->post_template_file );
+
+    my $index_file =
+        Path::Class::File->new( $self->publication_directory, 'index.html' );
+    symlink $self->recent_file, $index_file;
 }
 
 sub publish_rss {
@@ -594,6 +598,7 @@ sub _build_posts {
 
     my @posts = sort { $b->date <=> $a->date }
                 map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
+                sort { $a->basename cmp $b->basename }
                 grep { /\.markdown$|\.md$/ }
                 $self->source_directory->children
     ;
@@ -735,8 +740,9 @@ For instructions on installing and using Plerd, please see the README file that
 should have accompanied this distribution. It is also available online
 at L<https://github.com/jmacdotorg/plerd#plerd>.
 
-The remainder of this document describes method calls and other information
-specific to the Plerd object class.
+The remainder of this document describes method calls and other
+information specific to the Plerd object class. (If you are using Plerd
+to run a blog, you don't necessarily have to know any of this!)
 
 =head1 CLASS METHODS
 

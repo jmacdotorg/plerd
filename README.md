@@ -1,8 +1,11 @@
+[![Build Status](https://travis-ci.org/jmacdotorg/plerd.svg?branch=master)](https://travis-ci.org/jmacdotorg/plerd)
 # Plerd 
 
 Plerd is meant to be an ultralight blogging platform for Markdown fans that plays well with (but does not require) Dropbox.
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
+
+Optional and experimental Plerd features add support for IndieWeb technologies, such as sending and receiving webmentions.
 
 ## Purpose
 
@@ -16,69 +19,73 @@ If you have the time and inclination, you may watch [a 20-minute presentation ab
 
 ## Project status
 
-Travis says, "[![Build Status](https://travis-ci.org/jmacdotorg/plerd.svg?branch=master)](https://travis-ci.org/jmacdotorg/plerd)!"
-
 Plerd is released and stable. It still has plenty of room for improvement, and I welcome community feedback and patch proposals, but it will continue to do what it does now, in more or less the same fashion, for the foreseeable future.
+
+I reserve the right to add new features to it, but I will do my best not to break existing functionality when doing so. If you'd like to stay informed of Plerd changes, consider joining [the plerd-announce mailing list](http://lists.jmac.org/listinfo/plerd-announce).
 
 ## Setup
 
 ### Installation
 
-This version of Plerd is intended to run directly from its own source directory, rather than from a formally installed location on your system. You will likely need to install its various library dependencies, however, and you'll need to do a little bit of further configuration and customization.
+The best way to install Plerd is via CPAN. Use the CPAN command-line tool of your choice to install `Plerd`. Or, if the previous sentence was meaningless to you, just do this:
 
-To install Plerd's dependencies, run the following command from the top level of your Plerd repository (the directory that contains this here README file):
+    curl -fsSL https://cpanmin.us | perl - Plerd
+
+If you have a copy of Plerd's source handy, you can install it this way (after setting the current working directory to the same directory containing this README file):
 
     curl -fsSL https://cpanmin.us | perl - --installdeps .
+    perl Makefile.PL
+    make
+    make install
     
-This should crunch though the installation of a bunch of Perl modules that Plerd needs. It'll take a few minutes. When it's all done, Plerd will be ready for configuration.
+
+If everything installed as it should, then you should have the `plerdall` and `plerdwatcher` programs in your command path.
 
 ### Configuration
 
-1. Create a new directory for Plerd's sake. Then, create these subdirectories inside of it:
+1. Run `plerdall --init` to create a new directory called `plerd/` in your current working directory, populated with all the special files and directories that Plerd requires. This includes a sample config file in `plerd/plerd.conf`.
 
-    * `source`: This will hold your blog's Markdown-based source files.
-    * `templates`: Holds your blog's templates.
-    * `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
-    * `db`: Will contain metadata about your blog's posts.
-    
+    If you'd like the directory named something else or located somewhere else, you can provide it as an argument, e.g. `plerdall --init=/some/other/location`. See the `plerdall` man page for full details.
+
+    Here's the purpose of the subdirectories that `plerdall --init` creates:
+
+    - `source`: This will hold your blog's Markdown-based source files.
+    - `templates`: Holds your blog's templates. `plerdall --init` will place a full complement of sample templates in this directory for you.
+    - `docroot`: Will hold your blog's actual docroot, ready for serving up by the webserver software of your choice.
+    - `conf`: Holds your blog's configuration files. `plerdall --init` will place an example `plerd.conf` file in this directory for you.
+    - `db`: Will contain metadata about your blog's posts.
+    - `run`: Holds PID files and such.
+    - `log`: The `plerdwatcher` program will write logs here.
+
     You can freely add other files or directories in this directory if you wish (a `drafts` folder, perhaps?). Plerd will happily ignore them.
-    
-    *Alternately*, you can simply choose four directories anywhere on your  filesystem to serve these purposes. Just make sure that whatever user runs Plerd's processes has write access to both the source and docroot directories.
 
-1. Copy `conf/plerd_example.conf` to `conf/plerd.conf`, and then update it to best suit your blog. 
+2. Edit the `plerd.conf` file in the directory that you created in the previous step to best suit your needs. The file itself is extensively commented and self-documenting.
 
-    * Set the `path` attribute to the full path of the directory you created in the first step.
-    
-        (If you took the alternate route of choosing different directories, then set the `source_path`, `publication_path`, `template_path`, and `database_path` directories instead, just like the commented-out lines in `conf/plerd_example.conf` demonstrate.)
-    
-    * Set the other attributes as should be obvious, based on the provided examples.
+    You can optionally move or copy the file to `.plerd` in your home directory. If you do, that new copy of the file becomes the default configuration file that Plerd's command-line programs will refer to.
 
-1. Copy the contents of this repository's `templates` directory into the new `templates` subdirectory you created in the first step.
+3. As noted above, the `templates` directory that you created in the first step of this process contains sample templates that you can customize as much as you'd like. They are rendered using [Template Toolkit](http://www.template-toolkit.org). You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via [the \[% INCLUDE %\] directive](http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE), and so on.
+4. Configure the webserver of your choice such that it treats the `docroot` subdirectory (which you created as part of the first step) as your new blog's own docroot.
 
-    These are sample templates that you can customize as much as you'd like. They are rendered using [Template Toolkit](http://www.template-toolkit.org). You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via [the [% INCLUDE %] directive](http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE), and so on.
-
-1. Configure the webserver of your choice such that it treats the synced `docroot` subdirectory (which you created as part of the first step) as your new blog's own docroot.
-
-    Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up.
+    When running in its basic mode, Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up. (Plerd _does_ provide a webserver specifically for handling incoming webmentions, but this is an experimental and entirely optional feature; see ["Webmention"](#webmention), below.)
 
 ## Usage
 
 ### Running Plerd
 
-Plerd includes two command-line programs, both found in this distribution's `bin` directory:
+Plerd includes two command-line programs:
 
-* __plerdall__ creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories.
+- **plerdall** creates a new website in Plerd's docroot directory, based on the contents of its source and templates directories. (It also provides a few other "one-off" utility functions, including the `--init` feature referred to above.)
 
     Run this program (with no arguments) to initially populate your blog's docroot, and at any other time you wish to manually regenerate your blog's served files.
 
-* __plerdwatcher__ runs a daemon that monitors the Dropbox-synced source directory for changes, republishing files as necessary.
+- **plerdwatcher** runs a daemon that monitors the Dropbox-synced source directory for changes, republishing files as necessary.
 
-    ___This is where the magic happens.___ While both _plerdwatcher_ and Dropbox's own daemon process run on your webserver's machine, any changes you make to your blog's source directory will instantly update your blog's published static files as appropriate.
-    
-    Launch plerdwatcher through this command (assuming your working directory is Plerd's top-level directory):
-    
-        bin/plerdwatcher start
-    
+    **_This is where the magic happens._** While both _plerdwatcher_ and Dropbox's own daemon process run on your webserver's machine, any changes you make to your blog's source directory will instantly update your blog's published static files as appropriate.
+
+    Launch plerdwatcher through this command:
+
+        plerdwatcher start
+
     It also accepts the verbs `stop`, `restart`, and `status`, as well as [all the command-line options listed in the App::Daemon documentation](https://metacpan.org/pod/App::Daemon#Command-Line-Options).
 
 ### Composing posts
@@ -90,11 +97,11 @@ You must also give your post a title, sometime before you're ready to publish it
 For example, a valid, ready-to-publish source file could be called `today.markdown`, and it could contain this, in full:
 
     title: My day today
-
+    
     I had a pretty good day today. 
     
     I hung out at [the coffee shop](http://empireteaandcoffee.com). Then I went home.
-
+    
     Well, that's all for now. Bye bye.
 
 ### Publishing posts
@@ -105,9 +112,8 @@ Plerd will, once it notices the new file, give the file a timestamp recording th
 
 Normally, Plerd will set the publication time to the moment that you added the file to the source directory. Plerd recognizes two exceptions to this rule:
 
-* If you manually give your post a `time:` timestamp, and it's in W3C date-time format, then Plerd will leave that timestamp alone.
-    
-* If you leave the timestamp out, _and_ include in your post's filename a date of yesterday or earlier (e.g. `1994-06-10-i-like-ace-of-base.md`), then Plerd will set the post's timestamp to midnight (in the local time zone) of that date. This allows you to batch-backdate many posts at once -- useful, perhaps, for populating a new blog with existing writing.
+- If you manually give your post a `time:` timestamp, and it's in W3C date-time format, then Plerd will leave that timestamp alone.
+- If you leave the timestamp out, _and_ include in your post's filename a date of yesterday or earlier (e.g. `1994-06-10-i-like-ace-of-base.md`), then Plerd will set the post's timestamp to midnight (in the local time zone) of that date. This allows you to batch-backdate many posts at once -- useful, perhaps, for populating a new blog with existing writing.
 
 (Note that Plerd assumes you use a text editor smart enough to see that the source file has both moved and had additional lines added to it from an external process, and to react to this in a graceful fashion.)
 
@@ -127,7 +133,7 @@ To have Plerd work with Dropbox, just place its working directory (the one conta
 
 Now, you can create, update, and delete blog posts just by moving and editing files, _no matter what computer you're using_, so long as it has access to that Dropbox folder.
 
-In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting _File &rarr; Save_ in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way. [What what.](https://vine.co/v/OB5j0jdn1Pt)
+In this way you could, for example, compose and edit blog posts via Markdown in your favorite text editor while sitting by the fire with your laptop in the back of your favorite coffee shop, publishing updates to your blog by hitting _File → Save_ in your text editor, and not directly interacting with your webserver (or, indeed, with the Plerd software itself) in any way.
 
 ## Advanced use
 
@@ -151,29 +157,27 @@ can direct Plerd to add [Open Graph](http://ogp.me) and [Twitter Card](https://d
 
 These blog configuration options (all optional) are:
 
-* __twitter_id__: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
-
-* __facebook_id__: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
-
-* __image__: If present, Plerd will use this URL as the location of a default image to use in the metadata for any post that doesn't define its own _image_ attribute.
+- **twitter\_id**: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
+- **facebook\_id**: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
+- **image**: If present, Plerd will use this URL as the location of a default image to use in the metadata for any post that doesn't define its own _image_ attribute.
 
     If _not_ present, Plerd will _not_ generate any social-media metadata for any post lacking an _image_ attribute.
 
-* __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
+- **image\_alt**: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
 
 To see examples of all the above, please see the file `conf/plerd_example.conf`.
 
 Once you've configured your blog as described above, you can add these attributes to any post:
 
-* __description__: A very brief summary of this post.
+- **description**: A very brief summary of this post.
 
     If not defined, then Plerd will try to use the first paragraph of your post's text (after stripping out any markup) as the post's description.
 
-* __image__: The URL of an image to associate with this post within social-media links. (This could refer to image that also appears in your post by way of an HTML `<img>` tag, but it doesn't have to.) 
+- **image**: The URL of an image to associate with this post within social-media links. (This could refer to image that also appears in your post by way of an HTML `<img>` tag, but it doesn't have to.) 
 
     If not defined, then Plerd will instead use the blog's _image_ configuration directive. If _that_ is also undefined, then Plerd will not generate any social-media metadata for this post.
-    
-* __image_alt__: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
+
+- **image\_alt**: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
 
 ### Webmention
 
@@ -183,7 +187,7 @@ Thus, with certain options enabled, Plerd can send webmentions to websites that 
 
 These features are sparsely documented or tested as of August 2018, but I expect that to improve presently. Adding Webmention support has been the focus of my Plerd development since March, and I expect it to receive more complete documentation and test coverage by the end of the year.
 
-For the time being, you can consult the documentation of the `bin/plerdwatcher` and `bin/plerdall` programs for a list of Webmention-related options, and see `templates/post.tt` among the included sample templates for an example of webmention display technique. Note also the commented-out `rel="webmention"` line in `templates/wrapper.tt`, which requires uncommenting for webmention receipt to work.
+For the time being, you can consult the documentation of the `plerdwatcher` and `plerdall` programs for a list of Webmention-related options, and see `post.tt` among the starter templates (the ones created for you via `plerdall --init`) for an example of webmention display technique. Note also the commented-out `rel="webmention"` line in `wrapper.tt`, which requires uncommenting for webmention receipt to work.
 
 You can see a variety of real-life displayed webmentions on [this post](http://fogknife.com/2018-04-22-announcing-two-new-indieweb-modules-for-perl.html#webmentions), part of my own Plerd-powered blog. (Note that this includes mentions from other, subsequent posts within the same blog, making for an organic sort of "Related Posts" feature.)
 
@@ -197,7 +201,9 @@ Plerd assumes that all your source and template files are encoded as UTF-8.
 
 To report bugs or file pull requests, visit [Plerd's GitHub repository](https://github.com/jmacdotorg/plerd).
 
-For now, the best way to ask questions about Plerd is to simply [email me, Jason McIntosh](mailto:jmac@jmac.org). I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
+To keep up to date on Plerd news, or to discuss the software with other users or developers, please join [one of the project's mailing lists](http://fogknife.com/2018-09-16-plerd-has-some-mailing-lists.html).
+
+You may also simply simply [email me, Jason McIntosh](mailto:jmac@jmac.org), directly. I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
 
 [Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
 
@@ -207,15 +213,12 @@ This software powers Jason McIntosh's blog, [Fogknife](http://fogknife.com), for
 
 ## Credits
 
-Plerd is by Jason McIntosh (<jmac@jmac.org>). I would love to hear any thoughts about Plerd you would care to share, and welcome any questions or suggestions about it.
+Plerd is by Jason McIntosh (jmac@jmac.org). I would love to hear any thoughts about Plerd you would care to share, and welcome any questions or suggestions about it.
 
 Contributors include:
 
-* Christian Sánchez (<http://www.chsanch.info/>)
+- Christian Sánchez
+- David Turner
+- Rebecca Turner
 
-* David Turner (<novalis@novalis.org>)
-
-* Rebecca Turner (<me@re-becca.org>)
-
-
-This repository contains the image "Envelope" designed by <a href="http://www.thenounproject.com/jontesta">Jon Testa</a>, and the image "RSS" designed by [useiconic.com](https://thenounproject.com/useiconic.com). Both are shared through a [Creative Commons Attribution 3.0 United States](https://creativecommons.org/licenses/by/3.0/us/) license, and come to this project via [The Noun Project](https://thenounproject.com).
+This repository contains the image "Envelope" designed by Jon Testa, and the image "RSS" designed by [useiconic.com](https://thenounproject.com/useiconic.com). Both are shared through a [Creative Commons Attribution 3.0 United States](https://creativecommons.org/licenses/by/3.0/us/) license, and come to this project via [The Noun Project](https://thenounproject.com).
