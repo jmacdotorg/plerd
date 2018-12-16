@@ -54,7 +54,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="archive.html">Archive</a></li>
-                    <li><a href="[% plerd.tag_uri("") %]">Tags</a></li>
+                    [% IF plerd.has_tags %]<li><a href="[% plerd.tag_uri %]">Tags</a></li>[% END %]
                     <li><a href="atom.xml">RSS</a></li>
                 </ul>
             </div><!--/.navbar-collapse -->

@@ -244,6 +244,12 @@ has 'webmention_queue' => (
     lazy_build => 1,
 );
 
+has 'has_tags' => (
+    is => 'ro',
+    isa => 'Bool',
+    lazy_build => 1,
+);
+
 sub BUILD {
     my $self = shift;
 
@@ -327,7 +333,7 @@ sub publish_tag_indexes {
     $self->template->process(
         $self->tags_template_file->open('<:encoding(utf8)'),
         {
-            self_uri => $self->tag_uri(),
+            self_uri => $self->tag_uri,
             is_tags_index_page => 1,
             is_tags_page => 1,
             tags => $tag_map,
@@ -658,7 +664,7 @@ sub generates_post_guids {
 # Tag-related builders & methods
 sub _build_tags_index_uri {
     my $self = shift;
-    return $self->tag_uri("");
+    return $self->tag_uri;
 }
 
 sub _build_tags_publication_path { 'tags' }
@@ -699,7 +705,7 @@ sub tags_publication_file {
 sub tag_uri {
     my ($self, $tag) = @_;
     my $uri = $self->base_uri->clone;
-    if (!$tag) {
+    unless (defined $tag) {
         # master tag list
         $uri->path($uri->path . $self->tags_publication_path . "/");
         return $uri;
@@ -944,7 +950,15 @@ if there is no such post.
 
 =item tag_uri( $tag )
 
-Returns a L<URI> object with the address of the web page for the given tag.
+If $tag is defined, returns a L<URI> object with the address of the web
+page for the given tag.
+
+Otherwise, returns a L<URI> object referring to the tag index page.
+
+=item has_tags
+
+If the blog's posts declare any tags at all, then this returns true. Otherwise,
+returns false.
 
 =back
 
