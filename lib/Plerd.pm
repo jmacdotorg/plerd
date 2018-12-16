@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.72';
+our $VERSION = '1.703';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -682,18 +682,11 @@ sub _build_tags_template_file {
 # or a tags/TAGNAME.html file if given a tag
 sub tags_publication_file {
     my ($self, $tag) = @_;
-
-    my $encoded;
-    if (!$tag) {
-        $encoded = URI->new("index.html");
-    } else {
-        (my $escaped = $tag) =~ s/ /_/g;
-        $encoded = URI->new("$escaped.html");
-    }
+    $tag //= 'index';
 
     my $file = Path::Class::File->new($self->publication_directory,
                                       $self->tags_publication_directory,
-                                      $encoded->as_string);
+                                      "$tag.html");
 
     my $dir = $file->parent->stringify;
     if ( !-d $dir) {
@@ -712,9 +705,8 @@ sub tag_uri {
         return $uri;
     }
 
-    (my $escaped = $tag) =~ s/ /_/g;
     # individual tag page
-    $uri->path($uri->path . $self->tags_publication_path . "/$escaped.html");
+    $uri->path($uri->path . $self->tags_publication_path . "/$tag.html");
     return $uri;
 }
 
