@@ -926,11 +926,6 @@ tag index HTML files.
 This is a L<URI> object that points to the tag index.  It is
 particularly helpful when creating navigation.
 
-=item tag_uri TAG
-
-This method takes a tag name and returns a L<URI> object that points
-to that a view of all the posts associated with that tag.
-
 =back
 
 =head1 OBJECT METHODS
@@ -946,6 +941,10 @@ Also recreates the recent, archive, and syndication files.
 
 Returns the Plerd::Post object that has the given absolute URL. Returns undef
 if there is no such post.
+
+=item tag_uri( $tag )
+
+Returns a L<URI> object with the address of the web page for the given tag.
 
 =back
 
