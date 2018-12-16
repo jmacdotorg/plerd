@@ -60,7 +60,7 @@ sub populate_directory ( $$ ) {
             mkdir $subdir or die "Can't create subdir $subdir: $!";
         }
 
-        foreach ( qw( archive atom jsonfeed post wrapper ) ) {
+        foreach ( qw( archive atom jsonfeed post wrapper tags ) ) {
             my $template = Path::Class::File->new(
                 $dir, 'templates', "$_.tt",
             );
@@ -489,6 +489,35 @@ image_alt: "My Cool Blog's logo -- a photograph of Fido, the author's gray tabby
 # database_path:    /opt/plerd/db
 # run_path:         /tmp/plerd/run
 # log_path:         /var/log/plerd/
+EOF
+tags => <<EOF,
+[% WRAPPER wrapper.tt title = 'Tags' %]
+
+[%   IF is_tags_index_page %]
+<section>
+    <h1>All Tags</h1>
+
+    <ul>
+    [% FOREACH tag = tags.keys.sort %]
+        <li><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a> ([% tags.\$tag.size %])</li>
+    [% END %]
+    </ul>
+</section>
+[%   ELSE %]
+
+    [% FOREACH tag = tags.keys %]
+      <h1>[% tag %]</h1>
+      <ul>
+        [% FOREACH post = tags.\$tag %]
+            <li><a href="[% post.uri %]">[% post.title %]</a></li>
+        [% END %]
+      </ul>
+    [% END %]
+
+[%   END %]
+
+[% END %]
+
 EOF
 );
 return %file_content;
