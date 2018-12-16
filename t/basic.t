@@ -98,6 +98,18 @@ is (
 );
 }
 
+### Make sure tag pages look as expected
+{
+my $tag_index_file =
+    Path::Class::File->new( $docroot_dir, 'tags', 'index.html' );
+my $tag_detail_file =
+    Path::Class::File->new( $docroot_dir, 'tags', 'bar with spaces.html' );
+
+is (-e $tag_index_file, 1, 'Tag index file created.');
+is (-e $tag_detail_file, 1, 'Tag detail file created.');
+
+}
+
 ### Make sure re-titling posts works as expected
 {
 my $source_file = Path::Class::File->new( $source_dir, 'good-source-file.md' );
