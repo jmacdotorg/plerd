@@ -13,10 +13,13 @@
 [%   ELSE %]
 
     [% FOREACH tag = tags.keys %]
-      <h1>[% tag %]</h1>
+      <h1>Tag: [% tag %]</h1>
       <ul>
         [% FOREACH post = tags.$tag %]
-            <li><a href="[% post.uri %]">[% post.title %]</a></li>
+            <li>
+            <p class="post-title"><a href="[% post.uri %]">[% post.title %]</a> ([% post.month_name %] [% post.day %], [% post.year %])</p>
+            <p>[% post.description %]</p>
+            </li>
         [% END %]
       </ul>
     [% END %]
@@ -24,3 +27,7 @@
 [%   END %]
 
 [% END %]
+
+<style>
+.post-title { margin: 0 }
+</style>
