@@ -6,7 +6,7 @@
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150005",
    "license" : [
-      "unknown"
+      "mit"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -77,11 +77,13 @@
          "web" : "https://github.com/jmacdotorg/plerd"
       }
    },
-   "version" : "1.72",
+   "version" : "1.703",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",
       "David Turner <novalis@novalis.org>",
+      "Joe Johnston <jjohn@taskboy.com>",
+      "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
       "Rebecca Turner <me@re-becca.org>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27300_01",
