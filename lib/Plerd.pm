@@ -684,6 +684,20 @@ sub _build_tags_template_file {
     );
 }
 
+sub _build_has_tags {
+    my $self = shift;
+
+    my $tags_map = $self->get_tags_map_from_posts;
+
+    if (scalar keys %$tags_map) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
+}
+
 # Return either the tags/index.html file
 # or a tags/TAGNAME.html file if given a tag
 sub tags_publication_file {

@@ -114,6 +114,8 @@ my $tag_detail_file =
 is (-e $tag_index_file, 1, 'Tag index file created.');
 is (-e $tag_detail_file, 1, 'Tag detail file created.');
 
+is ($plerd->has_tags, 1, 'The blog knows that it has tags.');
+
 }
 
 ### Make sure re-titling posts works as expected
