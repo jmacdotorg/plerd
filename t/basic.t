@@ -351,7 +351,7 @@ $extension_plerd->publish_all;
 
 my $post = Path::Class::File->new( $docroot_dir, "$ymd-a-very-special-source-file.html" )->slurp;
 like( $post,
-    qr{.dm which is .md backwards.},
+    qr{.sdrawkcab dm. si hcihw md.},
     'Extensions: Plerd can publish with extensions',
 );
 
