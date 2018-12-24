@@ -1006,7 +1006,7 @@ particularly helpful when creating navigation.
 
 =item extensions
 
-An arrayref of L<Str> objects, representing the plugins to load when a new Pled
+An arrayref of strings, representing the plugins to load when a new Plerd
 instance is created.
 
 =item extension_preferences
@@ -1016,7 +1016,7 @@ to decide how to act upon the contents therein.
 
 =item post_triggers
 
-A hashref of L<Str>,L<Str> objects. The key is used as a regex to deduce what
+A hashref that maps extensions to file types. The key is used as a regex to deduce what
 source file types the particular Post extension using to render pages.
 The value is a reference to that particular extension.
 
