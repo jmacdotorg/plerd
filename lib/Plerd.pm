@@ -250,6 +250,13 @@ has 'has_tags' => (
     lazy_build => 1,
 );
 
+has 'tags_map' => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy_build => 1,
+    clearer => 'clear_tags_map',
+);
+
 sub BUILD {
     my $self = shift;
 
@@ -288,6 +295,7 @@ sub publish_all {
     $self->clear_posts;
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
+    $self->clear_tags_map;
 }
 
 # Return a structure of tags to post objects
@@ -295,7 +303,7 @@ sub publish_all {
 #    TAG2 => [],
 #    ...
 #  }
-sub get_tags_map_from_posts {
+sub _build_tags_map {
     my $self = shift;
     my %tags;
     for my $post ( @{ $self->posts } ) {
@@ -312,7 +320,7 @@ sub get_tags_map_from_posts {
 sub publish_tag_indexes {
     my $self = shift;
 
-    my $tag_map = $self->get_tags_map_from_posts;
+    my $tag_map = $self->tags_map;
 
     # Create all the individual tag pages
     for my $tag (keys %$tag_map) {
@@ -687,7 +695,7 @@ sub _build_tags_template_file {
 sub _build_has_tags {
     my $self = shift;
 
-    my $tags_map = $self->get_tags_map_from_posts;
+    my $tags_map = $self->tags_map;
 
     if (scalar keys %$tags_map) {
         return 1;
