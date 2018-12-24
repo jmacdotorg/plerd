@@ -297,7 +297,8 @@ sub BUILD {
             load $extension;
         }
         catch {
-            die "Can't load extension: '$extension'.: $@";
+            my $error = shift || "Unknown error";
+            die "Can't load extension: '$extension': $error\n";
         };
     }
 
