@@ -95,6 +95,13 @@ has 'date' => (
         ymd
         hms
     ) ],
+    trigger => \&_build_utc_date,
+);
+
+has 'utc_date' => (
+    is => 'rw',
+    isa => 'DateTime',
+    lazy_build => 1,
 );
 
 has 'published_filename' => (
@@ -684,6 +691,14 @@ sub _retrieve {
     }
 }
 
+sub _build_utc_date {
+    my $self = shift;
+
+    my $dt = $self->date->clone;
+    $dt->set_time_zone( 'UTC' );
+    return $dt;
+}
+
 1;
 
 =head1 NAME
@@ -764,6 +779,10 @@ set to the local timezone.
 The L<URI> of the of the HTML file that this post will generate upon
 publication.
 
+=item utc_date
+
+Returns the value of C<date> (see below), with the time zone set to UTC.
+
 =back
 
 =head2 Read-write attributes
@@ -788,6 +807,10 @@ String representing the post's body text.
 =item date
 
 L<DateTime> object representing this post's presented publication date.
+
+Plerd usually sets this for you, based on the post's metadata, and sets
+the time zone to local. If you'd like the object in UTC time instead,
+use the C<utc_date> attribute.
 
 =item description
 

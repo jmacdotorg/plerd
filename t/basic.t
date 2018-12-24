@@ -68,6 +68,12 @@ my $post = $plerd->posts->[-1];
 is ( $post->reading_time, 4, 'Reading time is as expected.' );
 }
 
+### Test dates and time zones
+{
+my $post = $plerd->posts->[-1];
+is ( $post->utc_date->offset, 0, 'Output of utc_date looks correct.' );
+}
+
 ### Test formatting in titles and filenames
 {
 my $post = Path::Class::File->new( $docroot_dir, '1999-01-01-backdated.html' )->slurp;
