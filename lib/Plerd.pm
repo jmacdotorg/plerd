@@ -12,6 +12,8 @@ use URI;
 use Carp;
 use Try::Tiny;
 
+use Module::Load;
+
 use Plerd::Post;
 use Plerd::WebmentionQueue;
 
@@ -257,6 +259,23 @@ has 'tags_map' => (
     clearer => 'clear_tags_map',
 );
 
+has 'extensions' => (
+    is => 'ro',
+    isa => 'Maybe[ArrayRef[Str]]'
+);
+
+has 'extension_preferences' => (
+    is => 'ro',
+    isa => 'Maybe[HashRef]',
+);
+
+has 'post_triggers' => (
+    is => 'ro',
+    isa => 'Maybe[HashRef[Str]]',
+    lazy_build => 1,
+);
+
+
 sub BUILD {
     my $self = shift;
 
@@ -271,6 +290,16 @@ sub BUILD {
                     . "configuration: $_";
             };
         }
+    }
+
+    foreach my $extension (@{$self->extensions // []}) {
+        try {
+            load $extension;
+        }
+        catch {
+            my $error = shift || "Unknown error";
+            die "Can't load extension: '$extension': $error\n";
+        };
     }
 
     return $self;
@@ -609,15 +638,24 @@ sub _build_recent_posts {
 
 sub _build_posts {
     my $self = shift;
+    my @posts;
+    my $triggers = $self->post_triggers;
 
-    my @posts = sort { $b->date <=> $a->date }
-                map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
-                sort { $a->basename cmp $b->basename }
-                grep { /\.markdown$|\.md$/ }
-                $self->source_directory->children
-    ;
+    foreach my $file (sort { $a->basename cmp $b->basename } $self->source_directory->children) {
+        if ($file =~ m/\.(?:markdown|md)$/) {
+            push @posts, Plerd::Post->new( plerd => $self, source_file => $file )
+        } else {
+            foreach my $trigger (keys %{$triggers}) {
+                if ($file =~ m/\.$trigger$/i) {
+                    push @posts, $$triggers{$trigger}->new(plerd => $self, source_file => $file);
+                    last;
+                }
+            }
+        }
+    }
 
-    return \@posts;
+    return [sort { $b->date <=> $a->date } @posts];
+
 }
 
 sub _build_index_of_post_with_guid {
@@ -662,6 +700,19 @@ sub _throw_template_exception {
 
     die "Publication interrupted due to an error encountered while processing "
         . "template file $template_file: $error\n";
+}
+
+sub _build_post_triggers {
+    my $self = shift;
+    my %triggers;
+
+    foreach my $classref (@{$self->extensions // []}){
+        if ($classref->can('file_type')) {
+            $triggers{ $classref->file_type } = $classref;
+        }
+    }
+
+    return \%triggers;
 }
 
 sub generates_post_guids {
@@ -953,6 +1004,22 @@ tag index HTML files.
 
 This is a L<URI> object that points to the tag index.  It is
 particularly helpful when creating navigation.
+
+=item extensions
+
+An arrayref of strings, representing the plugins to load when a new Plerd
+instance is created.
+
+=item extension_preferences
+
+A hashref of config options for extensions. It is up to each individual extension
+to decide how to act upon the contents therein.
+
+=item post_triggers
+
+A hashref that maps extensions to file types. The key is used as a regex to deduce what
+source file types the particular Post extension using to render pages.
+The value is a reference to that particular extension.
 
 =back
 

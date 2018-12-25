@@ -77,10 +77,17 @@ my $plerd;
 my $watcher;
 try {
     $plerd = Plerd->new( $config_ref );
+    my $filter;
+
+    my $trigger = defined (keys %{$plerd->post_triggers})
+        ? sprintf '\.(md|markdown|%s)$', join('|', keys %{$plerd->post_triggers})
+        : '\.(md|markdown)$';
+
+    $filter = qr/$trigger/;
 
     $watcher = File::ChangeNotify->instantiate_watcher (
         directories => [ $plerd->source_directory . '' ],
-        filter      => qr/\.(md|markdown)$/,
+        filter      => $filter,
     );
 }
 catch {
