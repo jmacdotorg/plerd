@@ -35,6 +35,8 @@ GetOptions(
 my $webserver_pid;
 $SIG{TERM} = \&handle_term_signal;
 
+$ENV{MOJO_MODE} ||= 'production';
+
 my $config_ref = Plerd::Util::read_config_file( $config_file );
 
 for my $dir_type ( qw( run log ) ) {
@@ -125,13 +127,10 @@ post '/' => sub {
 if ( $webmention_port ) {
     $webserver_pid = fork;
     unless ( $webserver_pid ) {
-        app->log(
-            Mojo::Log->new( path => "$$config_ref{log_path}/plerdweb.log" )
-        );
+        app->log->path( "$$config_ref{log_path}/plerdweb.log" );
         app->start(
             'daemon',
             '-l', "http://*:$webmention_port",
-            '-m', 'production',
         );
     }
 }
