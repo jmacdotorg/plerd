@@ -431,7 +431,7 @@ sub _process_source_file {
     }
     else {
         my $body = $self->stripped_body;
-        my ( $description ) = $body =~ /^(.*)\n/;
+        my ( $description ) = $body =~ /^\s*(.*)\n/;
         $self->description( $description || '' );
     }
 

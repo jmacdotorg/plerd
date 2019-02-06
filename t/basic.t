@@ -155,11 +155,24 @@ is ( $docroot_dir->contains( $unwelcome_file ),
 );
 
 ### Test GUIDs
-
 $plerd->publish_all;
 like ( $source_file->slurp,
        qr/guid: /,
        'Source file contains a GUID, as expected.',
+);
+
+### Make sure descriptions work in different cases.
+is ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags.html" )->description,
+     'Fun with social metatags.',
+     'Manually-set post description works.',
+);
+like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image.html" )->description,
+    qr/This file sets up some attributes/,
+    'Automatically derived description works.',
+);
+like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image-and-alt.html" )->description,
+    qr/This file sets up some attributes/,
+    'Automatically derived description works, with leading image tag present.',
 );
 
 ### Test miscellaneous-attribute pass-through

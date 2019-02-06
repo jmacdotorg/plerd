@@ -9,6 +9,8 @@ Revision history for Plerd
       - Fixing a bug that made `plerdall --init` fail if plerdall can't find a config file. (Thanks to Bo for the bug report.)
       
       - Fixing a bug that ignored any user-requested webmention-listener log level.
+      
+      - Improving automatically derived post descriptions.
 
 1.72 2018-12-09T16:51:27Z
 
