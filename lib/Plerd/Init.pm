@@ -24,27 +24,37 @@ sub initialize ( $$ ) {
 
     if (-e $dir) {
         unless (-d $dir) {
-            push @messages,
-                "$dir exists, but it's not a directory!\nExiting.";
+            return [
+                @messages,
+                "$dir exists, but it's not a directory!\nExiting."
+            ];
         }
         if ( $dir->children ) {
-            push @messages,
+            return [
+                @messages,
                 "$dir exists, but it's not empty!\nExiting."
+            ];
         }
     }
     else {
-        mkdir $dir or (push @messages, "Cannot create $dir: $!");
-        my $success = populate_directory( $dir, \@messages );
-
-        if ( $success ) {
-            my $config_file = Path::Class::File->new( $dir, 'plerd.conf' );
-            push @messages,
-                "I have created and populated a new Plerd working directory at "
-                . "$dir. Your next step involves updating the configuration file "
-                . "at $config_file.\n"
-                . "For full documentation, links to mailing lists, and other stuff, "
-                . "please visit http://plerd.jmac.org/. Enjoy!";
+        unless (mkdir $dir) {
+            return [
+                @messages,
+                "Cannot create $dir: $!"
+            ];
         }
+    }
+
+    my $success = populate_directory( $dir, \@messages );
+
+    if ( $success ) {
+        my $config_file = Path::Class::File->new( $dir, 'plerd.conf' );
+        push @messages,
+            "I have created and populated a new Plerd working directory at "
+            . "$dir. Your next step involves updating the configuration file "
+            . "at $config_file.\n"
+            . "For full documentation, links to mailing lists, and other stuff, "
+            . "please visit http://plerd.jmac.org/. Enjoy!";
     }
     return \@messages;
 }
