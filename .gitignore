@@ -3,6 +3,7 @@ t/source
 t/log
 t/run
 t/test.conf
+t/init
 run
 db
 source
