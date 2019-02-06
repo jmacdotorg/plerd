@@ -34,8 +34,6 @@ GetOptions(
     'init:s'              => \$init_path,
 );
 
-my $config_ref = Plerd::Util::read_config_file( $config_file );
-
 if ( defined $init_path ) {
     my $is_using_default = 0;
     unless ( length $init_path ) {
@@ -50,6 +48,8 @@ if ( defined $init_path ) {
     print "\n";
     exit;
 }
+
+my $config_ref = Plerd::Util::read_config_file( $config_file );
 
 foreach (qw( base_uri image ) ) {
     unless ( ref $config_ref->{ $_ } ) {
