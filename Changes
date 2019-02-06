@@ -2,6 +2,14 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Adding support for tags. Thanks to Joe Johnston for the basic concept, and much of the implementation work.
+      
+      - Adding a utc_date method to post objects.
+      
+      - Fixing a bug that made `plerdall --init` fail if plerdall can't find a config file. (Thanks to Bo for the bug report.)
+      
+      - Fixing a bug that ignored any user-requested webmention-listener log level.
+
 1.72 2018-12-09T16:51:27Z
 
       - Tweaking some internal bits so that Plerd sits better with CPAN's amazing and celebrated testing army. (Thanks to Slaven Rezic for advice and guidance.)
