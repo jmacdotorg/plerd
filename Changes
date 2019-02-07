@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.8 2019-02-07T01:11:35Z
+
       - Adding support for tags. Thanks to Joe Johnston for the basic concept, and much of the implementation work.
       
       - Adding a utc_date method to post objects.

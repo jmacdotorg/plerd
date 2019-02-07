@@ -175,6 +175,30 @@ has 'webmentions_by_source' => (
     lazy_build => 1,
 );
 
+has 'likes' => (
+    is => 'ro',
+    isa => 'ArrayRef[Web::Mention]',
+    lazy_build => 1,
+);
+
+has 'reposts' => (
+    is => 'ro',
+    isa => 'ArrayRef[Web::Mention]',
+    lazy_build => 1,
+);
+
+has 'replies' => (
+    is => 'ro',
+    isa => 'ArrayRef[Web::Mention]',
+    lazy_build => 1,
+);
+
+has 'mentions' => (
+    is => 'ro',
+    isa => 'ArrayRef[Web::Mention]',
+    lazy_build => 1,
+);
+
 has 'json' => (
     is => 'ro',
     isa => 'JSON',
@@ -697,6 +721,53 @@ sub _build_utc_date {
     my $dt = $self->date->clone;
     $dt->set_time_zone( 'UTC' );
     return $dt;
+}
+
+sub _build_likes {
+    my $self = shift;
+
+    return $self->_grep_webmentions( 'like' );
+}
+
+sub _build_mentions {
+    my $self = shift;
+
+    return $self->_grep_webmentions( 'mention' );
+}
+
+sub _build_replies {
+    my $self = shift;
+
+    return $self->_grep_webmentions( 'reply' );
+}
+
+sub _build_quotations {
+    my $self = shift;
+
+    return $self->_grep_webmentions( 'quotation' );
+}
+
+sub _build_replies_and_quotations {
+    my $self = shift;
+
+    return [
+        sort
+        {$a->time_received <=> $b->time_received }
+        @{ $self->replies }, @{ $self->quotations }
+    ];
+}
+
+sub _build_reposts {
+    my $self = shift;
+
+    return $self->_grep_webmentions( 'repost' );
+}
+
+sub _grep_webmentions {
+    my ( $self, $webmention_type ) = @_;
+    return [
+        grep { $_->type eq $webmention_type } $self->ordered_webmentions
+    ];
 }
 
 1;

@@ -220,6 +220,15 @@ In this way you could, for example, compose and edit blog posts via Markdown in 
 
 For a brief guide to the template files and how to customize them for your blog, please L<see the Plerd wiki on GitHub|https://github.com/jmacdotorg/plerd/wiki/Plerd-template-guide>.
 
+=head3 Tags
+
+If you define a list of comma-separated tags under a post attribute named C<tags>, then Plerd will add the post to those linked from a file named C<tags/[tag].html>, relative to the blog's docroot. It will also link to that page form C<tags/index.html>.
+
+For example, this attribute would assign three tags to its post:
+
+    tags: Media, Books I like, 📚
+
+The default Plerd templates will display links to tag-pages where appropriate. Tag pages get their shape from the template named C<tags.tt>.
 
 =head3 User-defined attributes
 
@@ -342,6 +351,11 @@ Plerd is by Jason McIntosh (jmac@jmac.org). I would love to hear any thoughts ab
 Contributors include:
 
 =over
+
+=item *
+
+Joe Johnston
+
 
 =item *
 

@@ -8,6 +8,7 @@ use Try::Tiny;
 use File::HomeDir;
 use YAML qw( LoadFile );
 use Cwd;
+use Path::Class::File;
 
 # read_config_file: Pass in a param representing a config file location, which
 #                   can be undef if we don't have one. Apply fallbacks if
