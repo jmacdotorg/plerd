@@ -2,6 +2,10 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.801 2019-02-07T02:31:29Z
+
+      - Adding a linked tag list to the default post template.
+
 1.8 2019-02-07T01:11:35Z
 
       - Adding support for tags. Thanks to Joe Johnston for the basic concept, and much of the implementation work.

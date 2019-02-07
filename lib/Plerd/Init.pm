@@ -197,6 +197,14 @@ post => <<EOF,
     <data class="u-url u-uid" value="[% post.uri %]"></data>
 
     <div class="body e-content">[% post.body %]</div>
+    [% IF post.tags.size > 0 %]
+        <ul class="list-inline tag-list">
+            <li class="list-inline-item">Tags:</li>
+            [% FOREACH tag = post.tags.sort %]
+                <li class="list-inline-item p-category"><a href="[% plerd.tag_uri(tag) %]">[% tag %]</a></li>
+            [% END %]
+        </ul>
+    [% END %]
 </div>
 [% END %]
 
@@ -516,7 +524,7 @@ tags => <<EOF,
 [%   ELSE %]
 
     [% FOREACH tag = tags.keys %]
-      <h1>[% tag %]</h1>
+      <h1>Tag: [% tag %]</h1>
       <ul>
         [% FOREACH post = tags.\$tag %]
             <li><a href="[% post.uri %]">[% post.title %]</a></li>

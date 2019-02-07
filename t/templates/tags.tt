@@ -13,7 +13,7 @@
 [%   ELSE %]
 
     [% FOREACH tag = tags.keys.sort %]
-      <h1>[% tag %]</h1>
+      <h1>Tag: [% tag %]</h1>
       <ul>
         [% FOREACH post = posts %]
             <li><a href="[% post.uri %]">[% post.title %]</a></li>
