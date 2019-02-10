@@ -179,25 +179,50 @@ has 'likes' => (
     is => 'ro',
     isa => 'ArrayRef[Web::Mention]',
     lazy_build => 1,
+    traits => ['Array'],
+    handles => {
+        like_count => 'count',
+    },
 );
 
 has 'reposts' => (
     is => 'ro',
     isa => 'ArrayRef[Web::Mention]',
     lazy_build => 1,
+    traits => ['Array'],
+    handles => {
+        repost_count => 'count',
+    },
 );
 
 has 'replies' => (
     is => 'ro',
     isa => 'ArrayRef[Web::Mention]',
+    traits => ['Array'],
     lazy_build => 1,
+    handles => {
+        reply_count => 'count',
+    },
+);
+
+has 'quotations' => (
+    is => 'ro',
+    isa => 'ArrayRef[Web::Mention]',
+    traits => ['Array'],
+    lazy_build => 1,
+    handles => {
+        quotation_count => 'count',
+    },
 );
 
 has 'mentions' => (
     is => 'ro',
     isa => 'ArrayRef[Web::Mention]',
+    traits => ['Array'],
     lazy_build => 1,
-);
+    handles => {
+        mention_count => 'count',
+    },);
 
 has 'json' => (
     is => 'ro',
@@ -745,16 +770,6 @@ sub _build_quotations {
     my $self = shift;
 
     return $self->_grep_webmentions( 'quotation' );
-}
-
-sub _build_replies_and_quotations {
-    my $self = shift;
-
-    return [
-        sort
-        {$a->time_received <=> $b->time_received }
-        @{ $self->replies }, @{ $self->quotations }
-    ];
 }
 
 sub _build_reposts {
