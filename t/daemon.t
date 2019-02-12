@@ -9,16 +9,22 @@ use DateTime;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-# Prepare by making a fresh source directory, based on the source_model directory
-# (and throw out said source dir if it's already there from e.g. a botched test)
-my $source_dir = Path::Class::Dir->new( "$FindBin::Bin/source" );
-$source_dir->rmtree;
-$source_dir->mkpath;
+use Plerd::Init;
+
+my $blog_dir = Path::Class::Dir->new( "$FindBin::Bin/testblog" );
+$blog_dir->rmtree;
+
+my $init_messages_ref = Plerd::Init::initialize( $blog_dir->stringify, 0 );
+unless (-e $blog_dir) {
+    die "Failed to create $blog_dir: @$init_messages_ref\n";
+}
 
 my $now = DateTime->now( time_zone => 'local' );
 my $ymd = $now->ymd;
 
 my $model_dir = Path::Class::Dir->new( "$FindBin::Bin/source_model" );
+my $source_dir = Path::Class::Dir->new( $blog_dir, 'source' );
+my $docroot_dir = Path::Class::Dir->new( $blog_dir, 'docroot' );
 
 # Just copy over one good-to-go source file from the model, for this test.
 my $good_model_file = Path::Class::File->new(
@@ -31,11 +37,6 @@ my $good_source_file = Path::Class::File->new(
 );
 $good_model_file->copy_to( $good_source_file );
 
-# And then clean out the docroot.
-my $docroot_dir = Path::Class::Dir->new( "$FindBin::Bin/docroot" );
-$docroot_dir->rmtree;
-$docroot_dir->mkpath;
-
 my $daemon = "$FindBin::Bin/../bin/plerdwatcher";
 
 # Write out a config file for this test.
@@ -43,10 +44,7 @@ my $config_file_path = Path::Class::File->new(
     $FindBin::Bin,
     'test.conf',
 );
-my $test_dir_path = Path::Class::Dir->new(
-    $FindBin::Bin,
-    '.',
-);
+
 my $run_dir_path = Path::Class::Dir->new(
     $FindBin::Bin,
     'run',
@@ -58,7 +56,7 @@ my $log_dir_path = Path::Class::Dir->new(
 
 my $config = <<"END";
 base_uri:      http://plerd.example.com/
-path:          $test_dir_path
+path:          $blog_dir
 title:         My Cool Blog
 author_name:   Sam Handwich
 author_email:  s.handwich\@example.com
@@ -74,7 +72,7 @@ system(
     'start',
 );
 
-my $plerd_pid = "$FindBin::Bin/run/plerdwatcher.pid";
+my $plerd_pid = Path::Class::File->new( $blog_dir, 'run', 'plerdwatcher.pid' );
 unless (-e $plerd_pid) {
     die "Tried to launch a plerdwatcher test instance, but no PID file found.";
 }
@@ -96,9 +94,9 @@ close $fh or quit( "Couldn't close $good_source_file for testing: $!" );
 diag "Giving the Plerd daemon a a few seconds to process a change...";
 sleep(5);
 
-# Magic number "6" below accounts for the 1 post plus various auto-generated
+# Magic number "7" below accounts for the 1 post plus various auto-generated
 # files.
-is ( $docroot_dir->children( visible => 1 ), 6, "Success!" );
+is ( $docroot_dir->children( visible => 1 ), 7, "Success!" );
 
 kill ('KILL', $pid) or die "Could not kill test plerdwatcher instance ($pid): $!";
 done_testing();

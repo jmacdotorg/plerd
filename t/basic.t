@@ -11,15 +11,21 @@ use lib "$FindBin::Bin/../lib";
 
 use_ok( 'Plerd' );
 
-# Prepare by making a fresh source directory, based on the source_model directory
-# (and throw out said source dir if it's already there from e.g. a botched test)
-my $source_dir = Path::Class::Dir->new( "$FindBin::Bin/source" );
-$source_dir->rmtree;
-$source_dir->mkpath;
+use Plerd::Init;
+
+my $blog_dir = Path::Class::Dir->new( "$FindBin::Bin/testblog" );
+$blog_dir->rmtree;
+
+my $init_messages_ref = Plerd::Init::initialize( $blog_dir->stringify, 0 );
+unless (-e $blog_dir) {
+    die "Failed to create $blog_dir: @$init_messages_ref\n";
+}
 
 my $now = DateTime->now( time_zone => 'local' );
 my $ymd = $now->ymd;
 
+my $source_dir = Path::Class::Dir->new( $blog_dir, 'source' );
+my $docroot_dir = Path::Class::Dir->new( $blog_dir, 'docroot' );
 my $model_dir = Path::Class::Dir->new( "$FindBin::Bin/source_model" );
 foreach ( Path::Class::Dir->new( "$FindBin::Bin/source_model" )->children ) {
     my $filename = $_->basename;
@@ -28,14 +34,9 @@ foreach ( Path::Class::Dir->new( "$FindBin::Bin/source_model" )->children ) {
     $_->copy_to( $destination );
 }
 
-# And then clean out the docroot.
-my $docroot_dir = Path::Class::Dir->new( "$FindBin::Bin/docroot" );
-$docroot_dir->rmtree;
-$docroot_dir->mkpath;
-
 # Now try to make a Plerd object, and send it through its paces.
 my $plerd = Plerd->new(
-    path         => $FindBin::Bin,
+    path         => $blog_dir->stringify,
     title        => 'Test Blog',
     author_name  => 'Nobody',
     author_email => 'nobody@example.com',
@@ -45,18 +46,18 @@ my $plerd = Plerd->new(
 eval { $plerd->publish_all; };
 like ( $@, qr/not in W3C format/, 'Rejected source file with invalid timestamp.' );
 
-unlink "$FindBin::Bin/source/bad-date.md";
+unlink "$blog_dir/source/bad-date.md";
 
 eval { $plerd->publish_all; };
 like ( $@, qr/post title/, 'Rejected title-free source file.' );
 
-unlink "$FindBin::Bin/source/no-title.md";
+unlink "$blog_dir/source/no-title.md";
 
 $plerd->publish_all;
 
-# The "+5" below accounts for the generated recent, archive, and RSS files,
-# a index.html symlink, and a tags directory.
-my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 5;
+# The "+6" below accounts for the generated recent, archive, and RSS files,
+# a index.html symlink, a JSON feed file, and a tags directory.
+my $expected_docroot_count = scalar( $source_dir->children( no_hidden => 1 ) ) + 6;
 is( scalar( $docroot_dir->children ),
             $expected_docroot_count,
             "Correct number of files generated in docroot."
@@ -176,6 +177,21 @@ like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image-
 );
 
 ### Test miscellaneous-attribute pass-through
+# We need to edit the post template so it'll do something with a received
+# pass-through attribute.
+my $post_template =
+    Path::Class::File->new(
+        $blog_dir,
+        'templates',
+        'post.tt',
+    );
+my $post_template_content = $post_template->slurp;
+$post_template_content =~
+    s{<div class="body e-content">}
+    {<div class="byline">[% post.attributes.byline %]</div><div class="body e-content">};
+$post_template->spew( $post_template_content );
+$plerd->publish_all;
+
 my $byline_post =
     Path::Class::File->new(
         $docroot_dir,
@@ -230,7 +246,7 @@ is( $last_post->newer_post,
 ### Test trailing no slash on base_uri
 {
 my $plerd = Plerd->new(
-    path         => $FindBin::Bin,
+    path         => $blog_dir->stringify,
     title        => 'Test Blog',
     author_name  => 'Nobody',
     author_email => 'nobody@example.com',
@@ -251,10 +267,10 @@ $docroot_dir->rmtree;
 $docroot_dir->mkpath;
 
 my $alt_config_plerd = Plerd->new(
-    source_path       => "$FindBin::Bin/source",
-    publication_path  => "$FindBin::Bin/docroot",
-    template_path     => "$FindBin::Bin/templates",
-    database_path     => "$FindBin::Bin/db",
+    source_path       => "$blog_dir/source",
+    publication_path  => "$blog_dir/docroot",
+    template_path     => "$blog_dir/templates",
+    database_path     => "$blog_dir/db",
     title             => 'Test Blog',
     author_name       => 'Nobody',
     author_email      => 'nobody@example.com',
@@ -271,7 +287,7 @@ is( scalar( $docroot_dir->children ),
 ### Test social-media metatags.
 {
 my $social_plerd = Plerd->new(
-    path         => $FindBin::Bin,
+    path         => $blog_dir->stringify,
     title        => 'Test Blog',
     author_name  => 'Nobody',
     author_email => 'nobody@example.com',
@@ -326,7 +342,7 @@ like ( $image_post,
 
 # Now add some alt text...
 $social_plerd = Plerd->new(
-    path         => $FindBin::Bin,
+    path         => $blog_dir->stringify,
     title        => 'Test Blog',
     author_name  => 'Nobody',
     author_email => 'nobody@example.com',

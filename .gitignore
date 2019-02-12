@@ -1,7 +1,4 @@
-t/docroot
-t/source
-t/log
-t/run
+t/testblog
 t/test.conf
 t/init
 run
