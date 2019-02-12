@@ -987,3 +987,25 @@ returns false.
 =head1 AUTHOR
 
 Jason McIntosh <jmac@jmac.org>
+
+=head CONTRIBUTORS
+
+=over
+
+=item *
+
+Joe Johnston
+
+=item *
+
+Christian Sánchez
+
+=item *
+
+David Turner
+
+=item *
+
+Rebecca Turner
+
+=back
