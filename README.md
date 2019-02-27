@@ -168,7 +168,6 @@ can direct Plerd to add [Open Graph](http://ogp.me) and [Twitter Card](https://d
 These blog configuration options (all optional) are:
 
 - **twitter\_id**: If present, then Plerd will try to attach Twitter Card metadata to each post, associated with the given Twitter username. (No leading '@', please. Yes, I know. It confuses the YAML parser. Sorry...)
-- **facebook\_id**: If present, then Plerd will try to attach Open Graph metadata to each post, associated with the given Facebook app ID.
 - **image**: If present, Plerd will use this URL as the location of a default image to use in the metadata for any post that doesn't define its own _image_ attribute.
 
     If _not_ present, Plerd will _not_ generate any social-media metadata for any post lacking an _image_ attribute.

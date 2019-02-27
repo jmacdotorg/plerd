@@ -466,15 +466,8 @@ author_email: s.handwich\@example.com
 ######################
 # Social-media setup
 ######################
-# Fill in these values in order to activate Open Graph and Twitter Card support
-# for your Plerd-based blog.
-
-# facebook_id: Your blogs's Facebook App ID number.
-#              If you define this, then Plerd will try to generate Open Graph
-#              metatags on each post's webpage.
-#              (Yes, you need to register your blog as an "app" on Facebook for
-#              this. Don't look at me, I don't decide how that stuff works.)
-facebook_id: 123456789876543212345678987654321
+# Fill in these values in order to activate Twitter Card support for your
+# Plerd-based blog.
 
 # twitter_id: The Twitter username to associate with this blog.
 #             If you define this, then Plerd will try to generate Twitter Card

@@ -804,10 +804,6 @@ And, optional keys:
 
 =item *
 
-facebook_id
-
-=item *
-
 image
 
 =item *
@@ -836,10 +832,6 @@ recent_posts_maxsize I<Default value: 10>
 
 L<URI> object representing the base URI for this blog, which the system will prepend
 to any absolute links it builds.
-
-=item facebook_id
-
-(Optional) This blog's Facebook app ID.
 
 =item image
 
