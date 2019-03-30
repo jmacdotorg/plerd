@@ -345,6 +345,9 @@ sub _build_stripped_body {
     my $stripper = HTML::Strip->new;
     my $body = $stripper->parse( $self->body );
 
+    # Clean up apparently orphaned punctuation
+    $body =~ s{ ([;.,\?\!])}{$1}g;
+
     return $body;
 }
 

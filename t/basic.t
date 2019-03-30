@@ -172,7 +172,7 @@ like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image.
     'Automatically derived description works.',
 );
 like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image-and-alt.html" )->description,
-    qr/This file sets up some attributes/,
+    qr/This file, which is awesome, sets up some attributes/,
     'Automatically derived description works, with leading image tag present.',
 );
 
