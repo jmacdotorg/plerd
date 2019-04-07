@@ -108,6 +108,12 @@ has 'recent_posts_maxsize' => (
     default => 10,
 );
 
+has 'probation_length' => (
+    is => 'ro',
+    isa => 'Int',
+    default => 3600,
+);
+
 has 'directory' => (
     is => 'ro',
     isa => 'Path::Class::Dir',
@@ -211,6 +217,13 @@ has 'recent_posts' => (
     clearer => 'clear_recent_posts',
 );
 
+has 'recent_nonprobationary_posts' => (
+    is => 'ro',
+    isa => 'ArrayRef[Plerd::Post]',
+    lazy_build => 1,
+    clearer => 'clear_recent_nonprobationary_posts',
+);
+
 has 'datetime_formatter' => (
     is => 'ro',
     isa => 'DateTime::Format::W3CDTF',
@@ -292,6 +305,7 @@ sub publish_all {
     $self->publish_jsonfeed;
 
     $self->clear_recent_posts;
+    $self->clear_recent_nonprobationary_posts;
     $self->clear_posts;
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
@@ -413,7 +427,7 @@ sub _publish_feed {
         $self->$template_file_method->open('<:encoding(utf8)'),
         {
             plerd => $self,
-            posts => $self->recent_posts,
+            posts => $self->recent_nonprobationary_posts,
             timestamp => $timestamp,
         },
         $self->$file_method->open('>:encoding(utf8)'),
@@ -583,9 +597,27 @@ sub _build_jsonfeed_file {
 sub _build_recent_posts {
     my $self = shift;
 
+    return $self->_fetch_recent_posts;
+}
+
+sub _build_recent_nonprobationary_posts {
+    my $self = shift;
+
+    return $self->_fetch_recent_posts( 1 );
+}
+
+sub _fetch_recent_posts {
+    my $self = shift;
+
+    my ( $exclude_probationary_posts ) = @_;
+
     my @recent_posts = ();
 
     for my $post ( @{ $self->posts } ) {
+
+        if ( $exclude_probationary_posts ) {
+            next if $post->is_probationary;
+        }
 
         my $did_update = 0;
 
@@ -818,6 +850,10 @@ twitter_id
 
 recent_posts_maxsize I<Default value: 10>
 
+=item *
+
+probation_length I<Default value: 3600>
+
 =back
 
 =back
@@ -886,6 +922,14 @@ the leading '@' character.
 Integer representing the maximum size of the recent_posts array, which in turn
 defines how many posts (at most) appear on the blog's front page and syndication
 document.
+
+=item probation_length
+
+Integer representing the number of seconds that Plerd will consider a post
+"probationary". A probationary post will not get included on RSS or JSON feeds.
+
+Defaults to 3600 (for a one-hour probation). You can set it to 0 if don't want
+Plerd to ever consider posts as probationary.
 
 =back
 

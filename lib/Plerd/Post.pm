@@ -230,6 +230,12 @@ has 'json' => (
     default => sub { JSON->new->convert_blessed },
 );
 
+has 'is_probationary' => (
+    is => 'ro',
+    isa => 'Bool',
+    lazy_build => 1,
+);
+
 sub _build_publication_file {
     my $self = shift;
 
@@ -788,6 +794,21 @@ sub _grep_webmentions {
     ];
 }
 
+sub _build_is_probationary {
+    my $self = shift;
+
+    my $minimum_date =
+        DateTime->now( time_zone => 'local' )
+                ->add( seconds => -( $self->plerd->probation_length ) );
+    if ( $self->date > $minimum_date ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
 1;
 
 =head1 NAME
@@ -828,6 +849,11 @@ file.
 =head2 Read-only attributes
 
 =over
+
+=item is_probationary
+
+A boolean value. If true, then Plerd considers this post "probationary", and
+possibly too new for inclusion into feeds.
 
 =item newer_post
 
