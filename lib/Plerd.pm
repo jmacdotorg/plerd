@@ -111,7 +111,7 @@ has 'recent_posts_maxsize' => (
 has 'probation_length' => (
     is => 'ro',
     isa => 'Int',
-    default => 3600,
+    default => 0,
 );
 
 has 'directory' => (
@@ -923,13 +923,17 @@ Integer representing the maximum size of the recent_posts array, which in turn
 defines how many posts (at most) appear on the blog's front page and syndication
 document.
 
+Defaults to 10.
+
 =item probation_length
 
-Integer representing the number of seconds that Plerd will consider a post
+Integer representing the number of seconds that Plerd will consider a new post
 "probationary". A probationary post will not get included on RSS or JSON feeds.
 
-Defaults to 3600 (for a one-hour probation). You can set it to 0 if don't want
-Plerd to ever consider posts as probationary.
+If set to 3600, for example, then Plerd will consider all new posts
+probationary for one hour.
+
+Defaults to 0, meaning that Plerd will never consider posts probationary.
 
 =back
 

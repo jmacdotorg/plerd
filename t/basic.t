@@ -5,6 +5,7 @@ use Path::Class::Dir;
 use Path::Class::File;
 use URI;
 use DateTime;
+use JSON;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
@@ -83,6 +84,14 @@ like ( $post,
        'Post title is formatted.'
      );
 }
+
+## Test default probationary state (no posts probationary)
+my $nonprobationary_json = json_feed_as_hashref();
+is (
+    scalar @{ $nonprobationary_json->{items} },
+    10,
+    'No posts probationary; feed is maxed out, as expected',
+);
 
 ### Test published-file naming
 {
@@ -362,4 +371,32 @@ like( $post,
 
 }
 
+### Test probationary posting.
+my $probationary_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new ( 'http://blog.example.com/' ),
+    image        => URI->new ( 'http://blog.example.com/logo.png' ),
+    probation_length => 60,
+);
+
+is ( $probationary_plerd->probation_length, 60, 'Probationary length set', );
+$probationary_plerd->publish_all;
+my $probationary_json = json_feed_as_hashref();
+is (
+    scalar @{ $probationary_json->{items} },
+    4,
+    'Only non-probationary posts are in the feed',
+);
+
 done_testing();
+
+sub json_feed_as_hashref {
+    my $json_feed_file = Path::Class::File->new(
+        $docroot_dir,
+        'feed.json',
+    );
+    return decode_json( $json_feed_file->slurp );
+}

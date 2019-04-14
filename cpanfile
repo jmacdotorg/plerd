@@ -19,3 +19,4 @@ requires 'Readonly';
 requires 'Web::Mention' => '0.6'; 
 requires 'Mojolicious::Lite';
 requires 'Capture::Tiny';
+requires 'JSON';

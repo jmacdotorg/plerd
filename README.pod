@@ -289,7 +289,9 @@ B<image>: The URL of an image to associate with this post within social-media li
 
 If not defined, then Plerd will instead use the blog's I<image> configuration directive. If I<that> is also undefined, then Plerd will not generate any social-media metadata for this post.
 
+=head3 Probationary posts
 
+If you set the optioan C<probationary_length> attribute in your configuration file, then Plerd will consider new posts "probationary" for that many seconds. A probationary post will not appear in generated feed files.
 
 =item *
 

@@ -853,7 +853,7 @@ file.
 =item is_probationary
 
 A boolean value. If true, then Plerd considers this post "probationary", and
-possibly too new for inclusion into feeds.
+too new for inclusion into feeds.
 
 =item newer_post
 
