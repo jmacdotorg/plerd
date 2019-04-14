@@ -747,6 +747,8 @@ sub publish {
 
 1;
 
+=encoding utf8
+
 =head1 NAME
 
 Plerd - Ultralight blogging with Markdown and Dropbox
@@ -980,7 +982,7 @@ returns false.
 
 Jason McIntosh <jmac@jmac.org>
 
-=head CONTRIBUTORS
+=head1 CONTRIBUTORS
 
 =over
 

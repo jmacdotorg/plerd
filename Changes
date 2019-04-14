@@ -2,6 +2,16 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.802 2019-04-14T15:42:54Z
+
+      - Suppressing extra whitespace from post methods (e.g. description()) whose output might use an HTML-stripped version of the post's body.
+
+      - Removing redundant example-template files, and basing tests on plerdall's "init" feature instead.
+      
+      - Adding the contributors list to Plerd.pm's POD.
+      
+      - Removing documentation regarding Facebook support. (See: http://fogknife.com/2019-02-26-ending-my-personal-use-and-project-support-for-facebook.html)
+
 1.801 2019-02-07T02:31:29Z
 
       - Adding a linked tag list to the default post template.
