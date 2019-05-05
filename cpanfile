@@ -5,7 +5,7 @@ requires 'Data::GUID';
 requires 'DateTime';
 requires 'DateTime::Format::W3CDTF';
 requires 'URI';
-requires 'Text::Markdown';
+requires 'Text::MultiMarkdown';
 requires 'YAML';
 requires 'FindBin';
 requires 'File::ChangeNotify';
