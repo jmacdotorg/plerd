@@ -3,7 +3,7 @@ package Plerd::Post;
 use Moose;
 use DateTime;
 use DateTime::Format::W3CDTF;
-use Text::Markdown qw( markdown );
+use Text::MultiMarkdown qw( markdown );
 use URI;
 use HTML::Strip;
 use Data::GUID;

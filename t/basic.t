@@ -176,6 +176,12 @@ like ( $plerd->post_with_url( "http://blog.example.com/$ymd-metatags-with-image-
     'Automatically derived description works, with leading image tag present.',
 );
 
+# make sure that multimarkdown tables work
+like ( $plerd->post_with_url( "http://blog.example.com/$ymd-markdown-table.html")->body,
+    qr{<td>Pizza</td>},
+    'Markdown tables are rendered.',
+);
+
 ### Test miscellaneous-attribute pass-through
 # We need to edit the post template so it'll do something with a received
 # pass-through attribute.
