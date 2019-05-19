@@ -226,6 +226,7 @@ Plerd is by Jason McIntosh (jmac@jmac.org). I would love to hear any thoughts ab
 
 Contributors include:
 
+- Petter Hassberg
 - Joe Johnston
 - Christian Sánchez
 - David Turner
