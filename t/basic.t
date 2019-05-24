@@ -117,6 +117,16 @@ is (-e $tag_detail_file, 1, 'Tag detail file created.');
 
 is ($plerd->has_tags, 1, 'The blog knows that it has tags.');
 
+my $foo_tag_file =
+    Path::Class::File->new( $docroot_dir, 'tags', 'foo.html' );
+my $tag_detail_content = $foo_tag_file->slurp;
+like(
+    $tag_detail_content,
+    qr{<h1>Tag: foo.*<li>.*<li>.*</ul>.*sidebar"}s,
+    "The 'foo' tag page links to two posts, even though they capitalized "
+    . "it differently.",
+);
+
 }
 
 ### Make sure re-titling posts works as expected

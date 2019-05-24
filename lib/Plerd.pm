@@ -308,7 +308,7 @@ sub _build_tags_map {
     my %tags;
     for my $post ( @{ $self->posts } ) {
         for my $tag (@{$post->tags}) {
-            push @{ $tags{ $tag } }, $post;
+            push @{ $tags{ lc $tag } }, $post;
         }
     }
     return \%tags;
