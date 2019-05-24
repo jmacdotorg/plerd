@@ -2,6 +2,10 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Adding support for MultiMarkdown. Thanks to Petter Hassberg for the patch.
+      
+      - Normalizing tag detail-page filenames to lowercase.
+
 1.802 2019-04-14T15:42:54Z
 
       - Suppressing extra whitespace from post methods (e.g. description()) whose output might use an HTML-stripped version of the post's body.
