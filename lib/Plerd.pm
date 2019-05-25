@@ -13,6 +13,7 @@ use Carp;
 use Try::Tiny;
 
 use Plerd::Post;
+use Plerd::Tag;
 use Plerd::WebmentionQueue;
 
 has 'path' => (
@@ -251,10 +252,9 @@ has 'has_tags' => (
 );
 
 has 'tags_map' => (
-    is => 'ro',
+    is => 'rw',
     isa => 'HashRef',
-    lazy_build => 1,
-    clearer => 'clear_tags_map',
+    default => sub { {} },
 );
 
 sub BUILD {
@@ -295,23 +295,8 @@ sub publish_all {
     $self->clear_posts;
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
-    $self->clear_tags_map;
-}
 
-# Return a structure of tags to post objects
-#  { TAG1 => [ post1, post2, ...],
-#    TAG2 => [],
-#    ...
-#  }
-sub _build_tags_map {
-    my $self = shift;
-    my %tags;
-    for my $post ( @{ $self->posts } ) {
-        for my $tag (@{$post->tags}) {
-            push @{ $tags{ lc $tag } }, $post;
-        }
-    }
-    return \%tags;
+    $self->tags_map( {} );
 }
 
 # Create a page that lists all available tags with
@@ -322,29 +307,39 @@ sub publish_tag_indexes {
 
     my $tag_map = $self->tags_map;
 
+    # Commentary: Ideally we'd just pass a sorted array of tag objects
+    # to the template. But alas said template was designed before tags were
+    # objects, and I didn't want to make Plerd users have to go mess around
+    # in their templates in between minor Plerd versions. And thus, we
+    # pull out some tag data into a hash and pass that in, instead.
+
     # Create all the individual tag pages
-    for my $tag (keys %$tag_map) {
+    for my $tag (values %$tag_map) {
 
         $self->template->process(
             $self->tags_template_file->open('<:encoding(utf8)'),
             {
-                self_uri => $self->tag_uri($tag),
+                self_uri => $tag->uri,
                 is_tags_page => 1,
-                tags => { $tag => $tag_map->{$tag} },
+                tags => { $tag->name => $tag->posts },
                 plerd => $self,
             },
-            $self->tags_publication_file($tag)->open('>:encoding(utf8)'),
+            $self->tags_publication_file(lc $tag->name)->open('>:encoding(utf8)'),
             ) || $self->_throw_template_exception( $self->tags_template_file );
     }
 
     # Create the tag index
+    my %simplified_tag_map;
+    for my $tag (values %$tag_map) {
+        $simplified_tag_map{ $tag->name => $tag->posts }
+    }
     $self->template->process(
         $self->tags_template_file->open('<:encoding(utf8)'),
         {
             self_uri => $self->tag_uri,
             is_tags_index_page => 1,
             is_tags_page => 1,
-            tags => $tag_map,
+            tags => \%simplified_tag_map,
             plerd => $self,
         },
         $self->tags_publication_file->open('>:encoding(utf8)'),
@@ -738,6 +733,26 @@ sub tag_uri {
     return $uri;
 }
 
+sub tag_named {
+    my ( $self, $tag_name ) = @_;
+
+    my $key = lc $tag_name;
+
+    my $tag = $self->tags_map->{ $key };
+
+    if ( $tag ) {
+        $tag->ponder_new_name( $tag_name );
+    }
+    else {
+        $tag = Plerd::Tag->new(
+            name => $tag_name,
+            plerd => $self,
+        );
+        $self->tags_map->{ $key } = $tag;
+    }
+
+    return $tag;
+}
 
 sub publish {
     my $self = shift;

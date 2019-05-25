@@ -122,11 +122,10 @@ my $foo_tag_file =
 my $tag_detail_content = $foo_tag_file->slurp;
 like(
     $tag_detail_content,
-    qr{<h1>Tag: foo.*<li>.*<li>.*</ul>.*sidebar"}s,
+    qr{<h1>Tag: Foo.*<li>.*<li>.*</ul>.*sidebar"}s,
     "The 'foo' tag page links to two posts, even though they capitalized "
     . "it differently.",
 );
-
 }
 
 ### Make sure re-titling posts works as expected

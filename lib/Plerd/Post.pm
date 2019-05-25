@@ -488,9 +488,11 @@ sub _process_source_file {
     }
 
     if ( $attributes{ tags } ) {
-        my @tags = split /\s*,\s*/, $attributes{ tags };
-        if (@tags) {
-            @{ $self->tags } = @tags;
+        my @tag_names = split /\s*,\s*/, $attributes{ tags };
+        for my $tag_name (@tag_names) {
+            my $tag = $self->plerd->tag_named( $tag_name );
+            $tag->add_post( $self );
+            push @{ $self->tags }, $tag;
         }
     }
 
