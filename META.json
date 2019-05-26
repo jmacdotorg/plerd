@@ -58,7 +58,7 @@
             "Path::Class" : "0",
             "Readonly" : "0",
             "Template" : "0",
-            "Text::Markdown" : "0",
+            "Text::MultiMarkdown" : "0",
             "Try::Tiny" : "0",
             "URI" : "0",
             "Web::Mention" : "0.6",
@@ -78,13 +78,14 @@
          "web" : "https://github.com/jmacdotorg/plerd"
       }
    },
-   "version" : "1.802",
+   "version" : "1.810",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",
       "David Turner <novalis@novalis.org>",
       "Joe Johnston <jjohn@taskboy.com>",
       "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
+      "Petter hassberg <dr.doddo@gmail.com>",
       "Rebecca Turner <me@re-becca.org>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27300_01",

@@ -87,6 +87,7 @@ This tag's name. Just an ordinary text string.
 
 =back
 
+=back
 
 =head1 ATTRIBUTES
 

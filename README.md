@@ -151,6 +151,8 @@ For example, this attribute would assign three tags to its post:
 
 The default Plerd templates will display links to tag-pages where appropriate. Tag pages get their shape from the template named `tags.tt`.
 
+_Mind your capitalization with tags!_ If faced with inconsistent capitalization within a single tag, e.g. one post claims "boston" for a tag and other one claims "Boston", then Plerd will prefer the first tag containing capital letters to one that contains none, and it will retroactively apply to across all relevant posts.
+
 ### User-defined attributes
 
 You can add any attributes you'd like to your posts, and then refer to them from your templates via a hash named `attributes` attached to every post object. For example, if a post's metadata looks like this:
@@ -187,6 +189,10 @@ Once you've configured your blog as described above, you can add these attribute
     If not defined, then Plerd will instead use the blog's _image_ configuration directive. If _that_ is also undefined, then Plerd will not generate any social-media metadata for this post.
 
 - **image\_alt**: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
+
+### MultiMarkdown
+
+Plerd supports \[MultiMarkdown\](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
 
 ### Webmention
 
