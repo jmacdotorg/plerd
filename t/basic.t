@@ -118,7 +118,7 @@ is (-e $tag_detail_file, 1, 'Tag detail file created.');
 is ($plerd->has_tags, 1, 'The blog knows that it has tags.');
 
 my $foo_tag_file =
-    Path::Class::File->new( $docroot_dir, 'tags', 'foo.html' );
+    Path::Class::File->new( $docroot_dir, 'tags', 'Foo.html' );
 my $tag_detail_content = $foo_tag_file->slurp;
 like(
     $tag_detail_content,
