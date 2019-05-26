@@ -1,6 +1,6 @@
 package Plerd;
 
-our $VERSION = '1.803';
+our $VERSION = '1.810';
 
 use Moose;
 use MooseX::Types::URI qw(Uri);
@@ -1002,6 +1002,10 @@ Jason McIntosh <jmac@jmac.org>
 =head1 CONTRIBUTORS
 
 =over
+
+=item *
+
+Petter Hassberg
 
 =item *
 

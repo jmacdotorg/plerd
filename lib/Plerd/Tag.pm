@@ -106,6 +106,10 @@ A L<URI> object pointing to this tag's detail page.
 
 =over
 
+=item add_post ( $post )
+
+Adds the given L<Plerd::Post> object to this tag's list of posts.
+
 =item ponder_new_name ( $new_name )
 
 Given $new_name, this tag ponders whether it should replace its own name

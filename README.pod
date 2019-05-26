@@ -215,7 +215,6 @@ In this way you could, for example, compose and edit blog posts via Markdown in 
 
 =head2 Advanced use
 
-
 =head3 Customizing templates
 
 For a brief guide to the template files and how to customize them for your blog, please L<see the Plerd wiki on GitHub|https://github.com/jmacdotorg/plerd/wiki/Plerd-template-guide>.
@@ -229,6 +228,8 @@ For example, this attribute would assign three tags to its post:
     tags: Media, Books I like, 📚
 
 The default Plerd templates will display links to tag-pages where appropriate. Tag pages get their shape from the template named C<tags.tt>.
+
+I<Mind your capitalization with tags!> If faced with inconsistent capitalization within a single tag, e.g. one post claims "boston" for a tag and other one claims "Boston", then Plerd will prefer the first tag containing capital letters to one that contains none, and it will retroactively apply to across all relevant posts.
 
 =head3 User-defined attributes
 
@@ -299,6 +300,10 @@ B<image_alt>: A textual description of the image referenced by the C<image> attr
 
 =back
 
+
+=head3 MultiMarkdown
+
+Plerd supports [MultiMarkdown](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
 
 =head3 Webmention
 
