@@ -941,8 +941,15 @@ String representing this post's title.
 
 =item tags
 
-An array reference to the list of tags associated with this post as
-set in the source file using the 'tags:' header.
+An array reference to the list of tags (as plain-text strings)
+associated with this post as set in the source file using the 'tags:'
+header.
+
+=item tag_objects
+
+An array reference to the list of tags (as L<Plerd::Tag> objects)
+associated with this post as set in the source file using the 'tags:'
+header.
 
 =back
 

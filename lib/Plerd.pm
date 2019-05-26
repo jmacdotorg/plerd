@@ -336,7 +336,7 @@ sub publish_tag_indexes {
     $self->template->process(
         $self->tags_template_file->open('<:encoding(utf8)'),
         {
-            self_uri => $self->tag_uri,
+            self_uri => $self->tags_index_uri,
             is_tags_index_page => 1,
             is_tags_page => 1,
             tags => \%simplified_tag_map,
@@ -667,7 +667,10 @@ sub generates_post_guids {
 # Tag-related builders & methods
 sub _build_tags_index_uri {
     my $self = shift;
-    return $self->tag_uri;
+    return URI->new_abs(
+        'tags/',
+        $self->base_uri,
+    );
 }
 
 sub _build_tags_publication_path { 'tags' }
@@ -719,20 +722,6 @@ sub tags_publication_file {
     return $file;
 }
 
-sub tag_uri {
-    my ($self, $tag) = @_;
-    my $uri = $self->base_uri->clone;
-    unless (defined $tag) {
-        # master tag list
-        $uri->path($uri->path . $self->tags_publication_path . "/");
-        return $uri;
-    }
-
-    # individual tag page
-    $uri->path($uri->path . $self->tags_publication_path . "/$tag.html");
-    return $uri;
-}
-
 sub tag_named {
     my ( $self, $tag_name ) = @_;
 
@@ -758,6 +747,19 @@ sub publish {
     my $self = shift;
 
     return $self->publish_all;
+}
+
+sub tag_uri {
+    my ( $self, $tag_name ) = @_;
+
+    my $tag = $self->tag_named( $tag_name );
+
+    if ( $tag ) {
+        return $tag->uri;
+    }
+    else {
+        return $self->tags_index_uri;
+    }
 }
 
 1;

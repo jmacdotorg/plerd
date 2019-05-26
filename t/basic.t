@@ -126,6 +126,14 @@ like(
     "The 'foo' tag page links to two posts, even though they capitalized "
     . "it differently.",
 );
+
+my $tag_index_content = $tag_index_file->slurp;
+like(
+    $tag_index_content,
+    qr{<h1>All Tags.*<li>.*<li>.*</ul>.*sidebar"}s,
+    "The tag-index page links to two tags.",
+);
+
 }
 
 ### Make sure re-titling posts works as expected

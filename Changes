@@ -4,7 +4,7 @@ Revision history for Plerd
 
       - Adding support for MultiMarkdown. Thanks to Petter Hassberg for the patch.
       
-      - Normalizing tag detail-page filenames to lowercase.
+      - Tags now decide on their own capitalization, in the case of user inconsistency, and apply it across the blog.
 
 1.802 2019-04-14T15:42:54Z
 
