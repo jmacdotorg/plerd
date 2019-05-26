@@ -324,14 +324,14 @@ sub publish_tag_indexes {
                 tags => { $tag->name => $tag->posts },
                 plerd => $self,
             },
-            $self->tags_publication_file(lc $tag->name)->open('>:encoding(utf8)'),
+            $self->tags_publication_file($tag->name)->open('>:encoding(utf8)'),
             ) || $self->_throw_template_exception( $self->tags_template_file );
     }
 
     # Create the tag index
     my %simplified_tag_map;
     for my $tag (values %$tag_map) {
-        $simplified_tag_map{ $tag->name => $tag->posts }
+        $simplified_tag_map{ $tag->name } = $tag->posts;
     }
     $self->template->process(
         $self->tags_template_file->open('<:encoding(utf8)'),

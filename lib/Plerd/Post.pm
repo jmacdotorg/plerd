@@ -60,7 +60,7 @@ has 'attributes' => (
     isa => 'HashRef',
 );
 
-has 'tags' => (
+has 'tag_objects' => (
     is => 'rw',
     isa => 'ArrayRef',
     default => sub {[]}
@@ -492,7 +492,7 @@ sub _process_source_file {
         for my $tag_name (@tag_names) {
             my $tag = $self->plerd->tag_named( $tag_name );
             $tag->add_post( $self );
-            push @{ $self->tags }, $tag;
+            push @{ $self->tag_objects }, $tag;
         }
     }
 
@@ -788,6 +788,12 @@ sub _grep_webmentions {
     return [
         grep { $_->type eq $webmention_type } $self->ordered_webmentions
     ];
+}
+
+sub tags {
+    my $self = shift;
+
+    return [ map { $_->name } @{ $self->tag_objects } ];
 }
 
 1;
