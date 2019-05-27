@@ -2,6 +2,10 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.811 2019-05-27T04:24:16Z
+
+      - Fixing a tag-ordering bug.
+
 1.810 2019-05-26T22:22:27Z
 
       - Adding support for MultiMarkdown. Thanks to Petter Hassberg for the patch.

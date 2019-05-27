@@ -487,15 +487,6 @@ sub _process_source_file {
         $self->description( $description || '' );
     }
 
-    if ( $attributes{ tags } ) {
-        my @tag_names = split /\s*,\s*/, $attributes{ tags };
-        for my $tag_name (@tag_names) {
-            my $tag = $self->plerd->tag_named( $tag_name );
-            $tag->add_post( $self );
-            push @{ $self->tag_objects }, $tag;
-        }
-    }
-
     if ( $attributes{ image } ) {
         $self->image( URI->new( $attributes{ image } ) );
         $self->image_alt( $attributes{ image_alt } || '' );
@@ -564,6 +555,15 @@ sub _process_source_file {
 
         $attributes{ time } = $date_string;
         $attributes_need_to_be_written_out = 1;
+    }
+
+    if ( $attributes{ tags } ) {
+        my @tag_names = split /\s*,\s*/, $attributes{ tags };
+        for my $tag_name (@tag_names) {
+            my $tag = $self->plerd->tag_named( $tag_name );
+            $tag->add_post( $self );
+            push @{ $self->tag_objects }, $tag;
+        }
     }
 
     if ( $attributes{ published_filename } ) {

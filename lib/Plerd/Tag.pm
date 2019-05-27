@@ -31,7 +31,20 @@ has 'uri' => (
 sub add_post {
     my ($self, $post) = @_;
 
-    push ( @{$self->posts}, $post );
+    my $added = 0;
+    if ( @{$self->posts} ) {
+        for (my $index = 0; $index <= @{$self->posts} - 1; $index++ ) {
+            if ( $self->posts->[$index]->date < $post->date ) {
+                splice @{$self->posts}, $index, 0, $post;
+                $added = 1;
+                last;
+            }
+        }
+    }
+
+    unless ($added) {
+        push @{$self->posts}, $post;
+    }
 }
 
 sub ponder_new_name {
