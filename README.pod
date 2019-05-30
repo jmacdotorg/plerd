@@ -303,7 +303,7 @@ B<image_alt>: A textual description of the image referenced by the C<image> attr
 
 =head3 MultiMarkdown
 
-Plerd supports [MultiMarkdown](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
+Plerd supports L<MultiMarkdown|https://fletcherpenney.net/multimarkdown/> syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
 
 =head3 Webmention
 

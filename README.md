@@ -192,7 +192,7 @@ Once you've configured your blog as described above, you can add these attribute
 
 ### MultiMarkdown
 
-Plerd supports \[MultiMarkdown\](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
+Plerd supports [MultiMarkdown](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. it'll just work.
 
 ### Webmention
 
