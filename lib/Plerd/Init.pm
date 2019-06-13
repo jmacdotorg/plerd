@@ -306,8 +306,8 @@ post => <<EOF,
                 [% ELSE %]
                 <h4 class="media-heading"><a href="[% webmention.original_source %]">[% webmention.original_source.host %]</a></h4>
                 [% END %]
-                    [% IF type == 'mention' %]
-                    <p><strong>[% webmention.source_mf2_document.get_first('entry').get_property('name') %]</strong></p>
+                    [% IF (type == 'mention') && (webmention.title != webmention.content) %]
+                    <p><strong>[% webmention.title %]</strong></p>
                     [% END %]
                     [% webmention.content %] <a rel="nofollow" href="[% webmention.original_source %]"><span class="glyphicon glyphicon-share" style="text-decoration:none; color:black;"></a>
             </div>
