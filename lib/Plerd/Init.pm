@@ -380,8 +380,9 @@ wrapper => <<EOF,
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="archive.html">Archive</a></li>
-                    <li><a href="atom.xml">RSS</a></li>
+                    <li><a href="/archive.html">Archive</a></li>
+                    <li><a href="/tags/">Tags</a></li>
+                    <li><a href="/atom.xml">RSS</a></li>
                 </ul>
             </div><!--/.navbar-collapse -->
         </div>
