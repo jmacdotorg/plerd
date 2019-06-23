@@ -676,7 +676,7 @@ sub ordered_webmentions {
     my $self = shift;
 
     return sort
-        {$a->time_received <=> $b->time_received }
+        {$a->time_published <=> $b->time_published }
         values( %{ $self->webmentions_by_source } )
     ;
 }
