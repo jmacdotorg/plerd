@@ -26,11 +26,28 @@ use Plerd::Util;
 my $webmention_enabled = 0;
 my $webmention_port  = 0;
 my $config_file;
+my $ssl_cert;
+my $ssl_key;
 GetOptions(
     'config=s'              => \$config_file,
     'send-webmentions'      => \$webmention_enabled,
     'receive-webmentions=i' => \$webmention_port,
+    'ssl-cert=s'            => \$ssl_cert,
+    'ssl-key=s'             => \$ssl_key,
 );
+
+if ($ssl_cert || $ssl_key) {
+    unless ( $ssl_cert && $ssl_key ) {
+        die "Can't start $0: You must define both ssl-cert and ssl-key, "
+            . "if you define either of them.\n";
+    }
+    unless (-r $ssl_cert) {
+        die "Can't start $0: No readable ssl-cert file at $ssl_cert.\n";
+    }
+    unless (-r $ssl_key) {
+        die "Can't start $0: No readable ssl-key file at $ssl_key.\n";
+    }
+}
 
 my $webserver_pid;
 $SIG{TERM} = \&handle_term_signal;
@@ -128,9 +145,20 @@ if ( $webmention_port ) {
     $webserver_pid = fork;
     unless ( $webserver_pid ) {
         app->log->path( "$$config_ref{log_path}/plerdweb.log" );
+
+        my $listen_uri;
+        if ( $ssl_cert ) {
+            $listen_uri =
+                "https://*:$webmention_port?cert=$ssl_cert&key=$ssl_key";
+        }
+        else {
+            $listen_uri =
+                "http://*:$webmention_port";
+        }
+
         app->start(
             'daemon',
-            '-l', "http://*:$webmention_port",
+            '-l' => $listen_uri,
         );
     }
 }
@@ -252,8 +280,14 @@ any URLs they link to.
 
  bin/plerdwatcher --receive-webmentions=4000 start
 
+ bin/plerdwatcher --receive-webmentions=4000 --ssl-cert=/path/to/cert.pem --ssl-key=/path/to/key.pem start
+
 Launches a webserver that listens on the specified TCP port. This will
 allow plerdwatcher to receive webmentions.
+
+If you want to use an SSL cert/key pair with this (so that plerdwatcher will
+listen for webmentions via HTTPS, rather than HTTP) add C<--ssl-cert> and
+C<--ssl-key> options as well.
 
 =head1 SEE ALSO
 
