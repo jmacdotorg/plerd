@@ -19,3 +19,6 @@ requires 'Readonly';
 requires 'Web::Mention' => '0.703'; 
 requires 'Mojolicious::Lite';
 requires 'Capture::Tiny';
+requires 'JSON';
+requires 'LWP';
+requires 'MooseX::Types::URI';
