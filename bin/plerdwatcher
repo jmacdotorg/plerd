@@ -17,7 +17,8 @@ use Getopt::Long;
 use Mojolicious::Lite;
 
 use Readonly;
-Readonly my $ACCEPTED => 202;
+Readonly my $OK          => 200;
+Readonly my $ACCEPTED    => 202;
 Readonly my $BAD_REQUEST => 400;
 
 use Plerd;
@@ -139,6 +140,12 @@ post '/' => sub {
     $c->render( status => $ACCEPTED, text => $success_text );
 
     $plerd->webmention_queue->add_webmention( $webmention );
+};
+
+get '/' => sub {
+    my $c = shift;
+
+    $c->render( status => $OK, text => 'OK (listening for webmentions)' );
 };
 
 if ( $webmention_port ) {
