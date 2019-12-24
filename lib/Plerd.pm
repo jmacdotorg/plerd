@@ -707,12 +707,20 @@ sub _build_has_tags {
 # Return either the tags/index.html file
 # or a tags/TAGNAME.html file if given a tag
 sub tags_publication_file {
-    my ($self, $tag) = @_;
-    $tag //= 'index';
+    my ($self, $tag_name) = @_;
+
+    if (defined $tag_name) {
+        # Grab the tag object based on this name and get its actual-factual name,
+        # which removes any different-case confusion.
+        $tag_name = $self->tag_named( $tag_name )->name;
+    }
+    else {
+        $tag_name = 'index';
+    }
 
     my $file = Path::Class::File->new($self->publication_directory,
                                       $self->tags_publication_directory,
-                                      "$tag.html");
+                                      "$tag_name.html");
 
     my $dir = $file->parent->stringify;
     if ( !-d $dir) {
