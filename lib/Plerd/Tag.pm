@@ -55,8 +55,12 @@ sub ponder_new_name {
     if ( $current_name eq $new_name ) {
         return;
     }
-    elsif ( not ($current_name =~ /[[:upper:]]/) ) {
-        $self->name( $new_name );
+    else {
+        $self->plerd->add_tag_case_conflict( $new_name, $current_name );
+        if ( not ($current_name =~ /[[:upper:]]/) ) {
+            $self->name( $new_name );
+
+        }
     }
 }
 

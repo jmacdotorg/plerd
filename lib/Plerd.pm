@@ -257,6 +257,12 @@ has 'tags_map' => (
     default => sub { {} },
 );
 
+has 'tag_case_conflicts' => (
+    is => 'rw',
+    isa => 'HashRef',
+    default => sub { {} },
+);
+
 sub BUILD {
     my $self = shift;
 
@@ -284,6 +290,7 @@ sub publish_all {
     }
 
     $self->publish_tag_indexes;
+    $self->report_tag_case_conflicts;
 
     $self->publish_archive_page;
 
@@ -297,6 +304,7 @@ sub publish_all {
     $self->clear_post_url_index_hash;
 
     $self->tags_map( {} );
+    $self->tag_case_conflicts( {} );
 }
 
 # Create a page that lists all available tags with
@@ -760,6 +768,35 @@ sub tag_uri {
     else {
         return $self->tags_index_uri;
     }
+}
+
+sub add_tag_case_conflict {
+    my ( $self, $conflicting_tag, $existing_tag ) = @_;
+
+    return unless $conflicting_tag ne $existing_tag;
+
+    $self->tag_case_conflicts->{lc $existing_tag}->{$conflicting_tag} = 1;
+    $self->tag_case_conflicts->{lc $existing_tag}->{$existing_tag} = 1;
+}
+
+sub report_tag_case_conflicts {
+    my $self = shift;
+
+    unless ( keys %{$self->tag_case_conflicts} ) {
+        return;
+    }
+
+    my $warning = "This blog's tags include the following case-conflicts:\n";
+
+    foreach ( keys %{$self->tag_case_conflicts} ) {
+        my $conflicts = join ', ', sort keys %{$self->tag_case_conflicts->{$_}};
+        $warning .= "$conflicts\n";
+    }
+
+    $warning .= "This can lead to unexpected behavior, broken links, and other\n"
+             . "sadnesses and regrets. Please normalize these tags!\n";
+
+    warn $warning;
 }
 
 1;
