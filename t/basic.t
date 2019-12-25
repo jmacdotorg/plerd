@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use Test::More;
+use Test::Warn;
 use Path::Class::Dir;
 use Path::Class::File;
 use URI;
@@ -123,7 +124,20 @@ like(
     qr{<h1>All Tags.*<li>.*<li>.*</ul>.*sidebar"}s,
     "The tag-index page links to two tags.",
 );
+}
 
+### Test warns when tags have case conflicts.
+{
+my $naughty_file = Path::Class::File->new( $source_dir, 'bad_case.md' );
+$naughty_file->spew(qq{title: Naughty tag!
+tags: FOO
+
+Oh no, this post has a tag whose case conflicts with an existing one.
+});
+$plerd->publish_all;
+warning_like {$plerd->publish_all} qr/conflicts/,
+    'Tag case-conflicts generate a warning';
+unlink $naughty_file;
 }
 
 ### Make sure re-titling posts works as expected

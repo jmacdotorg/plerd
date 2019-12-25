@@ -22,3 +22,4 @@ requires 'Capture::Tiny';
 requires 'JSON';
 requires 'LWP';
 requires 'MooseX::Types::URI';
+requires 'Test::Warn';
