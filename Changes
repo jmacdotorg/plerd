@@ -2,6 +2,16 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.820 2019-12-26T04:03:53Z
+
+      - Adding SSL support to Plerdwatcher.
+      
+      - Displayed webmentions are now sorted by time they were published (versus the time they were received).
+      
+      - Adding a trivial default handler on the webmention listener.
+
+      - Plerd now emits an intentional warning on publication if the blog contains tags that are identical except for case.
+      
 1.811 2019-05-27T04:24:16Z
 
       - Fixing a tag-ordering bug.

@@ -11,7 +11,7 @@ use ExtUtils::MakeMaker 6.64;
 my %WriteMakefileArgs = (
     NAME     => 'Plerd',
     DISTNAME => 'Plerd',
-    VERSION  => '1.811',
+    VERSION  => '1.820',
     EXE_FILES => [glob('script/*'), glob('bin/*')],
     CONFIGURE_REQUIRES => {
   "ExtUtils::MakeMaker" => "6.64"
@@ -32,16 +32,20 @@ my %WriteMakefileArgs = (
   "FindBin" => 0,
   "HTML::SocialMeta" => "0.72",
   "HTML::Strip" => 0,
+  "JSON" => 0,
+  "LWP" => 0,
   "List::Util" => "1.45",
   "Mojolicious::Lite" => 0,
   "Moose" => 0,
+  "MooseX::Types::URI" => 0,
   "Path::Class" => 0,
   "Readonly" => 0,
   "Template" => 0,
+  "Test::Warn" => 0,
   "Text::MultiMarkdown" => 0,
   "Try::Tiny" => 0,
   "URI" => 0,
-  "Web::Mention" => "0.6",
+  "Web::Mention" => "0.703",
   "YAML" => 0
 }
 ,
