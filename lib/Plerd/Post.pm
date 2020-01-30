@@ -724,7 +724,7 @@ sub _store {
         $post_dir,
         $filename,
     );
-    $file->spew( $self->json->encode( $data_ref ) );
+    $file->spew( $self->json->utf8->encode( $data_ref ) );
 }
 
 sub _retrieve {

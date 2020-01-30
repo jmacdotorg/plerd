@@ -58,7 +58,7 @@ sub add_webmention ( $ ) {
         croak "Not a Web::Mention object!";
     }
 
-    my $json = JSON->new->convert_blessed->encode( $wm );
+    my $json = JSON->new->utf8->convert_blessed->encode( $wm );
 
     my $file = Path::Class::File->new(
         $self->directory,
