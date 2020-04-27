@@ -27,19 +27,31 @@ I reserve the right to add new features to it, but I will do my best not to brea
 
 ### Installation
 
-The best way to install Plerd is via CPAN. Use the CPAN command-line tool of your choice to install `Plerd`. Or, if the previous sentence was meaningless to you, just do this:
+**First, make sure you have the `cpanm` program on your machine.** It is likely
+available as "cpanminus" in your favorite package manager. (Or install it from
+source, through the instructions at [http://cpanmin.us](http://cpanmin.us).)
 
-    curl -fsSL https://cpanmin.us | perl - Plerd
+Then, run this command:
 
-If you have a copy of Plerd's source handy, you can install it this way (after setting the current working directory to the same directory containing this README file):
+    cpanm Plerd
 
-    curl -fsSL https://cpanmin.us | perl - --installdeps .
+If you run into issues due to failing dependencies, you can try one of these instead:
+
+    cpanm --notest Plerd
+    # or
+    cpanm --force Plerd
+
+Alternately, you can run these commands under \`sudo\` to install Sweat at the system level.
+
+If everything installed as it should, then you should have the `plerdall` and `plerdwatcher` programs in your command path.
+
+**To install Plerd from source**, set the current working directory to the same directory containing this README file, make sure you have `cpanm` as described above, and then do this:
+
+    cpanm --installdeps .
     perl Makefile.PL
     make
     make install
     
-
-If everything installed as it should, then you should have the `plerdall` and `plerdwatcher` programs in your command path.
 
 ### Configuration
 
