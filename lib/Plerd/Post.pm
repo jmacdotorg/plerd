@@ -437,7 +437,7 @@ sub _process_source_file {
     while ( my $line = <$fh> ) {
         chomp $line;
         last unless $line =~ /\S/;
-        my ($key, $value) = $line =~ /^\s*(\w+?)\s*:\s*(.*)$/;
+        my ($key, $value) = $line =~ /^\s*(\w+?)\s*:\s*(.*?)\s*$/;
         if ( $key ) {
             $key = lc $key;
             $attributes{ $key } = $value;
