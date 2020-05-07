@@ -91,7 +91,7 @@ print $fh "\nHello!\n";
 close $fh or quit( "Couldn't close $good_source_file for testing: $!" );
 
 # This shouldn't take more than a couple of seconds to update...
-diag "Giving the Plerd daemon a a few seconds to process a change...";
+diag "Giving the Plerd daemon a few seconds to process a change...";
 sleep(5);
 
 # Magic number "7" below accounts for the 1 post plus various auto-generated
