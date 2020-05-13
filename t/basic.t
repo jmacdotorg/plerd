@@ -83,6 +83,11 @@ like ( $post,
        qr{an <em>example</em> of a “backdated},
        'Post title is formatted.'
      );
+my $json = Path::Class::File->new( $docroot_dir, 'feed.json' )->slurp;
+like ( $json,
+       qr{A good source file},
+       'JSON Feed file has HTML-stripped titles.',
+     );
 }
 
 ### Test published-file naming

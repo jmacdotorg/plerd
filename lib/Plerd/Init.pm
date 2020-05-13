@@ -173,7 +173,7 @@ jsonfeed => <<EOF,
     {
       "id": "[% post.uri %]",
       "url": "[% post.uri %]",
-      "title": "[% post.title %]",
+      "title": "[% post.stripped_title %]",
       "content_html": "[% post.body | json %]",
       "date_published": "[% post.published_timestamp %]",
       "date_modified": "[% post.updated_timestamp %]"

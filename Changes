@@ -4,6 +4,8 @@ Revision history for Plerd
 
       - Fixing a UTF-8 encoding bug with stored webmentions.
 
+      - HTML is now stripped from JSON Feed titles.
+
 1.820 2019-12-26T04:03:53Z
 
       - Adding SSL support to Plerdwatcher.

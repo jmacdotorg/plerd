@@ -55,6 +55,12 @@ has 'stripped_body' => (
     lazy_build => 1,
 );
 
+has 'stripped_title' => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
 has 'attributes' => (
     is => 'rw',
     isa => 'HashRef',
@@ -342,13 +348,24 @@ sub _build_reading_time {
 sub _build_stripped_body {
     my $self = shift;
 
-    my $stripper = HTML::Strip->new;
-    my $body = $stripper->parse( $self->body );
+    return $self->_strip_html( $self->body );
+}
+
+sub _build_stripped_title {
+    my $self = shift;
+
+    return $self->_strip_html( $self->title );
+}
+
+sub _strip_html {
+    my ($self, $raw_text) = @_;
+
+    my $stripped = HTML::Strip->new->parse( $raw_text );
 
     # Clean up apparently orphaned punctuation
-    $body =~ s{ ([;.,\?\!])}{$1}g;
+    $stripped =~ s{ ([;.,\?\!])}{$1}g;
 
-    return $body;
+    return $stripped;
 }
 
 sub _build_socialmeta {
