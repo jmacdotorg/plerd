@@ -1,5 +1,8 @@
 package Plerd;
 
+use strict;
+use warnings;
+
 our $VERSION = '1.821';
 
 use Moose;
@@ -17,264 +20,262 @@ use Plerd::Tag;
 use Plerd::WebmentionQueue;
 
 has 'path' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has 'source_path' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has 'template_path' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has 'publication_path' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has 'database_path' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Str',
 );
 
 has 'tags_publication_path' => (
-    is => 'ro',
-    isa => 'Str',
+    is         => 'ro',
+    isa        => 'Str',
     lazy_build => 1,
 );
 
 has 'base_uri' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    isa => Uri,
-    coerce => 1,
+    isa      => Uri,
+    coerce   => 1,
 );
 
 has 'tags_index_uri' => (
-    is => 'ro',
-    isa => Uri,
+    is         => 'ro',
+    isa        => Uri,
     lazy_build => 1,
 );
 
-
 has 'title' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    isa => 'Str',
+    isa      => 'Str',
 );
 
 has 'author_name' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    isa => 'Str',
+    isa      => 'Str',
 );
 
 has 'author_email' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    isa => 'Str',
+    isa      => 'Str',
 );
 
 has 'twitter_id' => (
-    is => 'ro',
-    isa => 'Maybe[Str]',
+    is      => 'ro',
+    isa     => 'Maybe[Str]',
     default => undef,
 );
 
 has 'facebook_id' => (
-    is => 'ro',
-    isa => 'Maybe[Str]',
+    is      => 'ro',
+    isa     => 'Maybe[Str]',
     default => undef,
 );
 
 has 'image' => (
-    is => 'ro',
-    isa => Uri,
+    is     => 'ro',
+    isa    => Uri,
     coerce => 1,
 );
 
 has 'image_alt' => (
-    is => 'ro',
-    isa => 'Maybe[Str]',
+    is      => 'ro',
+    isa     => 'Maybe[Str]',
     default => undef,
 );
 
 has 'recent_posts_maxsize' => (
-    is => 'ro',
-    isa => 'Int',
+    is      => 'ro',
+    isa     => 'Int',
     default => 10,
 );
 
 has 'directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'source_directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'template_directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'database_directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'publication_directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'tags_publication_directory' => (
-    is => 'ro',
-    isa => 'Path::Class::Dir',
+    is         => 'ro',
+    isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
 
 has 'template' => (
-    is => 'ro',
-    isa => 'Template',
+    is         => 'ro',
+    isa        => 'Template',
     lazy_build => 1,
 );
 
 has 'post_template_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'archive_template_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'rss_template_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'tags_template_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'jsonfeed_template_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'recent_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'archive_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'rss_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'jsonfeed_file' => (
-    is => 'ro',
-    isa => 'Path::Class::File',
+    is         => 'ro',
+    isa        => 'Path::Class::File',
     lazy_build => 1,
 );
 
 has 'recent_posts' => (
-    is => 'ro',
-    isa => 'ArrayRef[Plerd::Post]',
+    is         => 'ro',
+    isa        => 'ArrayRef[Plerd::Post]',
     lazy_build => 1,
-    clearer => 'clear_recent_posts',
+    clearer    => 'clear_recent_posts',
 );
 
 has 'datetime_formatter' => (
-    is => 'ro',
-    isa => 'DateTime::Format::W3CDTF',
+    is      => 'ro',
+    isa     => 'DateTime::Format::W3CDTF',
     default => sub { DateTime::Format::W3CDTF->new },
 );
 
 has 'posts' => (
-    is => 'ro',
-    isa => 'ArrayRef[Plerd::Post]',
+    is         => 'ro',
+    isa        => 'ArrayRef[Plerd::Post]',
     lazy_build => 1,
-    clearer => 'clear_posts',
+    clearer    => 'clear_posts',
 );
 
 has 'index_of_post_with_guid' => (
-    is => 'ro',
-    isa  => 'HashRef',
+    is         => 'ro',
+    isa        => 'HashRef',
     lazy_build => 1,
-    clearer => 'clear_post_index_hash',
+    clearer    => 'clear_post_index_hash',
 );
 
 has 'index_of_post_with_url' => (
-    is => 'ro',
-    isa  => 'HashRef',
+    is         => 'ro',
+    isa        => 'HashRef',
     lazy_build => 1,
-    clearer => 'clear_post_url_index_hash',
+    clearer    => 'clear_post_url_index_hash',
 );
 
 has 'webmention_queue' => (
-    is => 'ro',
-    isa => 'Plerd::WebmentionQueue',
+    is         => 'ro',
+    isa        => 'Plerd::WebmentionQueue',
     lazy_build => 1,
 );
 
 has 'has_tags' => (
-    is => 'ro',
-    isa => 'Bool',
+    is         => 'ro',
+    isa        => 'Bool',
     lazy_build => 1,
 );
 
 has 'tags_map' => (
-    is => 'rw',
-    isa => 'HashRef',
+    is      => 'rw',
+    isa     => 'HashRef',
     default => sub { {} },
 );
 
 has 'tag_case_conflicts' => (
-    is => 'rw',
-    isa => 'HashRef',
+    is      => 'rw',
+    isa     => 'HashRef',
     default => sub { {} },
 );
 
 sub BUILD {
     my $self = shift;
 
-    unless ( $self->path ) {
-        for my $subdir_type ( qw( source template publication database ) ) {
+    unless ($self->path) {
+        for my $subdir_type (qw( source template publication database )) {
             try {
                 my $method = "${subdir_type}_directory";
-                my $dir = $self->$method;
+                my $dir    = $self->$method;
             }
             catch {
-                die "Can't create a new Plerd object, due to insufficient "
-                    . "configuration: $_";
+                die "Can't create a new Plerd object, due to insufficient " . "configuration: $_";
             };
         }
     }
@@ -285,7 +286,7 @@ sub BUILD {
 sub publish_all {
     my $self = shift;
 
-    for my $post ( @{ $self->posts } ) {
+    for my $post (@{$self->posts}) {
         $post->publish;
     }
 
@@ -303,8 +304,10 @@ sub publish_all {
     $self->clear_post_index_hash;
     $self->clear_post_url_index_hash;
 
-    $self->tags_map( {} );
-    $self->tag_case_conflicts( {} );
+    $self->tags_map({});
+    $self->tag_case_conflicts({});
+
+    return;
 }
 
 # Create a page that lists all available tags with
@@ -327,31 +330,33 @@ sub publish_tag_indexes {
         $self->template->process(
             $self->tags_template_file->open('<:encoding(utf8)'),
             {
-                self_uri => $tag->uri,
+                self_uri     => $tag->uri,
                 is_tags_page => 1,
-                tags => { $tag->name => $tag->posts },
-                plerd => $self,
+                tags         => {$tag->name => $tag->posts},
+                plerd        => $self,
             },
             $self->tags_publication_file($tag->name)->open('>:encoding(utf8)'),
-            ) || $self->_throw_template_exception( $self->tags_template_file );
+        ) || $self->_throw_template_exception($self->tags_template_file);
     }
 
     # Create the tag index
     my %simplified_tag_map;
     for my $tag (values %$tag_map) {
-        $simplified_tag_map{ $tag->name } = $tag->posts;
+        $simplified_tag_map{$tag->name} = $tag->posts;
     }
     $self->template->process(
         $self->tags_template_file->open('<:encoding(utf8)'),
         {
-            self_uri => $self->tags_index_uri,
+            self_uri           => $self->tags_index_uri,
             is_tags_index_page => 1,
-            is_tags_page => 1,
-            tags => \%simplified_tag_map,
-            plerd => $self,
+            is_tags_page       => 1,
+            tags               => \%simplified_tag_map,
+            plerd              => $self,
         },
         $self->tags_publication_file->open('>:encoding(utf8)'),
-        ) || $self->_throw_template_exception( $self->tags_template_file );
+    ) || $self->_throw_template_exception($self->tags_template_file);
+
+    return;
 
 }
 
@@ -366,41 +371,43 @@ sub publish_recent_page {
             title => $self->title,
         },
         $self->recent_file->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->post_template_file );
+    ) || $self->_throw_template_exception($self->post_template_file);
 
-    my $index_file =
-        Path::Class::File->new( $self->publication_directory, 'index.html' );
+    my $index_file = Path::Class::File->new($self->publication_directory, 'index.html');
     symlink $self->recent_file, $index_file;
+
+    return;
 }
 
 sub publish_rss {
     my $self = shift;
 
-    $self->_publish_feed( 'rss' );
+    $self->_publish_feed('rss');
+
+    return;
 }
 
 sub publish_jsonfeed {
     my $self = shift;
 
-    $self->_publish_feed( 'jsonfeed' );
+    $self->_publish_feed('jsonfeed');
+
+    return;
 }
 
 sub post_with_url {
-    my $self = shift;
-    my ( $url ) = @_;
+    my ($self, $url) = @_;
 
-    my $index = $self->index_of_post_with_url->{ $url };
-    if ( defined $index ) {
-        return $self->posts->[ $self->index_of_post_with_url->{ $url } ];
-    }
-    else {
+    my $index = $self->index_of_post_with_url->{$url};
+    if (defined $index) {
+        return $self->posts->[$self->index_of_post_with_url->{$url}];
+    } else {
         return;
     }
 }
 
 sub _publish_feed {
-    my $self = shift;
-    my ( $feed_type ) = @_;
+    my ($self, $feed_type) = @_;
 
     my $template_file_method = "${feed_type}_template_file";
     my $file_method          = "${feed_type}_file";
@@ -408,19 +415,19 @@ sub _publish_feed {
     return unless -e $self->$template_file_method;
 
     my $formatter = $self->datetime_formatter;
-    my $timestamp =
-        $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
-    ;
+    my $timestamp = $formatter->format_datetime(DateTime->now(time_zone => 'local'));
 
     $self->template->process(
         $self->$template_file_method->open('<:encoding(utf8)'),
         {
-            plerd => $self,
-            posts => $self->recent_posts,
+            plerd     => $self,
+            posts     => $self->recent_posts,
             timestamp => $timestamp,
         },
         $self->$file_method->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->$template_file_method );
+    ) || $self->_throw_template_exception($self->$template_file_method);
+
+    return;
 }
 
 sub publish_archive_page {
@@ -435,152 +442,122 @@ sub publish_archive_page {
             posts => $posts_ref,
         },
         $self->archive_file->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->archive_template_file );
+    ) || $self->_throw_template_exception($self->archive_template_file);
+
+    return;
 
 }
-
 
 sub _build_directory {
     my $self = shift;
 
-    if ( defined $self->path ) {
-        return Path::Class::Dir->new( $self->path );
-    }
-    else {
-        return undef;
+    if (defined $self->path) {
+        return Path::Class::Dir->new($self->path);
+    } else {
+        return;
     }
 }
 
 sub _build_subdirectory {
     my $self = shift;
-    my ( $path_method, $subdir_name ) = @_;
+    my ($path_method, $subdir_name) = @_;
 
-    if ( defined $self->$path_method ) {
-        return Path::Class::Dir->new( $self->$path_method );
-    }
-    elsif ( defined $self->path ) {
-        return Path::Class::Dir->new(
-            $self->directory,
-            $subdir_name,
-        );
-    }
-    else {
-        die "Can't build $subdir_name directory! Neither a '$path_method' nor "
-            . "a 'path' attribute is defined.\n";
+    if (defined $self->$path_method) {
+        return Path::Class::Dir->new($self->$path_method);
+    } elsif (defined $self->path) {
+        return Path::Class::Dir->new($self->directory, $subdir_name,);
+    } else {
+        die "Can't build $subdir_name directory! Neither a '$path_method' nor " . "a 'path' attribute is defined.\n";
     }
 }
 
 sub _build_source_directory {
     my $self = shift;
 
-    return $self->_build_subdirectory( 'source_path', 'source' );
+    return $self->_build_subdirectory('source_path', 'source');
 }
 
 sub _build_database_directory {
     my $self = shift;
 
-    return $self->_build_subdirectory( 'database_path', 'db' );
+    return $self->_build_subdirectory('database_path', 'db');
 }
 
 sub _build_publication_directory {
     my $self = shift;
 
-    return $self->_build_subdirectory( 'publication_path', 'docroot' );
+    return $self->_build_subdirectory('publication_path', 'docroot');
 }
 
 sub _build_template_directory {
     my $self = shift;
 
-    return $self->_build_subdirectory( 'template_path', 'templates' );
+    return $self->_build_subdirectory('template_path', 'templates');
 }
 
 sub _build_template {
     my $self = shift;
 
-    return Template->new( {
-        INCLUDE_PATH => $self->template_directory,
-        FILTERS => {
-            json => sub {
-                my $text = shift;
-                $text =~ s/"/\\"/g;
-                $text =~ s/\n/\\n/g;
-                return $text;
+    return Template->new({
+            INCLUDE_PATH => $self->template_directory,
+            FILTERS      => {
+                json => sub {
+                    my $text = shift;
+                    $text =~ s/"/\\"/g;
+                    $text =~ s/\n/\\n/g;
+                    return $text;
+                },
             },
-        },
-        ENCODING => 'utf8',
-    } );
+            ENCODING => 'utf8',
+        });
 }
 
 sub _build_post_template_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->template_directory,
-        'post.tt',
-    );
+    return Path::Class::File->new($self->template_directory, 'post.tt',);
 }
 
 sub _build_rss_template_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->template_directory,
-        'atom.tt',
-    );
+    return Path::Class::File->new($self->template_directory, 'atom.tt',);
 }
 
 sub _build_jsonfeed_template_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->template_directory,
-        'jsonfeed.tt',
-    );
+    return Path::Class::File->new($self->template_directory, 'jsonfeed.tt',);
 }
 
 sub _build_archive_template_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->template_directory,
-        'archive.tt',
-    );
+    return Path::Class::File->new($self->template_directory, 'archive.tt',);
 }
 
 sub _build_recent_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->publication_directory,
-        'recent.html',
-    );
+    return Path::Class::File->new($self->publication_directory, 'recent.html',);
 }
 
 sub _build_archive_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->publication_directory,
-        'archive.html',
-    );
+    return Path::Class::File->new($self->publication_directory, 'archive.html',);
 }
 
 sub _build_rss_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->publication_directory,
-        'atom.xml',
-    );
+    return Path::Class::File->new($self->publication_directory, 'atom.xml',);
 }
 
 sub _build_jsonfeed_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->publication_directory,
-        'feed.json',
-    );
+    return Path::Class::File->new($self->publication_directory, 'feed.json',);
 }
 
 sub _build_recent_posts {
@@ -588,21 +565,20 @@ sub _build_recent_posts {
 
     my @recent_posts = ();
 
-    for my $post ( @{ $self->posts } ) {
+    for my $post (@{$self->posts}) {
 
         my $did_update = 0;
 
-        if ( @recent_posts < $self->recent_posts_maxsize ) {
+        if (@recent_posts < $self->recent_posts_maxsize) {
             push @recent_posts, $post;
             $did_update = 1;
-        }
-        elsif ( $post->date > $recent_posts[ -1 ]->date ) {
+        } elsif ($post->date > $recent_posts[-1]->date) {
             pop @recent_posts;
             push @recent_posts, $post;
             $did_update = 1;
         }
 
-        if ( $did_update ) {
+        if ($did_update) {
             @recent_posts = sort { $b->date <=> $a->date } @recent_posts;
         }
     }
@@ -614,11 +590,9 @@ sub _build_posts {
     my $self = shift;
 
     my @posts = sort { $b->date <=> $a->date }
-                map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
-                sort { $a->basename cmp $b->basename }
-                grep { /\.markdown$|\.md$/ }
-                $self->source_directory->children
-    ;
+        map { Plerd::Post->new(plerd => $self, source_file => $_) }
+        sort { $a->basename cmp $b->basename }
+        grep { /\.markdown$|\.md$/ } $self->source_directory->children;
 
     return \@posts;
 }
@@ -630,8 +604,8 @@ sub _build_index_of_post_with_guid {
 
     my $current_index = 0;
 
-    for my $post ( @{ $self->posts } ) {
-        $index_of_post{ $post->guid } = $current_index++;
+    for my $post (@{$self->posts}) {
+        $index_of_post{$post->guid} = $current_index++;
     }
 
     return \%index_of_post;
@@ -644,8 +618,8 @@ sub _build_index_of_post_with_url {
 
     my $current_index = 0;
 
-    for my $post ( @{ $self->posts } ) {
-        $index_of_post{ $post->uri } = $current_index++;
+    for my $post (@{$self->posts}) {
+        $index_of_post{$post->uri} = $current_index++;
     }
 
     return \%index_of_post;
@@ -654,48 +628,41 @@ sub _build_index_of_post_with_url {
 sub _build_webmention_queue {
     my $self = shift;
 
-    return Plerd::WebmentionQueue->new( plerd => $self );
+    return Plerd::WebmentionQueue->new(plerd => $self);
 }
 
 sub _throw_template_exception {
-    my $self = shift;
-    my ( $template_file ) = @_;
+    my ($self, $template_file) = @_;
 
     my $error = $self->template->error;
 
-    die "Publication interrupted due to an error encountered while processing "
-        . "template file $template_file: $error\n";
+    die "Publication interrupted due to an error encountered while processing " . "template file $template_file: $error\n";
 }
 
 sub generates_post_guids {
-    carp "generates_post_guids() is deprecated. (Also, it doesn't do anything "
-         . "anyway.)";
+    carp "generates_post_guids() is deprecated. (Also, it doesn't do anything " . "anyway.)";
+
+    return;
 }
 
 # Tag-related builders & methods
 sub _build_tags_index_uri {
     my $self = shift;
-    return URI->new_abs(
-        'tags/',
-        $self->base_uri,
-    );
+    return URI->new_abs('tags/', $self->base_uri,);
 }
 
-sub _build_tags_publication_path { 'tags' }
+sub _build_tags_publication_path { return 'tags' }
 
 sub _build_tags_publication_directory {
     my $self = shift;
 
-    return $self->_build_subdirectory( 'tags_publication_path', 'docroot' );
+    return $self->_build_subdirectory('tags_publication_path', 'docroot');
 }
 
 sub _build_tags_template_file {
     my $self = shift;
 
-    return Path::Class::File->new(
-        $self->template_directory,
-        'tags.tt',
-    );
+    return Path::Class::File->new($self->template_directory, 'tags.tt',);
 }
 
 sub _build_has_tags {
@@ -705,8 +672,7 @@ sub _build_has_tags {
 
     if (scalar keys %$tags_map) {
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 
@@ -718,34 +684,31 @@ sub tags_publication_file {
     my ($self, $tag) = @_;
     $tag //= 'index';
 
-    my $file = Path::Class::File->new($self->publication_directory,
-                                      $self->tags_publication_directory,
-                                      "$tag.html");
+    my $file = Path::Class::File->new($self->publication_directory, $self->tags_publication_directory, "$tag.html");
 
     my $dir = $file->parent->stringify;
-    if ( !-d $dir) {
-        mkdir $dir || die ("Cannot make directory: '$dir'. Create it manually, please.");
+    if (!-d $dir) {
+        mkdir $dir || die("Cannot make directory: '$dir'. Create it manually, please.");
     }
 
     return $file;
 }
 
 sub tag_named {
-    my ( $self, $tag_name ) = @_;
+    my ($self, $tag_name) = @_;
 
     my $key = lc $tag_name;
 
-    my $tag = $self->tags_map->{ $key };
+    my $tag = $self->tags_map->{$key};
 
-    if ( $tag ) {
-        $tag->ponder_new_name( $tag_name );
-    }
-    else {
+    if ($tag) {
+        $tag->ponder_new_name($tag_name);
+    } else {
         $tag = Plerd::Tag->new(
-            name => $tag_name,
+            name  => $tag_name,
             plerd => $self,
         );
-        $self->tags_map->{ $key } = $tag;
+        $self->tags_map->{$key} = $tag;
     }
 
     return $tag;
@@ -758,45 +721,47 @@ sub publish {
 }
 
 sub tag_uri {
-    my ( $self, $tag_name ) = @_;
+    my ($self, $tag_name) = @_;
 
-    my $tag = $self->tag_named( $tag_name );
+    my $tag = $self->tag_named($tag_name);
 
-    if ( $tag ) {
+    if ($tag) {
         return $tag->uri;
-    }
-    else {
+    } else {
         return $self->tags_index_uri;
     }
 }
 
 sub add_tag_case_conflict {
-    my ( $self, $conflicting_tag, $existing_tag ) = @_;
+    my ($self, $conflicting_tag, $existing_tag) = @_;
 
     return unless $conflicting_tag ne $existing_tag;
 
     $self->tag_case_conflicts->{lc $existing_tag}->{$conflicting_tag} = 1;
-    $self->tag_case_conflicts->{lc $existing_tag}->{$existing_tag} = 1;
+    $self->tag_case_conflicts->{lc $existing_tag}->{$existing_tag}    = 1;
+
+    return;
 }
 
 sub report_tag_case_conflicts {
     my $self = shift;
 
-    unless ( keys %{$self->tag_case_conflicts} ) {
+    unless (keys %{$self->tag_case_conflicts}) {
         return;
     }
 
     my $warning = "This blog's tags include the following case-conflicts:\n";
 
-    foreach ( keys %{$self->tag_case_conflicts} ) {
+    foreach (keys %{$self->tag_case_conflicts}) {
         my $conflicts = join ', ', sort keys %{$self->tag_case_conflicts->{$_}};
         $warning .= "$conflicts\n";
     }
 
-    $warning .= "This can lead to unexpected behavior, broken links, and other\n"
-             . "sadnesses and regrets. Please normalize these tags!\n";
+    $warning .= "This can lead to unexpected behavior, broken links, and other\n" . "sadnesses and regrets. Please normalize these tags!\n";
 
     warn $warning;
+
+    return;
 }
 
 1;
