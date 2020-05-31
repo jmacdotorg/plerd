@@ -1,0 +1,63 @@
+#line length; keep it quite short so that lists of arguments to subs
+#are wrapped
+--maximum-line-length=150
+
+#Cuddled else
+-ce
+
+#Stack Closing Tokens
+#http://perltidy.sourceforge.net/stylekey.html#stack_closing_tokens
+#"The manual shows how all of these vertical tightness controls may be
+#applied independently to each type of non-block opening and opening token."
+--stack-closing-tokens
+
+## Similarly for opening.
+--stack-opening-tokens
+
+#4 char wide tabs instead of spaces for indentation.
+-i=4
+
+#Horizontal Tightness
+#http://perltidy.sourceforge.net/stylekey.html#define_horizontal_tightness
+#parentheses      if ((my $len_tab = length($tabstr)) > 0)
+-pt=2
+
+#square brackets  $width = $col[$j + $k] - $col[$j];
+-sbt=2
+
+#braces           $width = $col[$j + $k] - $col[$j];
+-bt=2
+
+#block braces     map { $_ => -M $_ } grep { /\.deb$/ }
+-bbt=0
+
+#no space in front of semi-colons in a for loop
+--nospace-for-semicolon
+
+#no outdenting of long quotes
+#http://perltidy.sourceforge.net/stylekey.html#outdenting_long_quotes
+--no-outdent-long-quotes
+
+--add-semicolons
+
+#always break a new line after a semi-colon
+--want-break-after=";"
+
+#all hash key/values on a separate line
+--comma-arrow-breakpoints=0
+
+#No newlines before comments
+-nbbc
+
+--no-outdent-long-lines
+
+#do not outdent labels
+--no-outdent-labels
+
+--check-syntax
+
+--indent-spaced-block-comments
+
+#4 charachter if its breaks the line
+--continuation-indentation=4
+

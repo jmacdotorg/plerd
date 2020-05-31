@@ -1,0 +1,23 @@
+severity        = 4
+criticism-fatal = 1
+color           = 1
+include = TestingAndDebugging::RequireUseWarnings Subroutines::RequireArgUnpacking TestingAndDebugging::ProhibitNoStrict CodeLayout::RequireTidyCode ErrorHandling::RequireCheckingReturnValueOfEval TestingAndDebugging::RequireUseStrict
+exclude = ValuesAndExpressions::ProhibitConstantPragma
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules=MooseX::Singleton Mojo::Base
+
+[Subroutines::RequireArgUnpacking]
+short_subroutine_statements=3
+
+[TestingAndDebugging::ProhibitNoStrict]
+allow=refs
+
+[CodeLayout::RequireTidyCode]
+perltidyrc=t/rc/.perltidyrc
+
+[ErrorHandling::RequireCheckingReturnValueOfEval]
+severity=4
+
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules=MooseX::Singleton Mojo::Base
