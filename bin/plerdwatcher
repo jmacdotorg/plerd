@@ -6,7 +6,7 @@ use strict;
 use FindBin;
 use lib
     "$FindBin::Bin/../lib",
-;
+    ;
 
 use File::ChangeNotify;
 use Path::Class::File;
@@ -25,7 +25,7 @@ use Plerd;
 use Plerd::Util;
 
 my $webmention_enabled = 0;
-my $webmention_port  = 0;
+my $webmention_port    = 0;
 my $config_file;
 my $ssl_cert;
 my $ssl_key;
@@ -38,9 +38,8 @@ GetOptions(
 );
 
 if ($ssl_cert || $ssl_key) {
-    unless ( $ssl_cert && $ssl_key ) {
-        die "Can't start $0: You must define both ssl-cert and ssl-key, "
-            . "if you define either of them.\n";
+    unless ($ssl_cert && $ssl_key) {
+        die "Can't start $0: You must define both ssl-cert and ssl-key, " . "if you define either of them.\n";
     }
     unless (-r $ssl_cert) {
         die "Can't start $0: No readable ssl-cert file at $ssl_cert.\n";
@@ -51,27 +50,21 @@ if ($ssl_cert || $ssl_key) {
 }
 
 my $webserver_pid;
-$SIG{TERM} = \&handle_term_signal;
+local $SIG{TERM} = \&handle_term_signal;
 
 $ENV{MOJO_MODE} ||= 'production';
 
-my $config_ref = Plerd::Util::read_config_file( $config_file );
+my $config_ref = Plerd::Util::read_config_file($config_file);
 
-for my $dir_type ( qw( run log ) ) {
-    unless ( $config_ref->{ "${dir_type}_path" } ) {
-        if ( $config_ref->{ path } ) {
-            $config_ref->{ "${dir_type}_path" } =
-                Path::Class::File->new(
-                    $config_ref->{path},
-                    $dir_type,
-                )->stringify;
-        }
-        else {
-            $config_ref->{ "${dir_type}_path" } =
-                "$FindBin::Bin/../$dir_type";
+for my $dir_type (qw( run log )) {
+    unless ($config_ref->{"${dir_type}_path"}) {
+        if ($config_ref->{path}) {
+            $config_ref->{"${dir_type}_path"} = Path::Class::File->new($config_ref->{path}, $dir_type,)->stringify;
+        } else {
+            $config_ref->{"${dir_type}_path"} = "$FindBin::Bin/../$dir_type";
         }
     }
-    my $dir = $config_ref->{ "${dir_type}_path" };
+    my $dir = $config_ref->{"${dir_type}_path"};
     mkdir $dir unless -e $dir;
     unless (-w $dir) {
         die "Can't start $0: I don't have write permission to $dir_type "
@@ -85,19 +78,19 @@ $App::Daemon::pidfile = "$$config_ref{run_path}/plerdwatcher.pid";
 
 daemonize();
 
-foreach (qw( base_uri image ) ) {
-    unless ( ref $config_ref->{ $_ } ) {
-        $config_ref->{ $_ } = URI->new ( $config_ref->{ $_ } );
+foreach (qw( base_uri image )) {
+    unless (ref $config_ref->{$_}) {
+        $config_ref->{$_} = URI->new($config_ref->{$_});
     }
 }
 
 my $plerd;
 my $watcher;
 try {
-    $plerd = Plerd->new( $config_ref );
+    $plerd = Plerd->new($config_ref);
 
-    $watcher = File::ChangeNotify->instantiate_watcher (
-        directories => [ $plerd->source_directory . '' ],
+    $watcher = File::ChangeNotify->instantiate_watcher(
+        directories => [$plerd->source_directory . ''],
         filter      => qr/\.(md|markdown)$/,
     );
 }
@@ -110,57 +103,65 @@ post '/' => sub {
 
     my $webmention;
     try {
-        $webmention = Web::Mention->new_from_request ( $c );
+        $webmention = Web::Mention->new_from_request($c);
     }
     catch {
-        $c->render( status => $BAD_REQUEST, text => "Malformed webmention: $_" );
+        $c->render(
+            status => $BAD_REQUEST,
+            text   => "Malformed webmention: $_"
+        );
     };
     return unless $webmention;
 
     # If the list of blog source files has changed, force a lazy rebuild of
     # the plerd object's internal database of posts before continuing.
-    if ( $watcher->new_events ) {
+    if ($watcher->new_events) {
         $plerd->clear_posts;
         $plerd->clear_post_url_index_hash;
     }
 
-    my $post = $plerd->post_with_url( $webmention->target );
-    unless ( $post ) {
-        $c->render( status => $BAD_REQUEST, text => "Unrecognized target URL." );
+    my $post = $plerd->post_with_url($webmention->target);
+    unless ($post) {
+        $c->render(
+            status => $BAD_REQUEST,
+            text   => "Unrecognized target URL."
+        );
         return;
     }
 
-    my $success_text = "Webmention accepted, and queued for verification and "
-                     . "processing. Thank you!";
+    my $success_text = "Webmention accepted, and queued for verification and " . "processing. Thank you!";
 
-    my $return_link_url = $c->param( 'target' );
+    my $return_link_url  = $c->param('target');
     my $return_link_text = 'Return to ' . $plerd->title . '.';
     $success_text .= qq{ <a href="$return_link_url">$return_link_text</a>};
 
-    $c->render( status => $ACCEPTED, text => $success_text );
+    $c->render(
+        status => $ACCEPTED,
+        text   => $success_text
+    );
 
-    $plerd->webmention_queue->add_webmention( $webmention );
+    $plerd->webmention_queue->add_webmention($webmention);
 };
 
 get '/' => sub {
     my $c = shift;
 
-    $c->render( status => $OK, text => 'OK (listening for webmentions)' );
+    $c->render(
+        status => $OK,
+        text   => 'OK (listening for webmentions)'
+    );
 };
 
-if ( $webmention_port ) {
+if ($webmention_port) {
     $webserver_pid = fork;
-    unless ( $webserver_pid ) {
-        app->log->path( "$$config_ref{log_path}/plerdweb.log" );
+    unless ($webserver_pid) {
+        app->log->path("$$config_ref{log_path}/plerdweb.log");
 
         my $listen_uri;
-        if ( $ssl_cert ) {
-            $listen_uri =
-                "https://*:$webmention_port?cert=$ssl_cert&key=$ssl_key";
-        }
-        else {
-            $listen_uri =
-                "http://*:$webmention_port";
+        if ($ssl_cert) {
+            $listen_uri = "https://*:$webmention_port?cert=$ssl_cert&key=$ssl_key";
+        } else {
+            $listen_uri = "http://*:$webmention_port";
         }
 
         app->start(
@@ -170,28 +171,22 @@ if ( $webmention_port ) {
     }
 }
 
-while ( my @events = $watcher->wait_for_events ) {
-    if ( @events ) {
+while (my @events = $watcher->wait_for_events) {
+    if (@events) {
         try {
             $plerd->publish_all;
-            for my $event ( @events ) {
-                if (
-                    (
-                        ( $event->type eq 'create' )
-                        or ( $event->type eq 'modify' )
-                    )
-                    and $webmention_enabled
-                ) {
-                    my $file = Path::Class::File->new( $event->path );
+            for my $event (@events) {
+                if ((($event->type eq 'create') or ($event->type eq 'modify'))
+                    and $webmention_enabled)
+                {
+                    my $file = Path::Class::File->new($event->path);
                     my $post = Plerd::Post->new(
                         source_file => $file,
-                        plerd => $plerd,
+                        plerd       => $plerd,
                     );
                     INFO "Sending webmentions for $file...";
                     my $report = $post->send_webmentions;
-                    INFO "$report->{attempts} attempts, "
-                         . "$report->{sent} sent, "
-                         . "$report->{delivered} delivered.";
+                    INFO "$report->{attempts} attempts, " . "$report->{sent} sent, " . "$report->{delivered} delivered.";
                 }
             }
         }
@@ -202,7 +197,7 @@ while ( my @events = $watcher->wait_for_events ) {
 }
 
 sub handle_term_signal {
-    kill ('KILL', $webserver_pid) if $webserver_pid;
+    kill('KILL', $webserver_pid) if $webserver_pid;
     exit;
 }
 

@@ -14,7 +14,7 @@ short_subroutine_statements=3
 allow=refs
 
 [CodeLayout::RequireTidyCode]
-perltidyrc=t/rc/.perltidyrc
+perltidyrc=t/rc/.tidyallrc
 
 [ErrorHandling::RequireCheckingReturnValueOfEval]
 severity=4

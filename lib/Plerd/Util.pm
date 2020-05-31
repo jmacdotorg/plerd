@@ -15,27 +15,22 @@ use Path::Class::File;
 #                   needed, then try to parse it as YAML and return the
 #                   resulting data structure.
 sub read_config_file {
-    my ( $config_file ) = @_;
+    my ($config_file) = @_;
 
-    unless ( defined $config_file ) {
+    unless (defined $config_file) {
         # As fallback config locations, try ./plerd.conf, conf/plerd.conf,
         # ~/.plerd, then (for historical reasons) $bin/../conf/plerd.conf.
         # Then give up.
-        my $local_file = Path::Class::File->new( getcwd, 'plerd.conf' );
-        my $nearby_file = Path::Class::File->new( getcwd, 'conf', 'plerd.conf' );
-        my $dotfile = Path::Class::File->new( File::HomeDir->my_home, '.plerd' );
-        foreach (
-            $local_file,
-            $nearby_file,
-            $dotfile,
-            "$FindBin::Bin/../conf/plerd.conf",
-        ) {
-            if ( -r $_ ) {
+        my $local_file  = Path::Class::File->new(getcwd,                 'plerd.conf');
+        my $nearby_file = Path::Class::File->new(getcwd,                 'conf', 'plerd.conf');
+        my $dotfile     = Path::Class::File->new(File::HomeDir->my_home, '.plerd');
+        foreach ($local_file, $nearby_file, $dotfile, "$FindBin::Bin/../conf/plerd.conf",) {
+            if (-r $_) {
                 $config_file = $_;
                 last;
             }
         }
-        unless ( defined $config_file ) {
+        unless (defined $config_file) {
             die "Can't start $0: I can't find a Plerd config file in "
                 . "$local_file, $nearby_file, $dotfile, or in "
                 . "$FindBin::Bin/../conf/plerd.conf, and "
@@ -45,16 +40,16 @@ sub read_config_file {
 
     my $config_ref;
     try {
-        $config_ref = LoadFile( $config_file );
+        $config_ref = LoadFile($config_file);
     }
     catch {
-        if ( -r $config_file ) {
+        if (-r $config_file) {
             die "Can't start $0: Can't read config file at $config_file: $_\n";
-        }
-        else {
+        } else {
             die "Can't start $0: No readable config file found at $config_file.\n";
         }
     };
+    return;
 }
 
 1;

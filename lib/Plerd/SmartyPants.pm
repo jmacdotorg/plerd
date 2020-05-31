@@ -25,16 +25,13 @@ Do the bulk of the conversion work.
 =cut
 
 sub process {
-    shift if ( $_[0] eq __PACKAGE__ );    # oops, called in OOP fashion.
+    my ($text, $attr) = @_;
 
-    # Paramaters:
-    my $text = shift;                     # text to be parsed
-
+    die("Can't be called in OOP context!") if $text eq __PACKAGE__;
     # value of the smart_quotes="" attribute. Default to 'everything on'
-    my $attr = shift || '1';
-
+    $attr //= 1;
     # Options to specify which transformations to make:
-    my ( $do_quotes, $do_backticks, $do_dashes, $do_ellipses, $do_stupefy );
+    my ($do_quotes, $do_backticks, $do_dashes, $do_ellipses, $do_stupefy);
 
     # should we translate " entities into normal quotes?
     my $convert_quot = 0;
@@ -54,51 +51,46 @@ sub process {
     # e : ellipses
     # w : convert " entities to " for Dreamweaver users
 
-    if ( $attr eq "0" ) {
+    if ($attr eq "0") {
 
         # Do nothing.
         return $text;
-    }
-    elsif ( $attr eq "1" ) {
+    } elsif ($attr eq "1") {
 
         # Do everything, turn all options on.
         $do_quotes    = 1;
         $do_backticks = 1;
         $do_dashes    = 1;
         $do_ellipses  = 1;
-    }
-    elsif ( $attr eq "2" ) {
+    } elsif ($attr eq "2") {
 
         # Do everything, turn all options on, use old school dash shorthand.
         $do_quotes    = 1;
         $do_backticks = 1;
         $do_dashes    = 2;
         $do_ellipses  = 1;
-    }
-    elsif ( $attr eq "3" ) {
+    } elsif ($attr eq "3") {
 
         # Do everything, turn all options on, use inverted old school dash shorthand.
         $do_quotes    = 1;
         $do_backticks = 1;
         $do_dashes    = 3;
         $do_ellipses  = 1;
-    }
-    elsif ( $attr eq "-1" ) {
+    } elsif ($attr eq "-1") {
 
         # Special "stupefy" mode.
         $do_stupefy = 1;
-    }
-    else {
-        my @chars = split( //, $attr );
+    } else {
+        my @chars = split(//, $attr);
         foreach my $c (@chars) {
-            if    ( $c eq "q" ) { $do_quotes    = 1; }
-            elsif ( $c eq "b" ) { $do_backticks = 1; }
-            elsif ( $c eq "B" ) { $do_backticks = 2; }
-            elsif ( $c eq "d" ) { $do_dashes    = 1; }
-            elsif ( $c eq "D" ) { $do_dashes    = 2; }
-            elsif ( $c eq "i" ) { $do_dashes    = 3; }
-            elsif ( $c eq "e" ) { $do_ellipses  = 1; }
-            elsif ( $c eq "w" ) { $convert_quot = 1; }
+            if    ($c eq "q") { $do_quotes    = 1; }
+            elsif ($c eq "b") { $do_backticks = 1; }
+            elsif ($c eq "B") { $do_backticks = 2; }
+            elsif ($c eq "d") { $do_dashes    = 1; }
+            elsif ($c eq "D") { $do_dashes    = 2; }
+            elsif ($c eq "i") { $do_dashes    = 3; }
+            elsif ($c eq "e") { $do_ellipses  = 1; }
+            elsif ($c eq "w") { $convert_quot = 1; }
             else {
 
                 # Unknown attribute option, ignore.
@@ -106,7 +98,8 @@ sub process {
         }
     }
 
-    my $tokens ||= _tokenize($text);
+    my $tokens;
+    $tokens ||= _tokenize($text);
     my $result = '';
     my $in_pre = 0;    # Keep track of when we're inside <pre> or <code> tags.
 
@@ -118,18 +111,17 @@ sub process {
                                       # character quote tokens correctly.
 
     foreach my $cur_token (@$tokens) {
-        if ( $cur_token->[0] eq "tag" ) {
+        if ($cur_token->[0] eq "tag") {
 
             # Don't mess with quotes inside tags.
             $result .= $cur_token->[1];
-            if ( $cur_token->[1] =~ m/$tags_to_skip/ ) {
+            if ($cur_token->[1] =~ m/$tags_to_skip/) {
                 $in_pre = defined $1 && $1 eq '/' ? 0 : 1;
             }
-        }
-        else {
+        } else {
             my $t = $cur_token->[1];
-            my $last_char = substr( $t, -1 );    # Remember last char of this token before processing.
-            if ( !$in_pre ) {
+            my $last_char = substr($t, -1);    # Remember last char of this token before processing.
+            if (!$in_pre) {
                 $t = ProcessEscapes($t);
 
                 if ($convert_quot) {
@@ -137,9 +129,9 @@ sub process {
                 }
 
                 if ($do_dashes) {
-                    $t = EducateDashes($t)                  if ( $do_dashes == 1 );
-                    $t = EducateDashesOldSchool($t)         if ( $do_dashes == 2 );
-                    $t = EducateDashesOldSchoolInverted($t) if ( $do_dashes == 3 );
+                    $t = EducateDashes($t)                  if ($do_dashes == 1);
+                    $t = EducateDashesOldSchool($t)         if ($do_dashes == 2);
+                    $t = EducateDashesOldSchoolInverted($t) if ($do_dashes == 3);
                 }
 
                 $t = EducateEllipses($t) if $do_ellipses;
@@ -147,31 +139,27 @@ sub process {
                 # Notes: backticks need to be processed before quotes.
                 if ($do_backticks) {
                     $t = EducateBackticks($t);
-                    $t = EducateSingleBackticks($t) if ( $do_backticks == 2 );
+                    $t = EducateSingleBackticks($t) if ($do_backticks == 2);
                 }
 
                 if ($do_quotes) {
-                    if ( $t eq q/'/ ) {
+                    if ($t eq q/'/) {
 
                         # Special case: single-character ' token
-                        if ( $prev_token_last_char =~ m/\S/ ) {
+                        if ($prev_token_last_char =~ m/\S/) {
                             $t = "’";
-                        }
-                        else {
+                        } else {
                             $t = "‘";
                         }
-                    }
-                    elsif ( $t eq q/"/ ) {
+                    } elsif ($t eq q/"/) {
 
                         # Special case: single-character " token
-                        if ( $prev_token_last_char =~ m/\S/ ) {
+                        if ($prev_token_last_char =~ m/\S/) {
                             $t = "”";
-                        }
-                        else {
+                        } else {
                             $t = "“";
                         }
-                    }
-                    else {
+                    } else {
 
                         # Normal case:
                         $t = EducateQuotes($t);
@@ -202,17 +190,15 @@ sub SmartQuotes {
 
     my $do_backticks;    # should we educate ``backticks'' -style quotes?
 
-    if ( $attr == 0 ) {
+    if ($attr == 0) {
 
         # do nothing;
         return $text;
-    }
-    elsif ( $attr == 2 ) {
+    } elsif ($attr == 2) {
 
         # smarten ``backticks'' -style quotes
         $do_backticks = 1;
-    }
-    else {
+    } else {
         $do_backticks = 0;
     }
 
@@ -220,12 +206,13 @@ sub SmartQuotes {
     # an HTML tag. Add a space to give the quote education algorithm a bit of
     # context, so that it can guess correctly that it's a closing quote:
     my $add_extra_space = 0;
-    if ( $text =~ m/>['"]\z/ ) {
+    if ($text =~ m/>['"]\z/) {
         $add_extra_space = 1;    # Remember, so we can trim the extra space later.
         $text .= " ";
     }
 
-    my $tokens ||= _tokenize($text);
+    my $tokens;
+    $tokens ||= _tokenize($text);
     my $result = '';
     my $in_pre = 0;              # Keep track of when we're inside <pre> or <code> tags
 
@@ -237,44 +224,39 @@ sub SmartQuotes {
                                       # character quote tokens correctly.
 
     foreach my $cur_token (@$tokens) {
-        if ( $cur_token->[0] eq "tag" ) {
+        if ($cur_token->[0] eq "tag") {
 
             # Don't mess with quotes inside tags
             $result .= $cur_token->[1];
-            if ( $cur_token->[1] =~ m/$tags_to_skip/ ) {
+            if ($cur_token->[1] =~ m/$tags_to_skip/) {
                 $in_pre = defined $1 && $1 eq '/' ? 0 : 1;
             }
-        }
-        else {
+        } else {
             my $t = $cur_token->[1];
-            my $last_char = substr( $t, -1 );    # Remember last char of this token before processing.
-            if ( !$in_pre ) {
+            my $last_char = substr($t, -1);    # Remember last char of this token before processing.
+            if (!$in_pre) {
                 $t = ProcessEscapes($t);
                 if ($do_backticks) {
                     $t = EducateBackticks($t);
                 }
 
-                if ( $t eq q/'/ ) {
+                if ($t eq q/'/) {
 
                     # Special case: single-character ' token
-                    if ( $prev_token_last_char =~ m/\S/ ) {
+                    if ($prev_token_last_char =~ m/\S/) {
                         $t = "’";
-                    }
-                    else {
+                    } else {
                         $t = "‘";
                     }
-                }
-                elsif ( $t eq q/"/ ) {
+                } elsif ($t eq q/"/) {
 
                     # Special case: single-character " token
-                    if ( $prev_token_last_char =~ m/\S/ ) {
+                    if ($prev_token_last_char =~ m/\S/) {
                         $t = "”";
-                    }
-                    else {
+                    } else {
                         $t = "“";
                     }
-                }
-                else {
+                } else {
 
                     # Normal case:
                     $t = EducateQuotes($t);
@@ -301,23 +283,21 @@ Call the individual dash conversion to entities functions.
 sub SmartDashes {
 
     # Paramaters:
-    my $text = shift;          # text to be parsed
-    my $attr = shift;          # value of the smart_dashes="" attribute
+    my $text = shift;    # text to be parsed
+    my $attr = shift;    # value of the smart_dashes="" attribute
 
     # reference to the subroutine to use for dash education, default to EducateDashes:
     my $dash_sub_ref = \&EducateDashes;
 
-    if ( $attr == 0 ) {
+    if ($attr == 0) {
 
         # do nothing;
         return $text;
-    }
-    elsif ( $attr == 2 ) {
+    } elsif ($attr == 2) {
 
         # use old smart dash shortcuts, "--" for en, "---" for em
         $dash_sub_ref = \&EducateDashesOldSchool;
-    }
-    elsif ( $attr == 3 ) {
+    } elsif ($attr == 3) {
 
         # inverse of 2, "--" for em, "---" for en
         $dash_sub_ref = \&EducateDashesOldSchoolInverted;
@@ -329,17 +309,16 @@ sub SmartDashes {
     my $result = '';
     my $in_pre = 0;    # Keep track of when we're inside <pre> or <code> tags
     foreach my $cur_token (@$tokens) {
-        if ( $cur_token->[0] eq "tag" ) {
+        if ($cur_token->[0] eq "tag") {
 
             # Don't mess with quotes inside tags
             $result .= $cur_token->[1];
-            if ( $cur_token->[1] =~ m/$tags_to_skip/ ) {
+            if ($cur_token->[1] =~ m/$tags_to_skip/) {
                 $in_pre = defined $1 && $1 eq '/' ? 0 : 1;
             }
-        }
-        else {
+        } else {
             my $t = $cur_token->[1];
-            if ( !$in_pre ) {
+            if (!$in_pre) {
                 $t = ProcessEscapes($t);
                 $t = $dash_sub_ref->($t);
             }
@@ -361,7 +340,7 @@ sub SmartEllipses {
     my $text = shift;    # text to be parsed
     my $attr = shift;    # value of the smart_ellipses="" attribute
 
-    if ( $attr == 0 ) {
+    if ($attr == 0) {
 
         # do nothing;
         return $text;
@@ -373,17 +352,16 @@ sub SmartEllipses {
     my $result = '';
     my $in_pre = 0;      # Keep track of when we're inside <pre> or <code> tags
     foreach my $cur_token (@$tokens) {
-        if ( $cur_token->[0] eq "tag" ) {
+        if ($cur_token->[0] eq "tag") {
 
             # Don't mess with quotes inside tags
             $result .= $cur_token->[1];
-            if ( $cur_token->[1] =~ m/$tags_to_skip/ ) {
+            if ($cur_token->[1] =~ m/$tags_to_skip/) {
                 $in_pre = defined $1 && $1 eq '/' ? 0 : 1;
             }
-        }
-        else {
+        } else {
             my $t = $cur_token->[1];
-            if ( !$in_pre ) {
+            if (!$in_pre) {
                 $t = ProcessEscapes($t);
                 $t = EducateEllipses($t);
             }
@@ -432,7 +410,7 @@ sub EducateQuotes {
     #     substitution below trips it. The best thing to do would involve
     #     substituting with e.g. {$1 // q[] . q[']}e, but that would require
     #     Perl 5.10 or above and I'm not prepared to require that just yet.
-    no warnings 'uninitialized';
+    no warnings 'uninitialized';    ## no critic
 
     # Single closing quotes:
     s {
@@ -652,18 +630,18 @@ sub _tokenize {
     # pattern to match balanced nested <> pairs, up to two levels deep:
     my $nested_angles = qr/<(?:[^<>]|<[^<>]*>)*>/;
 
-    while ( $str =~ m/($nested_angles)/gs ) {
+    while ($str =~ m/($nested_angles)/gs) {
         my $whole_tag = $1;
         my $sec_start = pos $str;
         my $tag_start = $sec_start - length $whole_tag;
-        if ( $pos < $tag_start ) {
-            push @tokens, [ 'text', substr( $str, $pos, $tag_start - $pos ) ];
+        if ($pos < $tag_start) {
+            push @tokens, ['text', substr($str, $pos, $tag_start - $pos)];
         }
-        push @tokens, [ 'tag', $whole_tag ];
+        push @tokens, ['tag', $whole_tag];
         $pos = pos $str;
     }
-    push @tokens, [ 'text', substr( $str, $pos, $len - $pos ) ] if $pos < $len;
-    \@tokens;
+    push @tokens, ['text', substr($str, $pos, $len - $pos)] if $pos < $len;
+    return \@tokens;
 }
 
 1;

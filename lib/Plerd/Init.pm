@@ -10,47 +10,37 @@ use Try::Tiny;
 
 my %file_content;
 
-sub initialize ( $$ ) {
+# Check https://metacpan.org/pod/Perl::Critic::Policy::Subroutines::ProhibitSubroutinePrototypes
+sub initialize ( $$ ) {    ## no critic
     my ($init_path, $is_using_default) = @_;
 
     my @messages;
 
-    my $dir = Path::Class::Dir->new( $init_path )->absolute;
+    my $dir = Path::Class::Dir->new($init_path)->absolute;
 
-    if ( $is_using_default ) {
-        push @messages,
-            "No directory provided, so using default location ($dir).\n"
+    if ($is_using_default) {
+        push @messages, "No directory provided, so using default location ($dir).\n";
     }
 
     if (-e $dir) {
         unless (-d $dir) {
-            return [
-                @messages,
-                "$dir exists, but it's not a directory!\nExiting."
-            ];
+            return [@messages, "$dir exists, but it's not a directory!\nExiting."];
         }
-        if ( $dir->children ) {
-            return [
-                @messages,
-                "$dir exists, but it's not empty!\nExiting."
-            ];
+        if ($dir->children) {
+            return [@messages, "$dir exists, but it's not empty!\nExiting."];
         }
-    }
-    else {
+    } else {
         unless (mkdir $dir) {
-            return [
-                @messages,
-                "Cannot create $dir: $!"
-            ];
+            return [@messages, "Cannot create $dir: $!"];
         }
     }
 
-    my $success = populate_directory( $dir, \@messages );
+    my $success = populate_directory($dir, \@messages);
 
-    if ( $success ) {
-        my $config_file = Path::Class::File->new( $dir, 'plerd.conf' );
+    if ($success) {
+        my $config_file = Path::Class::File->new($dir, 'plerd.conf');
         push @messages,
-            "I have created and populated a new Plerd working directory at "
+              "I have created and populated a new Plerd working directory at "
             . "$dir. Your next step involves updating the configuration file "
             . "at $config_file.\n"
             . "For full documentation, links to mailing lists, and other stuff, "
@@ -59,36 +49,35 @@ sub initialize ( $$ ) {
     return \@messages;
 }
 
-sub populate_directory ( $$ ) {
-    my ( $dir, $messages ) = @_;
+sub populate_directory ( $$ ) {    ## no critic
+    my ($dir, $messages) = @_;
 
-    my %file_content = file_content( $dir );
+    my %file_content = file_content($dir);
 
     try {
-        foreach ( qw( docroot source templates log run db conf ) ) {
-            my $subdir = Path::Class::Dir->new( $dir, $_ );
+        foreach (qw( docroot source templates log run db conf )) {
+            my $subdir = Path::Class::Dir->new($dir, $_);
             mkdir $subdir or die "Can't create subdir $subdir: $!";
         }
 
-        foreach ( qw( archive atom jsonfeed post wrapper tags ) ) {
-            my $template = Path::Class::File->new(
-                $dir, 'templates', "$_.tt",
-            );
-            $template->spew( iomode=>'>:encoding(utf8)', $file_content{ $_ } );
+        foreach (qw( archive atom jsonfeed post wrapper tags )) {
+            my $template = Path::Class::File->new($dir, 'templates', "$_.tt",);
+            $template->spew(
+                iomode => '>:encoding(utf8)',
+                $file_content{$_});
         }
 
-        my $config = Path::Class::File->new(
-            $dir, 'conf', 'plerd.conf',
-        );
+        my $config = Path::Class::File->new($dir, 'conf', 'plerd.conf',);
 
-        $config->spew( iomode=>'>:encoding(utf8)', $file_content{ config } );
+        $config->spew(
+            iomode => '>:encoding(utf8)',
+            $file_content{config});
 
     }
     catch {
         push @$messages, $_;
-        push @$messages, "I am cowardly declining to clean up $dir. You might "
-                         . "need to empty or remove it yourself before trying "
-                         . "this command again.";
+        push @$messages,
+            "I am cowardly declining to clean up $dir. You might " . "need to empty or remove it yourself before trying " . "this command again.";
         push @$messages, "Exiting.";
         return 0;
     };
@@ -97,10 +86,10 @@ sub populate_directory ( $$ ) {
 
 }
 
-sub file_content ( $ ) {
-my ( $dir ) = @_;
-%file_content = (
-archive => <<EOF,
+sub file_content ( $ ) {    ## no critic
+    my ($dir) = @_;
+    %file_content = (
+        archive => <<EOF,
 [% WRAPPER wrapper.tt title = plerd.title _ ': Archives ' %]
 
 <div class="page-header">
@@ -127,7 +116,7 @@ archive => <<EOF,
 
 [% END %]
 EOF
-atom => <<EOF,
+        atom => <<EOF,
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
@@ -155,7 +144,7 @@ atom => <<EOF,
 
 </feed>
 EOF
-jsonfeed => <<EOF,
+        jsonfeed => <<EOF,
 {
   "version": "https://jsonfeed.org/version/1",
   "title": "[% plerd.title %]",
@@ -182,7 +171,7 @@ jsonfeed => <<EOF,
   ]
 }
 EOF
-post => <<EOF,
+        post => <<EOF,
 [% WRAPPER wrapper.tt %]
 
 [% FOREACH post IN posts %]
@@ -324,7 +313,7 @@ post => <<EOF,
 /* img.media-object { max-width: 64px } */
 </style>
 EOF
-wrapper => <<EOF,
+        wrapper => <<EOF,
 <!DOCTYPE html>
 <html>
 <head>
@@ -428,7 +417,7 @@ wrapper => <<EOF,
     </body>
 </html>
 EOF
-config => <<"EOF",
+        config => <<"EOF",
 # This is a configuration file for a single Plerd-based blog!
 #
 # Update the values below to best suit your blogging needs. After that,
@@ -501,7 +490,7 @@ image_alt: "My Cool Blog's logo -- a photograph of Fido, the author's gray tabby
 # run_path:         /tmp/plerd/run
 # log_path:         /var/log/plerd/
 EOF
-tags => <<EOF,
+        tags => <<EOF,
 [% WRAPPER wrapper.tt title = 'Tags' %]
 
 [%   IF is_tags_index_page %]
@@ -530,8 +519,8 @@ tags => <<EOF,
 [% END %]
 
 EOF
-);
-return %file_content;
+    );
+    return %file_content;
 }
 
 1;

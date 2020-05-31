@@ -1,4 +1,4 @@
-#line length; keep it quite short so that lists of arguments to subs
+#line length;
 #are wrapped
 --maximum-line-length=150
 
