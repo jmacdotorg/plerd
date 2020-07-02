@@ -14,7 +14,6 @@ use Try::Tiny;
 
 use Plerd::Post;
 use Plerd::Tag;
-use Plerd::WebmentionQueue;
 
 has 'path' => (
     is => 'ro',
@@ -237,12 +236,6 @@ has 'index_of_post_with_url' => (
     isa  => 'HashRef',
     lazy_build => 1,
     clearer => 'clear_post_url_index_hash',
-);
-
-has 'webmention_queue' => (
-    is => 'ro',
-    isa => 'Plerd::WebmentionQueue',
-    lazy_build => 1,
 );
 
 has 'has_tags' => (
@@ -649,12 +642,6 @@ sub _build_index_of_post_with_url {
     }
 
     return \%index_of_post;
-}
-
-sub _build_webmention_queue {
-    my $self = shift;
-
-    return Plerd::WebmentionQueue->new( plerd => $self );
 }
 
 sub _throw_template_exception {
