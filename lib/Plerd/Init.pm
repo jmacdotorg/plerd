@@ -4,7 +4,6 @@ use utf8;
 use warnings;
 use strict;
 use Path::Class::Dir;
-use LWP;
 use Plerd;
 use Try::Tiny;
 
@@ -220,103 +219,9 @@ post => <<EOF,
         [% END %]
     </div>
 
-    [% IF post.ordered_webmentions && post.ordered_webmentions.size > 0 %]
-    <hr />
-    <h3>Responses from around the web...</h3>
-        <div class="row">
-            <div class="col-xs-6">
-                [% INCLUDE likes %]
-            </div>
-            <div class="col-xs-6">
-                [% INCLUDE reposts %]
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                [% INCLUDE responses %]
-            </div>
-        </div>
-    [% END %]
-
-
 [% END %]
 
 
-[% END %]
-
-[% BLOCK likes %]
-<h4>Likes</h4>
-[% INCLUDE facepile type="like" %]
-[% END %]
-
-[% BLOCK reposts %]
-<h4>Reposts</h4>
-[% INCLUDE facepile type="repost" %]
-[% END %]
-
-[% BLOCK facepile %]
-    <p>
-    [% count = 0 %]
-    [% FOREACH webmention IN post.ordered_webmentions %]
-        [% IF webmention.type == type %]
-            <a href="[% webmention.author.url %]"><img class="facepile" src="[% webmention.author.photo %]" alt="[% webmention.author.name %] avatar" style="width:32px"></a>
-            [% count = count + 1 %]
-        [% END %]
-    [% END %]
-    [% UNLESS count %]
-        (None yet!)
-    [% END %]
-    </p>
-[% END %]
-
-[% BLOCK responses %]
-    <h4>Replies</h4>
-    [% INCLUDE mention_list types=['reply', 'quotation'] %]
-    <h4>Other webpages that mention this post</h4>
-    [% INCLUDE mention_list types=['mention'] %]
-
-[% END %]
-
-[% BLOCK mention_list %]
-    [% count = 0 %]
-    [% FOREACH webmention IN post.ordered_webmentions %]
-        [% match = 0 %]
-        [% FOREACH type IN types %]
-            [% IF webmention.type == type %]
-                [% match = 1 %]
-            [% END %]
-        [% END %]
-        [% IF match %]
-        [% count = count + 1 %]
-        <div class="media">
-            <div class="media-left">
-                [% IF webmention.author %]
-                <a rel="nofollow" href="[% webmention.author.url %]">
-                <img class="media-object" src="[% webmention.author.photo || 'http://fogknife.com/images/comment.png' %]" alt="[% IF webmention.author.photo %][% webmention.author.name %] avatar[% ELSE %]A generic word balloon[% END %]" style="max-width:32px; max-height:32px;">
-                </a>
-                [% ELSE %]
-                <a rel="nofollow" href="[% webmention.original_source %]">
-                <img class="media-object" src="http://fogknife.com/images/comment.png" alt="A generic word balloon" style="max-width:32px; max-height:32px;">
-                </a>
-                [% END %]
-            </div>
-            <div class="media-body">
-                [% IF webmention.author %]
-                <h4 class="media-heading"><a href="[% webmention.author.url %]">[% webmention.author.name %]</a></h4>
-                [% ELSE %]
-                <h4 class="media-heading"><a href="[% webmention.original_source %]">[% webmention.original_source.host %]</a></h4>
-                [% END %]
-                    [% IF (type == 'mention') && (webmention.title != webmention.content) %]
-                    <p><strong>[% webmention.title %]</strong></p>
-                    [% END %]
-                    [% webmention.content %] <a rel="nofollow" href="[% webmention.original_source %]"><span class="glyphicon glyphicon-share" style="text-decoration:none; color:black;"></a>
-            </div>
-        </div>
-        [% END %]
-    [% END %]
-    [% UNLESS count %]
-        (None yet!)
-    [% END %]
 [% END %]
 
 
@@ -333,16 +238,6 @@ wrapper => <<EOF,
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="atom.xml" rel="alternate" title="Atom feed" type="application/atom+xml">
     <link href="feed.json" rel="alternate" title="JSON feed" type="application/json">
-
-<!--
-    Uncomment the following <link> tag if you set up a Webmention receiver
-    using plerdwatcher. Update the port number as needed.
--->
-<!--
-    [% webmention_uri = plerd.base_uri.clone %]
-    [% old_port = webmention_uri.port( 4000 ) %]
-    <link rel="webmention" href="[% webmention_uri %]" />
--->
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     [% IF context_post %]
