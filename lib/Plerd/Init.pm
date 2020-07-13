@@ -208,7 +208,7 @@ post => <<EOF,
 </div>
 [% END %]
 
-[% IF posts.size == 1 %]
+[% IF context_post %]
 
     <div>
         <hr />
