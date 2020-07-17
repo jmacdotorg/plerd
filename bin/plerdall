@@ -36,7 +36,7 @@ GetOptions(
 
 if ($process_webmentions or $rebuild_webmentions) {
     die "Plerd ended its experimental Webmention receipt support in version "
-        . "1.830. Please re-run this command without those "
+        . "1.900. Please re-run this command without those "
         . "options. (Or use an older version of Plerd.)\n";
 }
 
