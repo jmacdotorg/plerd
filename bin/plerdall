@@ -6,7 +6,7 @@ use strict;
 use FindBin;
 use lib
     "$FindBin::Bin/../lib",
-;
+    ;
 
 use Getopt::Long;
 
@@ -34,34 +34,31 @@ GetOptions(
     'init:s'              => \$init_path,
 );
 
-if ( defined $init_path ) {
+if (defined $init_path) {
     my $is_using_default = 0;
-    unless ( length $init_path ) {
-        $init_path = Path::Class::Dir->new(
-            cwd,
-            $DEFAULT_INIT_PATH,
-        )->stringify;
+    unless (length $init_path) {
+        $init_path = Path::Class::Dir->new(cwd, $DEFAULT_INIT_PATH,)->stringify;
         $is_using_default = 1;
     }
-    my $messages = Plerd::Init::initialize( $init_path, $is_using_default );
-    print wrap( q{}, q{}, @$messages );
+    my $messages = Plerd::Init::initialize($init_path, $is_using_default);
+    print wrap(q{}, q{}, @$messages);
     print "\n";
     exit;
 }
 
-my $config_ref = Plerd::Util::read_config_file( $config_file );
+my $config_ref = Plerd::Util::read_config_file($config_file);
 
-foreach (qw( base_uri image ) ) {
-    unless ( ref $config_ref->{ $_ } ) {
-        $config_ref->{ $_ } = URI->new ( $config_ref->{ $_ } );
+foreach (qw( base_uri image )) {
+    unless (ref $config_ref->{$_}) {
+        $config_ref->{$_} = URI->new($config_ref->{$_});
     }
 }
 
-my $plerd = Plerd->new( $config_ref );
+my $plerd = Plerd->new($config_ref);
 
-if ( $rebuild_webmentions ) {
-    for my $post ( @{ $plerd->posts } ) {
-        for my $wm ( values %{$post->webmentions_by_source} ) {
+if ($rebuild_webmentions) {
+    for my $post (@{$plerd->posts}) {
+        for my $wm (values %{$post->webmentions_by_source}) {
             $wm->verify;
             sleep 1;
         }
@@ -70,27 +67,25 @@ if ( $rebuild_webmentions ) {
 }
 
 my $new_webmentions_were_added;
-if ( $process_webmentions ) {
+if ($process_webmentions) {
     $new_webmentions_were_added = $plerd->webmention_queue->process;
 }
 
 # Proceed to republish all posts (and possibly send out webmentions) only if
 # we're run without the "process-webmentions" flag, or we are processing
 # received webmentions and found some new ones to publish.
-unless ( $new_webmentions_were_added or !$process_webmentions ) {
+unless ($new_webmentions_were_added || !$process_webmentions) {
     exit;
 }
 
 $plerd->publish_all;
 
-if ( $webmention_enabled ) {
+if ($webmention_enabled) {
     print "Sending webmentions for all posts!\n";
-    for my $post ( @{ $plerd->posts } ) {
+    for my $post (@{$plerd->posts}) {
         print $post->source_file . "...\n";
         my $report = $post->send_webmentions;
-        print "$report->{attempts} attempts, "
-              . "$report->{sent} sent, "
-              . "$report->{delivered} delivered.\n";
+        print "$report->{attempts} attempts, " . "$report->{sent} sent, " . "$report->{delivered} delivered.\n";
     }
 }
 
