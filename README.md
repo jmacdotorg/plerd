@@ -5,7 +5,7 @@ Plerd is meant to be an ultralight blogging platform for Markdown fans that play
 
 It allows you to compose and maintain blog posts as easily as adding and modifying Markdown files in a single folder. Plerd creates an entirely static website based on the content of this one folder, automatically updating the site whenever this content changes.
 
-Optional and experimental Plerd features add support for IndieWeb technologies, such as sending and receiving webmentions.
+Optional and experimental Plerd features add support for IndieWeb technologies, such as sending webmentions.
 
 ## Purpose
 
@@ -78,7 +78,7 @@ If everything installed as it should, then you should have the `plerdall` and `p
 3. As noted above, the `templates` directory that you created in the first step of this process contains sample templates that you can customize as much as you'd like. They are rendered using [Template Toolkit](http://www.template-toolkit.org). You can't change these template files' names, but you can add new sub-template files that the main temlates will invoke via [the \[% INCLUDE %\] directive](http://www.template-toolkit.org/docs/manual/Directives.html#section_INCLUDE), and so on.
 4. Configure the webserver of your choice such that it treats the `docroot` subdirectory (which you created as part of the first step) as your new blog's own docroot.
 
-    When running in its basic mode, Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up. (Plerd _does_ provide a webserver specifically for handling incoming webmentions, but this is an experimental and entirely optional feature; see ["Webmention"](#webmention), below.)
+    When running in its basic mode, Plerd does not provide a webserver; it simply generates static HTML & XML files, ready for some other process to serve up.
 
 ## Usage
 
@@ -208,17 +208,9 @@ Plerd supports [MultiMarkdown](https://fletcherpenney.net/multimarkdown/) syntax
 
 ### Webmention
 
-Plerd includes experimental support for [Webmention](https://alistapart.com/article/webmentions-enabling-better-communication-on-the-internet), an open technology that allows websites to send simple "Hey, this page of mine contains a link to that page of yours!" messages to other websites. If the linking page employs [Microformats2](http://microformats.io) metadata, then the target page can choose to display salient information about the mention, such as its author, or a summary of its content. It can adjust the format of this display depending upon the mention's apparent type -- a "like", a repost, a comment-style response, and so on.
+Plerd supports [Webmention](https://jmac.org/webmention/), an open technology that allows websites to send simple "Hey, this page of mine contains a link to that page of yours!" messages to other websites. If the linking page employs [Microformats2](http://microformats.io) metadata, then the target page can choose to display salient information about the mention, such as its author, or a summary of its content. It can adjust the format of this display depending upon the mention's apparent type -- a "like", a repost, a comment-style response, and so on.
 
-Thus, with certain options enabled, Plerd can send webmentions to websites that your blog posts link to. It can also receive and display webmentions when pages elsewhere on the internet link to specific posts of yours.
-
-These features are sparsely documented or tested as of August 2018, but I expect that to improve presently. Adding Webmention support has been the focus of my Plerd development since March, and I expect it to receive more complete documentation and test coverage by the end of the year.
-
-For the time being, you can consult the documentation of the `plerdwatcher` and `plerdall` programs for a list of Webmention-related options, and see `post.tt` among the starter templates (the ones created for you via `plerdall --init`) for an example of webmention display technique. Note also the commented-out `rel="webmention"` line in `wrapper.tt`, which requires uncommenting for webmention receipt to work.
-
-You can see a variety of real-life displayed webmentions on [this post](http://fogknife.com/2018-04-22-announcing-two-new-indieweb-modules-for-perl.html#webmentions), part of my own Plerd-powered blog. (Note that this includes mentions from other, subsequent posts within the same blog, making for an organic sort of "Related Posts" feature.)
-
-If you are interested in helping me test Webmention support working with your own Plerd setup while it's still in this experimental stage, please do feel free to get in touch via email.
+Thus, with certain options enabled, Plerd can send webmentions to websites that your blog posts link to. Consult the documentation of the `plerdwatcher` and `plerdall` programs for details about Webmention-related options.
 
 ## A note about encoding
 
