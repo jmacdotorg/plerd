@@ -34,6 +34,12 @@ GetOptions(
     'init:s'              => \$init_path,
 );
 
+if ($process_webmentions or $rebuild_webmentions) {
+    die "Plerd ended its experimental Webmention receipt support in version "
+        . "1.900. Please re-run this command without those "
+        . "options. (Or use an older version of Plerd.)\n";
+}
+
 if ( defined $init_path ) {
     my $is_using_default = 0;
     unless ( length $init_path ) {
@@ -58,28 +64,6 @@ foreach (qw( base_uri image ) ) {
 }
 
 my $plerd = Plerd->new( $config_ref );
-
-if ( $rebuild_webmentions ) {
-    for my $post ( @{ $plerd->posts } ) {
-        for my $wm ( values %{$post->webmentions_by_source} ) {
-            $wm->verify;
-            sleep 1;
-        }
-        $post->serialize_webmentions;
-    }
-}
-
-my $new_webmentions_were_added;
-if ( $process_webmentions ) {
-    $new_webmentions_were_added = $plerd->webmention_queue->process;
-}
-
-# Proceed to republish all posts (and possibly send out webmentions) only if
-# we're run without the "process-webmentions" flag, or we are processing
-# received webmentions and found some new ones to publish.
-unless ( $new_webmentions_were_added or !$process_webmentions ) {
-    exit;
-}
 
 $plerd->publish_all;
 
@@ -177,10 +161,6 @@ This program will print either error text or a welcoming success message
 with followup suggestions to STDOUT, and then exit. It will not perform
 any blog publication beyond this initial setup.
 
-=head1 EXPERIMENTAL OPTIONS
-
-All of the following Webmention-related options are B<experimental>.
-
 =head2 send-webmentions
 
  bin/plerdall --send-webmentions
@@ -188,36 +168,6 @@ All of the following Webmention-related options are B<experimental>.
 After publishing all the blog's posts, Plerd will then
 direct every post to scan itself for hyperlinks and attempt to send
 webmentions to each one.
-
-=head2 process-webmentions
-
- bin/plerdall --process-webmentions
-
-Before publishing all the blog's posts, Plerd will
-check to see if any new webmentions are waiting in its webmention-inbox.
-If so, it will process those webmentions. Then, if at least one of those
-received webmentions is valid, Plerd will republish all the blog's
-posts. If neither of the prior conditions are true, Plerd will not
-republish the blog.
-
-This flag makes plerdall suitable for use as a scheduled task, via e.g.
-cron.
-
-=head2 rebuild-webmentions
-
- bin/plerdall --rebuild-webmentions
-
-Before publishing all the blog's posts, Plerd will re-verify every valid
-webmention that the blog has received and stored over its history,
-overwriting its old webmention database with the results. Then it will
-republish all the blog's posts.
-
-The script rate-limits itself to one verification request per second, so
-this might take a while.
-
-This is a utility function intended for use if the serialization format
-for Plerd's webmentions changes. You probably won't need to use it
-often, if ever.
 
 =head1 SEE ALSO
 
