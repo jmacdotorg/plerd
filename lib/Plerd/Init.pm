@@ -219,8 +219,14 @@ post => <<EOF,
         [% END %]
     </div>
 
+[% ELSIF post_counter == posts.size %]
+    <div>
+        <hr />
+        [% IF post.older_post %]
+            <p>Previous post: <a href="[% post.older_post.uri %]">[% post.older_post.title %]</a></p>
+        [% END %]
+    </div>
 [% END %]
-
 
 [% END %]
 
