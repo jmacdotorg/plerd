@@ -41,7 +41,7 @@ If you run into issues due to failing dependencies, you can try one of these ins
     # or
     cpanm --force Plerd
 
-Alternately, you can run these commands under \`sudo\` to install Sweat at the system level.
+Alternately, you can run these commands under \`sudo\` to install Plerd at the system level.
 
 If everything installed as it should, then you should have the `plerdall` and `plerdwatcher` programs in your command path.
 
