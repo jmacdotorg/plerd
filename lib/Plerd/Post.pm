@@ -512,15 +512,6 @@ sub _process_source_file {
         $attributes_need_to_be_written_out = 1;
     }
 
-    if ( $attributes{ tags } ) {
-        my @tag_names = split /\s*,\s*/, $attributes{ tags };
-        for my $tag_name (@tag_names) {
-            my $tag = $self->plerd->tag_named( $tag_name );
-            $tag->add_post( $self );
-            push @{ $self->tag_objects }, $tag;
-        }
-    }
-
     if ( $attributes{ published_filename } ) {
         $self->published_filename( $attributes{ published_filename } );
     }
@@ -536,6 +527,15 @@ sub _process_source_file {
         $attributes{ guid } = Data::GUID->new;
         $self->guid( $attributes{ guid } );
         $attributes_need_to_be_written_out = 1;
+    }
+
+    if ( $attributes{ tags } ) {
+        my @tag_names = split /\s*,\s*/, $attributes{ tags };
+        for my $tag_name (@tag_names) {
+            my $tag = $self->plerd->tag_named( $tag_name );
+            $tag->add_post( $self );
+            push @{ $self->tag_objects }, $tag;
+        }
     }
 
     if ( $attributes_need_to_be_written_out ) {

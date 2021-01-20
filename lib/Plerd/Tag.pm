@@ -34,7 +34,10 @@ sub add_post {
     my $added = 0;
     if ( @{$self->posts} ) {
         for (my $index = 0; $index <= @{$self->posts} - 1; $index++ ) {
-            if ( $self->posts->[$index]->date < $post->date ) {
+            if ( $self->posts->[$index]->guid eq $post->guid ) {
+                return;
+            }
+            elsif ( $self->posts->[$index]->date < $post->date ) {
                 splice @{$self->posts}, $index, 0, $post;
                 $added = 1;
                 last;
