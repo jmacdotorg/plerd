@@ -277,12 +277,12 @@ wrapper => <<EOF,
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="recent.html">[% plerd.title %]</a>
+                <a class="navbar-brand" href="/recent.html">[% plerd.title %]</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="archive.html">Archive</a></li>
-                    <li><a href="atom.xml">RSS</a></li>
+                    <li><a href="/archive.html">Archive</a></li>
+                    <li><a href="/atom.xml">RSS</a></li>
                 </ul>
             </div><!--/.navbar-collapse -->
         </div>
