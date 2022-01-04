@@ -2,7 +2,7 @@ requires 'Moose';
 requires 'Template';
 requires 'Path::Class';
 requires 'Data::GUID';
-requires 'DateTime';
+requires 'DateTime','1.54';
 requires 'DateTime::Format::W3CDTF';
 requires 'URI';
 requires 'Text::MultiMarkdown';
