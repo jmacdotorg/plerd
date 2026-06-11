@@ -243,3 +243,7 @@ Contributors include:
 - Rebecca Turner
 
 This repository contains the image "Envelope" designed by Jon Testa, and the image "RSS" designed by [useiconic.com](https://thenounproject.com/useiconic.com). Both are shared through a [Creative Commons Attribution 3.0 United States](https://creativecommons.org/licenses/by/3.0/us/) license, and come to this project via [The Noun Project](https://thenounproject.com).
+
+## AI disclosure
+
+Beginning in 2026, this code base is maintained and extended using generative AI tools. All code changes are human-directed and human-reviewed. This README file, as well as all user-facing text and art assets, remain entirely human-made. The software's overall design remains solely my own, as does its ownership and authorship, aside from the human contributors mentioned above.
