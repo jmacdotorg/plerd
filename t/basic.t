@@ -457,4 +457,29 @@ like( $tag_index_content,
 );
 }
 
+### Test that publishing (re)creates the index.html symlink even when a
+### stale index.html already exists in the docroot.
+# (Regression: symlink() silently fails when the destination already
+#  exists, so a stale or incorrect index.html was never corrected.)
+{
+my $index_file = Path::Class::File->new( $docroot_dir, 'index.html' );
+$index_file->remove if -e $index_file || -l $index_file;
+# Plant a stale regular file where the symlink should go.
+$index_file->spew( iomode => '>:encoding(utf8)', 'STALE' );
+
+my $symlink_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new( 'http://blog.example.com/' ),
+);
+$symlink_plerd->publish_all;
+
+my $recent_content =
+    Path::Class::File->new( $docroot_dir, 'recent.html' )->slurp;
+is( $index_file->slurp, $recent_content,
+    'Publishing replaces a stale index.html with the recent-posts page.' );
+}
+
 done_testing();

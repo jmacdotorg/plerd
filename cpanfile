@@ -2,6 +2,7 @@ requires 'Moose';
 requires 'Template';
 requires 'Path::Class';
 requires 'Data::GUID';
+requires 'JSON';
 requires 'DateTime';
 requires 'DateTime::Format::W3CDTF';
 requires 'URI';

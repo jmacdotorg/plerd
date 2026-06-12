@@ -364,7 +364,12 @@ sub publish_recent_page {
 
     my $index_file =
         Path::Class::File->new( $self->publication_directory, 'index.html' );
-    symlink $self->recent_file, $index_file;
+    # Remove any existing index.html first, since symlink() silently fails
+    # if the destination already exists (e.g. on republication).
+    $index_file->remove if -e $index_file || -l $index_file;
+    symlink $self->recent_file, $index_file
+        or warn "Couldn't create the index.html symlink pointing at "
+            . $self->recent_file . ": $!\n";
 }
 
 sub publish_rss {
