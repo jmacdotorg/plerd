@@ -11,6 +11,7 @@ use DateTime::Format::W3CDTF;
 use URI;
 use Carp;
 use Try::Tiny;
+use JSON;
 
 use Plerd::Post;
 use Plerd::Tag;
@@ -495,9 +496,14 @@ sub _build_template {
         FILTERS => {
             json => sub {
                 my $text = shift;
-                $text =~ s/"/\\"/g;
-                $text =~ s/\n/\\n/g;
-                return $text;
+                # Encode as a JSON string, which correctly escapes
+                # backslashes, quotes, newlines, tabs, and other control
+                # characters. Then strip the enclosing quotes, since the
+                # template supplies its own.
+                my $encoded = JSON->new->allow_nonref->encode( $text );
+                $encoded =~ s/^"//;
+                $encoded =~ s/"$//;
+                return $encoded;
             },
         },
         ENCODING => 'utf8',
@@ -659,12 +665,26 @@ sub generates_post_guids {
          . "anyway.)";
 }
 
+# Returns the blog's base_uri, guaranteed to end with a slash, so that
+# URI->new_abs() builds correct URLs even when base_uri points at a
+# subdirectory (e.g. http://example.com/blog).
+sub base_uri_with_slash {
+    my $self = shift;
+
+    my $base_uri = $self->base_uri->clone;
+    my $path = $base_uri->path;
+    unless ( $path =~ m{/$} ) {
+        $base_uri->path( "$path/" );
+    }
+    return $base_uri;
+}
+
 # Tag-related builders & methods
 sub _build_tags_index_uri {
     my $self = shift;
     return URI->new_abs(
         'tags/',
-        $self->base_uri,
+        $self->base_uri_with_slash,
     );
 }
 

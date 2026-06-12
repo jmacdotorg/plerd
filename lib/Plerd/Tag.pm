@@ -72,7 +72,7 @@ sub _build_uri {
 
     return URI->new_abs(
         'tags/' . $self->name . '.html',
-        $self->plerd->base_uri,
+        $self->plerd->base_uri_with_slash,
     );
 }
 

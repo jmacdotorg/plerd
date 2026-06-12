@@ -6,6 +6,7 @@ use warnings;
 use strict;
 use Try::Tiny;
 use File::HomeDir;
+use FindBin;
 use YAML qw( LoadFile );
 use Cwd;
 use Path::Class::File;
@@ -55,6 +56,8 @@ sub read_config_file {
             die "Can't start $0: No readable config file found at $config_file.\n";
         }
     };
+
+    return $config_ref;
 }
 
 1;

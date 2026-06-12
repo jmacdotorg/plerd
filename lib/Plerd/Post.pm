@@ -211,13 +211,9 @@ sub _build_published_filename {
 sub _build_uri {
     my $self = shift;
 
-    my $base_uri = $self->plerd->base_uri;
-    if ($base_uri =~ /[^\/]$/) {
-        $base_uri .= '/';
-    }
     return URI->new_abs(
         $self->published_filename,
-        $base_uri,
+        $self->plerd->base_uri_with_slash,
     );
 }
 

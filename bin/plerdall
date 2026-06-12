@@ -58,8 +58,10 @@ if ( defined $init_path ) {
 my $config_ref = Plerd::Util::read_config_file( $config_file );
 
 foreach (qw( base_uri image ) ) {
-    unless ( ref $config_ref->{ $_ } ) {
-        $config_ref->{ $_ } = URI->new ( $config_ref->{ $_ } );
+    my $value = $config_ref->{ $_ };
+    next unless defined $value && length $value;
+    unless ( ref $value ) {
+        $config_ref->{ $_ } = URI->new ( $value );
     }
 }
 

@@ -6,6 +6,7 @@ use Path::Class::Dir;
 use Path::Class::File;
 use URI;
 use DateTime;
+use JSON;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
@@ -392,6 +393,68 @@ like( $post,
     'Metatags: Defined default alt-text',
 );
 
+}
+
+### Test that the JSON feed is valid even when a post body contains
+### characters that need JSON-escaping (backslashes, quotes, tabs).
+# (Regression: the old hand-rolled `json` filter escaped only " and \n,
+#  producing invalid JSON for bodies containing backslashes etc.)
+{
+my $tricky_file = Path::Class::File->new( $source_dir, 'tricky-json.md' );
+$tricky_file->spew( iomode => '>:encoding(utf8)', <<'EOF' );
+title: Tricky JSON
+
+A Windows path in a code span: `C:\Users\test\file.txt`, plus a stray
+backslash \ and a "quoted" phrase, for good measure.
+EOF
+
+my $json_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new( 'http://blog.example.com/' ),
+);
+$json_plerd->publish_all;
+
+my $json_text = Path::Class::File->new( $docroot_dir, 'feed.json' )
+    ->slurp( iomode => '<:encoding(utf8)' );
+my $decoded = eval { JSON->new->decode( $json_text ) };
+ok( $decoded,
+    'JSON feed is valid even with backslashes and quotes in a post body.' )
+    or diag( "JSON decode failed: $@" );
+
+unlink $tricky_file;
+}
+
+### Test that tag URLs respect a base_uri that has a path and no trailing
+### slash. (Regression: Tag and tag-index URIs used to drop the
+### base_uri's path component, breaking blogs hosted in a subdirectory.)
+{
+my $subdir_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new( 'http://www.example.com/blog' ),
+);
+
+is( $subdir_plerd->base_uri_with_slash->as_string,
+    'http://www.example.com/blog/',
+    'base_uri_with_slash appends a missing trailing slash.',
+);
+is( $subdir_plerd->tags_index_uri->as_string,
+    'http://www.example.com/blog/tags/',
+    'Tag-index URI preserves the base_uri path.',
+);
+
+$subdir_plerd->publish_all;
+my $tag_index_content =
+    Path::Class::File->new( $docroot_dir, 'tags', 'index.html' )->slurp;
+like( $tag_index_content,
+    qr{http://www\.example\.com/blog/tags/},
+    'Generated tag links preserve the base_uri path.',
+);
 }
 
 done_testing();
