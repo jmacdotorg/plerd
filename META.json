@@ -47,6 +47,7 @@
             "Data::GUID" : "0",
             "DateTime" : "0",
             "DateTime::Format::W3CDTF" : "0",
+            "Digest::MD5" : "0",
             "File::ChangeNotify" : "0",
             "File::HomeDir" : "0",
             "FindBin" : "0",

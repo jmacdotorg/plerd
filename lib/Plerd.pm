@@ -12,6 +12,7 @@ use URI;
 use Carp;
 use Try::Tiny;
 use JSON;
+use Digest::MD5;
 
 use Plerd::Post;
 use Plerd::Tag;
@@ -292,6 +293,49 @@ sub publish_all {
     $self->publish_rss;
     $self->publish_jsonfeed;
 
+    $self->_clear_caches;
+}
+
+# Republish just enough to reflect a change to a single source file.
+#
+# We hash the file's metadata block (everything above the first blank line)
+# and compare it against the hash stored, by basename, in db/posts.json.
+# A missing or changed hash means the change may affect the blog's sidebar,
+# archive, and tag pages -- so we republish everything. An unchanged hash
+# means only the post's body changed, so we republish just that post plus
+# the aggregate pages that present post bodies.
+sub publish_file {
+    my $self = shift;
+    my ( $source_file ) = @_;
+
+    my $basename     = $source_file->basename;
+    my $stored_hash  = $self->_read_post_hashes->{ $basename };
+    my $current_hash = $self->_hash_of_metadata_block( $source_file );
+
+    if ( !defined $stored_hash || $stored_hash ne $current_hash ) {
+        $self->publish_all;
+
+        # publish_all may have rewritten source files (adding time, guid,
+        # etc.), so recompute every hash from the files as they are now.
+        $self->_write_post_hashes( $self->_post_hashes_from_source );
+    }
+    else {
+        my $post = Plerd::Post->new(
+            plerd       => $self,
+            source_file => $source_file,
+        );
+        $post->publish;
+        $self->publish_recent_page;
+        $self->publish_rss;
+        $self->publish_jsonfeed;
+
+        $self->_clear_caches;
+    }
+}
+
+sub _clear_caches {
+    my $self = shift;
+
     $self->clear_recent_posts;
     $self->clear_posts;
     $self->clear_post_index_hash;
@@ -299,6 +343,68 @@ sub publish_all {
 
     $self->tags_map( {} );
     $self->tag_case_conflicts( {} );
+}
+
+# The JSON file mapping source-file basenames to metadata-block hashes.
+sub _post_hash_file {
+    my $self = shift;
+
+    return Path::Class::File->new(
+        $self->database_directory,
+        'posts.json',
+    );
+}
+
+sub _read_post_hashes {
+    my $self = shift;
+
+    my $file = $self->_post_hash_file;
+    return {} unless -e $file;
+
+    return JSON->new->decode(
+        scalar $file->slurp( iomode => '<:encoding(utf8)' )
+    );
+}
+
+sub _write_post_hashes {
+    my $self = shift;
+    my ( $hashes ) = @_;
+
+    $self->_post_hash_file->spew(
+        iomode => '>:encoding(utf8)',
+        JSON->new->canonical->pretty->encode( $hashes ),
+    );
+}
+
+# An MD5 hex digest of a source file's leading metadata block: every line
+# above the first blank line. Read as raw bytes so the digest is stable and
+# so wide characters don't trip up Digest::MD5.
+sub _hash_of_metadata_block {
+    my $self = shift;
+    my ( $source_file ) = @_;
+
+    my $fh = $source_file->open('<:raw');
+    my $block = '';
+    while ( my $line = <$fh> ) {
+        last unless $line =~ /\S/;
+        $block .= $line;
+    }
+    close $fh;
+
+    return Digest::MD5::md5_hex( $block );
+}
+
+sub _post_hashes_from_source {
+    my $self = shift;
+
+    my %hashes;
+    for my $file ( grep { /\.markdown$|\.md$/ }
+                   $self->source_directory->children )
+    {
+        $hashes{ $file->basename } = $self->_hash_of_metadata_block( $file );
+    }
+
+    return \%hashes;
 }
 
 # Create a page that lists all available tags with
@@ -1024,6 +1130,20 @@ particularly helpful when creating navigation.
 
 Publishes every Markdown file in the blog's source directory.
 Also recreates the recent, archive, and syndication files.
+
+=item publish_file( $source_file )
+
+Republishes the blog in response to a change to a single source file,
+given as a L<Path::Class::File> object.
+
+Plerd hashes the file's leading metadata block (everything above the
+first blank line) and compares it against a hash stored, keyed by the
+file's basename, in C<db/posts.json>. If the hash is missing or has
+changed -- meaning the change might affect shared pages such as the
+sidebar, archive, or tag indexes -- this calls L<"publish_all"> and
+refreshes the stored hashes. If the hash is unchanged -- meaning only
+the post's body changed -- this republishes just that one post, the
+recent-posts page, and the syndication feeds.
 
 =item post_with_url( $absolute_url )
 
