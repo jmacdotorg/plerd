@@ -27,6 +27,12 @@ prove -lv t/basic.t          # a single test file
 
 `t/basic.t` is the main end-to-end test: it calls `Plerd::Init::initialize` to scaffold `t/testblog/`, copies fixtures from `t/source_model/` (filenames containing `TODAY` get the current date substituted), publishes, and asserts on the generated files. `t/daemon.t` covers `plerdwatcher`; `t/init.t` covers scaffolding.
 
+## Development workflow
+
+This project follows test-driven development. Whenever appropriate, begin work on a new feature or bug fix by writing a test that captures the desired behavior, and run it first to confirm it *fails* for the expected reason. Then implement the change and confirm the test passes.
+
+(The fail-first step only applies when the test genuinely precedes the implementation. If a change has already landed and you are adding tests retroactively, just confirm the new tests pass — don't revert working code to manufacture a failing run.)
+
 Run the two CLI programs from the distribution root (they resolve `lib/` via FindBin):
 
 ```
