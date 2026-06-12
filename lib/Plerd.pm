@@ -297,17 +297,17 @@ sub publish_all {
 }
 
 # Republish just enough to reflect a change to a single source file.
-#
-# We hash the file's metadata block (everything above the first blank line)
-# and compare it against the hash stored, by basename, in db/posts.json.
-# A missing or changed hash means the change may affect the blog's sidebar,
-# archive, and tag pages -- so we republish everything. An unchanged hash
-# means only the post's body changed, so we republish just that post plus
-# the aggregate pages that present post bodies.
 sub publish_file {
     my $self = shift;
     my ( $source_file ) = @_;
 
+    # We hash the file's metadata block (everything above the first blank
+    # line) and compare it against the hash stored, by basename, in
+    # db/posts.json. A missing or changed hash means the change may affect
+    # the blog's sidebar, archive, and tag pages -- so we republish
+    # everything. An unchanged hash means only the post's body changed, so
+    # we republish just that post plus the aggregate pages that present
+    # post bodies.
     my $basename     = $source_file->basename;
     my $stored_hash  = $self->_read_post_hashes->{ $basename };
     my $current_hash = $self->_hash_of_metadata_block( $source_file );
