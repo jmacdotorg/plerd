@@ -10,3 +10,12 @@ log
 conf
 Plerd-*
 /MYMETA.*
+
+# Build artifacts
+Build
+_build_params
+blib
+pm_to_blib
+
+# macOS
+.DS_Store
