@@ -13,6 +13,7 @@ use Carp;
 use Try::Tiny;
 use JSON;
 use Digest::MD5;
+use File::Temp ();
 
 use Plerd::Post;
 use Plerd::Tag;
@@ -302,22 +303,27 @@ sub publish_file {
     my ( $source_file ) = @_;
 
     # We hash the file's metadata block (everything above the first blank
-    # line) and compare it against the hash stored, by basename, in
-    # db/posts.json. A missing or changed hash means the change may affect
-    # the blog's sidebar, archive, and tag pages -- so we republish
-    # everything. An unchanged hash means only the post's body changed, so
-    # we republish just that post plus the aggregate pages that present
-    # post bodies.
+    # line) and compare it against the hash stored, by basename, in the
+    # db/posts.json index. A missing or changed hash means the change may
+    # affect the blog's sidebar, archive, and tag pages -- so we republish
+    # everything. An unchanged hash means only the post's body changed.
+    #
+    # For a body-only edit we always republish the post's own page. We touch
+    # the recent page and feeds only if this post is actually in the recent
+    # set; an edit to an older, out-of-feed post leaves every other file
+    # alone. Either way we consult the index for ordering and recency, so we
+    # never re-render the whole blog to publish one post.
     my $basename     = $source_file->basename;
-    my $stored_hash  = $self->_read_post_hashes->{ $basename };
+    my $index        = $self->_read_post_index;
+    my $stored       = $index->{ $basename };
     my $current_hash = $self->_hash_of_metadata_block( $source_file );
 
-    if ( !defined $stored_hash || $stored_hash ne $current_hash ) {
+    if ( !defined $stored || $stored->{ hash } ne $current_hash ) {
         $self->publish_all;
 
         # publish_all may have rewritten source files (adding time, guid,
-        # etc.), so recompute every hash from the files as they are now.
-        $self->_write_post_hashes( $self->_post_hashes_from_source );
+        # etc.), so recompute the whole index from the files as they are now.
+        $self->_write_post_index( $self->_post_index_from_source );
     }
     else {
         my $post = Plerd::Post->new(
@@ -325,9 +331,13 @@ sub publish_file {
             source_file => $source_file,
         );
         $post->publish;
-        $self->publish_recent_page;
-        $self->publish_rss;
-        $self->publish_jsonfeed;
+
+        my %is_recent = map { $_ => 1 } $self->_recent_basenames( $index );
+        if ( $is_recent{ $basename } ) {
+            $self->publish_recent_page;
+            $self->publish_rss;
+            $self->publish_jsonfeed;
+        }
 
         $self->_clear_caches;
     }
@@ -345,8 +355,13 @@ sub _clear_caches {
     $self->tag_case_conflicts( {} );
 }
 
-# The JSON file mapping source-file basenames to metadata-block hashes.
-sub _post_hash_file {
+# The JSON index of the blog's posts, keyed by source-file basename. Each
+# value is a record: { hash => <metadata-block MD5>, time => <W3C date> }.
+# The hash answers "did this post's metadata change?"; the time is all the
+# meta-work (ordering, recency, neighbor-finding) needs, since everything else
+# derives from publication date. Together they let an incremental publish
+# reason about the whole blog without re-rendering a single other post.
+sub _post_index_file {
     my $self = shift;
 
     return Path::Class::File->new(
@@ -355,10 +370,10 @@ sub _post_hash_file {
     );
 }
 
-sub _read_post_hashes {
+sub _read_post_index {
     my $self = shift;
 
-    my $file = $self->_post_hash_file;
+    my $file = $self->_post_index_file;
     return {} unless -e $file;
 
     return JSON->new->decode(
@@ -366,20 +381,21 @@ sub _read_post_hashes {
     );
 }
 
-sub _write_post_hashes {
+sub _write_post_index {
     my $self = shift;
-    my ( $hashes ) = @_;
+    my ( $index ) = @_;
 
-    $self->_post_hash_file->spew(
+    $self->_post_index_file->spew(
         iomode => '>:encoding(utf8)',
-        JSON->new->canonical->pretty->encode( $hashes ),
+        JSON->new->canonical->pretty->encode( $index ),
     );
 }
 
-# An MD5 hex digest of a source file's leading metadata block: every line
-# above the first blank line. Read as raw bytes so the digest is stable and
-# so wide characters don't trip up Digest::MD5.
-sub _hash_of_metadata_block {
+# Build an index record (hash + time) for one source file by reading only its
+# leading metadata block -- the lines above the first blank line -- so no
+# Markdown is rendered. Read as raw bytes so the MD5 is stable and wide
+# characters don't trip up Digest::MD5.
+sub _index_record_for_file {
     my $self = shift;
     my ( $source_file ) = @_;
 
@@ -391,20 +407,88 @@ sub _hash_of_metadata_block {
     }
     close $fh;
 
-    return Digest::MD5::md5_hex( $block );
+    my ( $time ) = $block =~ /^time\s*:\s*(.+?)\s*$/mi;
+
+    return {
+        hash => Digest::MD5::md5_hex( $block ),
+        time => $time,
+    };
 }
 
-sub _post_hashes_from_source {
+# Just the metadata-block hash for a single file, for change detection.
+sub _hash_of_metadata_block {
+    my $self = shift;
+    my ( $source_file ) = @_;
+
+    return $self->_index_record_for_file( $source_file )->{ hash };
+}
+
+sub _post_index_from_source {
     my $self = shift;
 
-    my %hashes;
+    my %index;
     for my $file ( grep { /\.markdown$|\.md$/ }
                    $self->source_directory->children )
     {
-        $hashes{ $file->basename } = $self->_hash_of_metadata_block( $file );
+        $index{ $file->basename } = $self->_index_record_for_file( $file );
     }
 
-    return \%hashes;
+    return \%index;
+}
+
+# Source-file basenames ordered newest-first by publication date (ties broken
+# by basename), derived from the post index. Undated records (which shouldn't
+# occur after a full publish) sort to the very end.
+sub _ordered_basenames {
+    my $self = shift;
+    my ( $index ) = @_;
+    $index ||= $self->_read_post_index;
+
+    my $formatter = $self->datetime_formatter;
+    my $epoch_zero = DateTime->from_epoch( epoch => 0 );
+    my %date_of;
+    for my $basename ( keys %$index ) {
+        my $time = $index->{ $basename }->{ time };
+        my $dt = $time && eval { $formatter->parse_datetime( $time ) };
+        $date_of{ $basename } = $dt || $epoch_zero;
+    }
+
+    return sort {
+        ( $date_of{ $b } <=> $date_of{ $a } ) || ( $a cmp $b )
+    } keys %$index;
+}
+
+# The basenames that currently make up the recent set (the front page + feeds).
+sub _recent_basenames {
+    my $self = shift;
+    my ( $index ) = @_;
+
+    my @ordered = $self->_ordered_basenames( $index );
+    my $max = $self->recent_posts_maxsize;
+    $max = @ordered if @ordered < $max;
+
+    return @ordered[ 0 .. $max - 1 ];
+}
+
+# Given a post's basename, return the basename of its neighbor in publication
+# order: $offset of -1 is the next-newer post, +1 the next-older. Returns undef
+# at the ends (or if the post isn't in the index). Used so an incrementally
+# published post page can resolve its prev/next links without building the
+# whole blog.
+sub neighbor_basename {
+    my $self = shift;
+    my ( $basename, $offset ) = @_;
+
+    my @ordered = $self->_ordered_basenames;
+    my %position = map { $ordered[$_] => $_ } 0 .. $#ordered;
+
+    my $i = $position{ $basename };
+    return unless defined $i;
+
+    my $j = $i + $offset;
+    return if $j < 0 || $j > $#ordered;
+
+    return $ordered[ $j ];
 }
 
 # Create a page that lists all available tags with
@@ -424,16 +508,16 @@ sub publish_tag_indexes {
     # Create all the individual tag pages
     for my $tag (values %$tag_map) {
 
-        $self->template->process(
-            $self->tags_template_file->open('<:encoding(utf8)'),
+        $self->_publish_template_to_file(
+            $self->tags_template_file,
             {
                 self_uri => $tag->uri,
                 is_tags_page => 1,
                 tags => { $tag->name => $tag->posts },
                 plerd => $self,
             },
-            $self->tags_publication_file($tag->name)->open('>:encoding(utf8)'),
-            ) || $self->_throw_template_exception( $self->tags_template_file );
+            $self->tags_publication_file($tag->name),
+        );
     }
 
     # Create the tag index
@@ -441,8 +525,8 @@ sub publish_tag_indexes {
     for my $tag (values %$tag_map) {
         $simplified_tag_map{ $tag->name } = $tag->posts;
     }
-    $self->template->process(
-        $self->tags_template_file->open('<:encoding(utf8)'),
+    $self->_publish_template_to_file(
+        $self->tags_template_file,
         {
             self_uri => $self->tags_index_uri,
             is_tags_index_page => 1,
@@ -450,32 +534,42 @@ sub publish_tag_indexes {
             tags => \%simplified_tag_map,
             plerd => $self,
         },
-        $self->tags_publication_file->open('>:encoding(utf8)'),
-        ) || $self->_throw_template_exception( $self->tags_template_file );
+        $self->tags_publication_file,
+    );
 
 }
 
 sub publish_recent_page {
     my $self = shift;
 
-    $self->template->process(
-        $self->post_template_file->open('<:encoding(utf8)'),
+    $self->_publish_template_to_file(
+        $self->post_template_file,
         {
             plerd => $self,
             posts => $self->recent_posts,
             title => $self->title,
         },
-        $self->recent_file->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->post_template_file );
+        $self->recent_file,
+    );
 
     my $index_file =
         Path::Class::File->new( $self->publication_directory, 'index.html' );
-    # Remove any existing index.html first, since symlink() silently fails
-    # if the destination already exists (e.g. on republication).
-    $index_file->remove if -e $index_file || -l $index_file;
-    symlink $self->recent_file, $index_file
-        or warn "Couldn't create the index.html symlink pointing at "
+    # Swap index.html into place atomically: build the symlink under a temp
+    # name, then rename() it over any existing index.html. (symlink() silently
+    # fails if its destination already exists, and removing index.html first
+    # would briefly 404 it on republication.)
+    my $temp_link = Path::Class::File->new(
+        $self->publication_directory, "index.html.$$.tmp"
+    );
+    $temp_link->remove if -e $temp_link || -l $temp_link;
+    if ( symlink $self->recent_file, $temp_link ) {
+        rename "$temp_link", "$index_file"
+            or warn "Couldn't move the index.html symlink into place: $!\n";
+    }
+    else {
+        warn "Couldn't create the index.html symlink pointing at "
             . $self->recent_file . ": $!\n";
+    }
 }
 
 sub publish_rss {
@@ -517,30 +611,28 @@ sub _publish_feed {
         $formatter->format_datetime( DateTime->now( time_zone => 'local' ) )
     ;
 
-    $self->template->process(
-        $self->$template_file_method->open('<:encoding(utf8)'),
+    $self->_publish_template_to_file(
+        $self->$template_file_method,
         {
             plerd => $self,
             posts => $self->recent_posts,
             timestamp => $timestamp,
         },
-        $self->$file_method->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->$template_file_method );
+        $self->$file_method,
+    );
 }
 
 sub publish_archive_page {
     my $self = shift;
 
-    my $posts_ref = $self->posts;
-
-    $self->template->process(
-        $self->archive_template_file->open('<:encoding(utf8)'),
+    $self->_publish_template_to_file(
+        $self->archive_template_file,
         {
             plerd => $self,
-            posts => $posts_ref,
+            posts => $self->posts,
         },
-        $self->archive_file->open('>:encoding(utf8)'),
-    ) || $self->_throw_template_exception( $self->archive_template_file );
+        $self->archive_file,
+    );
 
 }
 
@@ -696,6 +788,20 @@ sub _build_jsonfeed_file {
 sub _build_recent_posts {
     my $self = shift;
 
+    # Incremental path: when the full post list hasn't been built (a body-only
+    # republish), construct only the recent posts named by the index, rather
+    # than rendering the whole blog just to find the newest few.
+    unless ( $self->has_posts ) {
+        return [
+            map {
+                Plerd::Post->new(
+                    plerd       => $self,
+                    source_file => $self->source_directory->file( $_ ),
+                )
+            } $self->_recent_basenames
+        ];
+    }
+
     my @recent_posts = ();
 
     for my $post ( @{ $self->posts } ) {
@@ -759,6 +865,59 @@ sub _build_index_of_post_with_url {
     }
 
     return \%index_of_post;
+}
+
+# Publish atomically: render into a temp file in the target's own directory,
+# then rename() it into place. A rename(2) on the same filesystem is atomic, so
+# a web server reading the published file always sees either the complete old
+# file or the complete new one -- never a truncated or zero-length one. A render
+# that dies partway through leaves the existing published file untouched.
+sub _atomically_write {
+    my $self = shift;
+    my ( $target_file, $writer ) = @_;
+
+    my ( $fh, $temp_path ) = File::Temp::tempfile(
+        'plerd-XXXXXX',
+        DIR    => $target_file->parent->stringify,
+        UNLINK => 0,
+    );
+    binmode $fh, ':encoding(utf8)';
+
+    my $ok = eval { $writer->( $fh ); 1 };
+    my $error = $@;
+    close $fh;
+
+    unless ( $ok ) {
+        unlink $temp_path;
+        die $error;
+    }
+
+    # File::Temp creates the file mode 0600; restore the perms a normally
+    # created file would get, so the web server can read it.
+    chmod 0666 & ~umask, $temp_path;
+
+    unless ( rename $temp_path, $target_file->stringify ) {
+        my $rename_error = $!;
+        unlink $temp_path;
+        die "Couldn't move $temp_path into place as $target_file: "
+            . "$rename_error\n";
+    }
+}
+
+# Render a Template Toolkit template to a file, atomically (see
+# _atomically_write). Dies via _throw_template_exception on a processing error,
+# leaving any existing published file intact.
+sub _publish_template_to_file {
+    my $self = shift;
+    my ( $template_file, $vars, $target_file ) = @_;
+
+    $self->_atomically_write( $target_file, sub {
+        my $out_fh = shift;
+        my $in_fh = $template_file->open('<:encoding(utf8)')
+            or die "Can't open template file $template_file for reading: $!\n";
+        $self->template->process( $in_fh, $vars, $out_fh )
+            or $self->_throw_template_exception( $template_file );
+    } );
 }
 
 sub _throw_template_exception {
@@ -1137,13 +1296,17 @@ Republishes the blog in response to a change to a single source file,
 given as a L<Path::Class::File> object.
 
 Plerd hashes the file's leading metadata block (everything above the
-first blank line) and compares it against a hash stored, keyed by the
-file's basename, in C<db/posts.json>. If the hash is missing or has
-changed -- meaning the change might affect shared pages such as the
+first blank line) and compares it against the hash stored, keyed by the
+file's basename, in the C<db/posts.json> index. If the hash is missing or
+has changed -- meaning the change might affect shared pages such as the
 sidebar, archive, or tag indexes -- this calls L<"publish_all"> and
-refreshes the stored hashes. If the hash is unchanged -- meaning only
-the post's body changed -- this republishes just that one post, the
-recent-posts page, and the syndication feeds.
+rebuilds the index. If the hash is unchanged -- meaning only the post's
+body changed -- this republishes just that one post's page. It also
+refreshes the recent-posts page and the syndication feeds, but only when
+the edited post is currently in the recent set; a body edit to an older,
+out-of-feed post rewrites that post's page and nothing else. Ordering,
+recency, and prev/next neighbors are all read from the index, so a single
+post is republished without re-rendering the rest of the blog.
 
 =item post_with_url( $absolute_url )
 
