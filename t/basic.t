@@ -482,4 +482,72 @@ is( $index_file->slurp, $recent_content,
     'Publishing replaces a stale index.html with the recent-posts page.' );
 }
 
+### Test incremental publishing via publish_file.
+{
+my $inc_source = Path::Class::File->new( $source_dir, 'incremental-post.md' );
+$inc_source->spew( iomode => '>:encoding(utf8)',
+    "title: Incremental original title\n\nThe original body text.\n" );
+
+my $inc_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new( 'http://blog.example.com/' ),
+);
+
+# The first publish_file sees no stored hash, so it republishes everything
+# and records a metadata hash for every source file.
+$inc_plerd->publish_file( $inc_source );
+
+my $posts_json = Path::Class::File->new( $blog_dir, 'db', 'posts.json' );
+ok( -e $posts_json, 'db/posts.json exists after an initial publish_file.' );
+
+my $hashes = JSON->new->decode(
+    scalar $posts_json->slurp( iomode => '<:encoding(utf8)' ) );
+ok( exists $hashes->{ 'incremental-post.md' },
+    'posts.json has an entry for the changed source file.' );
+ok( scalar( keys %$hashes ) > 1,
+    "posts.json has entries for the blog's other source files too." );
+
+# Discover the post's published (date-prefixed) HTML filename.
+my ( $published_filename ) =
+    $inc_source->slurp( iomode => '<:encoding(utf8)' )
+        =~ /published_filename:\s*(\S+)/;
+my $post_html = Path::Class::File->new( $docroot_dir, $published_filename );
+my $archive_html = Path::Class::File->new( $docroot_dir, 'archive.html' );
+
+# Editing only the body leaves the metadata block (and its hash) untouched,
+# so the archive page should not be rewritten.
+my $archive_mtime_before = $archive_html->stat->mtime;
+{
+    my $content = $inc_source->slurp( iomode => '<:encoding(utf8)' );
+    $content =~ s/The original body text\./An edited body, same metadata./;
+    $inc_source->spew( iomode => '>:encoding(utf8)', $content );
+}
+$inc_plerd->publish_file( $inc_source );
+
+is( $archive_html->stat->mtime, $archive_mtime_before,
+    'A body-only edit does not rewrite the archive page (partial publish).' );
+like( $post_html->slurp( iomode => '<:encoding(utf8)' ),
+      qr/An edited body, same metadata\./,
+      'A body-only edit still republishes the post itself.' );
+
+# Editing the title changes the metadata block, so the whole blog should be
+# republished (rewriting the archive page).
+sleep 1;    # mtime has 1-second resolution; ensure a rewrite looks newer.
+$archive_mtime_before = $archive_html->stat->mtime;
+{
+    my $content = $inc_source->slurp( iomode => '<:encoding(utf8)' );
+    $content =~ s/title: Incremental original title/title: Incremental NEW title/;
+    $inc_source->spew( iomode => '>:encoding(utf8)', $content );
+}
+$inc_plerd->publish_file( $inc_source );
+
+isnt( $archive_html->stat->mtime, $archive_mtime_before,
+    'A title edit triggers a full republish (archive page rewritten).' );
+
+unlink $inc_source;
+}
+
 done_testing();

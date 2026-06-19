@@ -236,6 +236,8 @@ sub _build_updated_timestamp {
 sub _build_newer_post {
     my $self = shift;
 
+    return $self->_neighbor_post( -1 ) unless $self->plerd->has_posts;
+
     my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
     my $newer_post;
@@ -249,11 +251,36 @@ sub _build_newer_post {
 sub _build_older_post {
     my $self = shift;
 
+    return $self->_neighbor_post( +1 ) unless $self->plerd->has_posts;
+
     my $index = $self->plerd->index_of_post_with_guid->{ $self->guid };
 
     my $older_post = $self->plerd->posts->[ $index + 1 ];
 
     return $older_post;
+}
+
+# Resolve a neighbor post (offset -1 = newer, +1 = older) from the blog's
+# post index, constructing only that one neighbor. Used during an incremental
+# publish, when the full post list isn't in memory. Returns undef at the ends
+# of the blog or if the neighbor's source file has since vanished.
+sub _neighbor_post {
+    my $self = shift;
+    my ( $offset ) = @_;
+
+    my $basename = $self->plerd->neighbor_basename(
+        $self->source_file->basename,
+        $offset,
+    );
+    return unless defined $basename;
+
+    my $file = $self->plerd->source_directory->file( $basename );
+    return unless -e $file;
+
+    return Plerd::Post->new(
+        plerd       => $self->plerd,
+        source_file => $file,
+    );
 }
 
 sub _build_published_timestamp {
@@ -553,21 +580,16 @@ sub publish {
     my $stripped_title = $self->title;
     $stripped_title =~ s{</?(em|strong)>}{}g;
 
-    my $html_fh = $self->publication_file->openw;
-    my $template_fh = $self->plerd->post_template_file->openr;
-    foreach( $html_fh, $template_fh ) {
-	$_->binmode(':utf8');
-    }
-    $self->plerd->template->process(
-        $template_fh,
+    $self->plerd->_publish_template_to_file(
+        $self->plerd->post_template_file,
         {
             plerd => $self->plerd,
             posts => [ $self ],
             title => $stripped_title,
             context_post => $self,
         },
-	    $html_fh,
-    ) || $self->plerd->_throw_template_exception( $self->plerd->post_template_file );
+        $self->publication_file,
+    );
 
 }
 

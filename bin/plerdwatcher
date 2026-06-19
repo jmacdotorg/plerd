@@ -92,25 +92,30 @@ unless ( $plerd && $watcher ) {
 while ( my @events = $watcher->wait_for_events ) {
     if ( @events ) {
         try {
-            $plerd->publish_all;
             for my $event ( @events ) {
                 if (
-                    (
-                        ( $event->type eq 'create' )
-                        or ( $event->type eq 'modify' )
-                    )
-                    and $webmention_enabled
+                    ( $event->type eq 'create' )
+                    or ( $event->type eq 'modify' )
                 ) {
                     my $file = Path::Class::File->new( $event->path );
-                    my $post = Plerd::Post->new(
-                        source_file => $file,
-                        plerd => $plerd,
-                    );
-                    INFO "Sending webmentions for $file...";
-                    my $report = $post->send_webmentions;
-                    INFO "$report->{attempts} attempts, "
-                         . "$report->{sent} sent, "
-                         . "$report->{delivered} delivered.";
+                    $plerd->publish_file( $file );
+
+                    if ( $webmention_enabled ) {
+                        my $post = Plerd::Post->new(
+                            source_file => $file,
+                            plerd => $plerd,
+                        );
+                        INFO "Sending webmentions for $file...";
+                        my $report = $post->send_webmentions;
+                        INFO "$report->{attempts} attempts, "
+                             . "$report->{sent} sent, "
+                             . "$report->{delivered} delivered.";
+                    }
+                }
+                else {
+                    # A delete (or other) event can change the sidebar and
+                    # other shared pages, so republish the whole blog.
+                    $plerd->publish_all;
                 }
             }
         }
