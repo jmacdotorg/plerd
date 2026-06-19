@@ -1,5 +1,4 @@
 name = "Plerd"
-badges = ["travis"]
 authority="cpan:JMAC"
 
 module_maker="ExtUtilsMakeMaker"

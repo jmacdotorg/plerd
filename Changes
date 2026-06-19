@@ -2,13 +2,35 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Incremental publishing: plerdwatcher now republishes incrementally on a
+        source change, falling back to a full rebuild only when a change can
+        affect shared pages (recent/archive/tag pages and feeds). Scales far
+        better as a blog's archive grows.
+
+      - All generated files are now written atomically (rendered to a temp file,
+        then renamed into place), so a web server never serves a half-written or
+        empty file, and a failed render leaves the previous file intact.
+
       - Promoting webmention sending from experimental to supported feature.
 
       - Removing experimental support for storing webmentions.
 
       - HTML is now stripped from JSON Feed titles.
-      
+
       - Fixing a bug that would sometimes list a post twice on a tag page.
+
+      - The default post template now shows a "Previous post" link in list view
+        when older posts exist.
+
+      - Trailing whitespace is now stripped from metadata values.
+
+      - Assorted correctness and robustness fixes (with added tests), and
+        hardened index.html symlink creation.
+
+      - Declaring Digest::MD5 and JSON as dependencies.
+
+      - Continuous integration moved from the defunct Travis CI to GitHub
+        Actions (Perl 5.32 / 5.36 / 5.40).
 
 1.820 2019-12-26T04:03:53Z
 
