@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.900 2026-06-19T17:35:40Z
+
       - Incremental publishing: plerdwatcher now republishes incrementally on a
         source change, falling back to a full rebuild only when a change can
         affect shared pages (recent/archive/tag pages and feeds). Scales far

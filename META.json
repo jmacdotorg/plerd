@@ -4,13 +4,13 @@
       "Jason McIntosh <jmac@jmac.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.8, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.1.29, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "mit"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "Plerd",
    "no_index" : {
@@ -43,9 +43,8 @@
       "runtime" : {
          "requires" : {
             "App::Daemon" : "0",
-            "Capture::Tiny" : "0",
             "Data::GUID" : "0",
-            "DateTime" : "0",
+            "DateTime" : "1.54",
             "DateTime::Format::W3CDTF" : "0",
             "Digest::MD5" : "0",
             "File::ChangeNotify" : "0",
@@ -54,9 +53,7 @@
             "HTML::SocialMeta" : "0.72",
             "HTML::Strip" : "0",
             "JSON" : "0",
-            "LWP" : "0",
             "List::Util" : "1.45",
-            "Mojolicious::Lite" : "0",
             "Moose" : "0",
             "MooseX::Types::URI" : "0",
             "Path::Class" : "0",
@@ -79,11 +76,11 @@
       "homepage" : "https://github.com/jmacdotorg/plerd",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/jmacdotorg/plerd.git",
+         "url" : "https://github.com/jmacdotorg/plerd.git",
          "web" : "https://github.com/jmacdotorg/plerd"
       }
    },
-   "version" : "1.821",
+   "version" : "1.900",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",
@@ -94,6 +91,6 @@
       "Petter hassberg <dr.doddo@gmail.com>",
       "Rebecca Turner <me@re-becca.org>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300_01",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 0
 }
