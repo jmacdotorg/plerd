@@ -29,6 +29,10 @@ Revision history for Plerd
 
       - Declaring Digest::MD5 and JSON as dependencies.
 
+      - Requiring DateTime 1.54 or later; older versions could round-trip a
+        post's W3C "time" value into an unparseable form. Thanks to Olivier
+        Auverlot for the report.
+
       - Continuous integration moved from the defunct Travis CI to GitHub
         Actions (Perl 5.32 / 5.36 / 5.40).
 
