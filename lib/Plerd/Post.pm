@@ -413,6 +413,7 @@ sub _process_source_file {
     my %attributes;
     my @ordered_attribute_names = qw( title time published_filename guid tags);
     while ( my $line = <$fh> ) {
+        $line =~ s/\r\n?/\n/g;   # Normalize CRLF (or bare-CR) newlines to LF.
         chomp $line;
         last unless $line =~ /\S/;
         my ($key, $value) = $line =~ /^\s*(\w+?)\s*:\s*(.*?)\s*$/;
@@ -428,8 +429,9 @@ sub _process_source_file {
     $self->attributes( \%attributes );
 
     my $body;
-    while ( <$fh> ) {
-        $body .= $_;
+    while ( my $line = <$fh> ) {
+        $line =~ s/\r\n?/\n/g;   # Normalize CRLF (or bare-CR) newlines to LF.
+        $body .= $line;
     }
 
     close $fh;
