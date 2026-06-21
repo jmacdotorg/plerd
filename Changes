@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.901 2026-06-21T22:27:57Z
+
       - Fixed README generation: the CI badge and an "install Sweat"
         copypasta typo are now corrected at the README.pod source, since
         README.md is generated from it by Minilla.
