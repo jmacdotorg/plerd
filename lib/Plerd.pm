@@ -562,9 +562,6 @@ sub publish_recent_page {
         $self->publication_directory, "index.html.$$.tmp"
     );
     $temp_link->remove if -e $temp_link || -l $temp_link;
-    # Link to recent.html by basename: index.html sits beside it in the docroot,
-    # so a relative sibling target stays correct whether the docroot is named by
-    # an absolute or relative path, and survives the whole tree being moved.
     if ( symlink $self->recent_file->basename, $temp_link ) {
         rename "$temp_link", "$index_file"
             or warn "Couldn't move the index.html symlink into place: $!\n";
