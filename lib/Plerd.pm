@@ -573,7 +573,7 @@ sub publish_recent_page {
         $self->publication_directory, "index.html.$$.tmp"
     );
     $temp_link->remove if -e $temp_link || -l $temp_link;
-    if ( symlink $self->recent_file, $temp_link ) {
+    if ( symlink $self->recent_file->basename, $temp_link ) {
         rename "$temp_link", "$index_file"
             or warn "Couldn't move the index.html symlink into place: $!\n";
     }
