@@ -497,6 +497,17 @@ sub neighbor_basename {
 sub publish_tag_indexes {
     my $self = shift;
 
+    # tags.tt is the one non-critical template: if it's missing, publish the
+    # rest of the blog anyway rather than dying. Warn only if the blog actually
+    # uses tags and therefore loses content by skipping their pages.
+    unless ( -e $self->tags_template_file ) {
+        if ( $self->has_tags ) {
+            carp "This blog uses tags, but its template directory has no "
+                 . "tags.tt file. Skipping publication of tag pages.\n";
+        }
+        return;
+    }
+
     my $tag_map = $self->tags_map;
 
     # Commentary: Ideally we'd just pass a sorted array of tag objects
