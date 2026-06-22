@@ -398,6 +398,15 @@ sub _build_social_meta_tags {
 
 }
 
+# Normalize CRLF ("Windows") and bare-CR ("classic Mac") newlines to LF, so
+# source files publish cleanly and get rewritten with consistent line endings
+# regardless of the editor that produced them.
+sub _normalize_newlines {
+    my ( $text ) = @_;
+    $text =~ s/\r\n?/\n/g;
+    return $text;
+}
+
 # This next internal method does a bunch of stuff.
 # It's called via Moose-trigger when the object's source_file attribute is set.
 # * Read and store the file's data (body) and metadata
@@ -413,7 +422,7 @@ sub _process_source_file {
     my %attributes;
     my @ordered_attribute_names = qw( title time published_filename guid tags);
     while ( my $line = <$fh> ) {
-        $line =~ s/\r\n?/\n/g;   # Normalize CRLF (or bare-CR) newlines to LF.
+        $line = _normalize_newlines( $line );
         chomp $line;
         last unless $line =~ /\S/;
         my ($key, $value) = $line =~ /^\s*(\w+?)\s*:\s*(.*?)\s*$/;
@@ -430,8 +439,7 @@ sub _process_source_file {
 
     my $body;
     while ( my $line = <$fh> ) {
-        $line =~ s/\r\n?/\n/g;   # Normalize CRLF (or bare-CR) newlines to LF.
-        $body .= $line;
+        $body .= _normalize_newlines( $line );
     }
 
     close $fh;
