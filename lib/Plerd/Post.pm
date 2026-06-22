@@ -11,6 +11,8 @@ use HTML::SocialMeta;
 use Try::Tiny;
 use JSON;
 use Path::Class::File;
+use Digest::MD5 qw( md5_hex );
+use Encode qw( encode_utf8 );
 
 use Plerd::SmartyPants;
 use Web::Mention;
@@ -194,15 +196,22 @@ sub _build_published_filename {
         $filename =~ s/\..*$/.html/;
     }
     else {
-        $filename = $self->title;
         my $stripper = HTML::Strip->new( emit_spaces => 0 );
-        $filename = $stripper->parse( $filename );
-        $filename =~ s/\s+/-/g;
-        $filename =~ s/--+/-/g;
-        $filename =~ s/[^\w\-]+//g;
-        $filename = lc $filename;
-        $filename = $self->date->ymd( q{-} ) . q{-} . $filename;
-        $filename .= '.html';
+        my $slug = $stripper->parse( $self->title );
+        $slug =~ s/\s+/-/g;
+        $slug =~ s/--+/-/g;
+        $slug =~ s/[^\w\-]+//g;
+        $slug = lc $slug;
+
+        # A title made entirely of characters that can't appear in a filename
+        # (e.g. emoji) slugs down to nothing, which would make every such post
+        # on a given day collide on "YYYY-MM-DD-.html". Fall back to a short
+        # hash of the title, so distinct titles get distinct, stable filenames.
+        unless ( length $slug ) {
+            $slug = substr( md5_hex( encode_utf8( $self->title ) ), 0, 10 );
+        }
+
+        $filename = $self->date->ymd( q{-} ) . q{-} . $slug . '.html';
     }
 
     return $filename;
