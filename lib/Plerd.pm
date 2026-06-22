@@ -829,17 +829,17 @@ sub _build_recent_posts {
 sub _build_posts {
     my $self = shift;
 
-    # Newest publication date first, ties broken by source basename. This is a
-    # single sort (rather than a basename pre-sort feeding a date sort) and uses
-    # the same comparator as _ordered_basenames, so a full publish and an
-    # incremental publish agree on order. The grep keeps both .md and .markdown
-    # sources.
+    # Newest publication date first, ties broken by source basename, using the
+    # same comparator as _ordered_basenames so a full publish and an incremental
+    # publish agree on order. The inner sort guarantees order regardless of
+    # readdir order, and the grep keeps both .md and .markdown sources.
     my @posts =
         sort {
             $b->date <=> $a->date
             || $a->source_file->basename cmp $b->source_file->basename
         }
         map { Plerd::Post->new( plerd => $self, source_file => $_ ) }
+        sort { $a->basename cmp $b->basename }
         grep { /\.markdown$|\.md$/ }
         $self->source_directory->children
     ;
