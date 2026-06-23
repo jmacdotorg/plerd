@@ -3,7 +3,7 @@ package Plerd::Post;
 use Moose;
 use DateTime;
 use DateTime::Format::W3CDTF;
-use Text::MultiMarkdown qw( markdown );
+use Markdown::Perl;
 use URI;
 use HTML::Strip;
 use Data::GUID;
@@ -17,6 +17,13 @@ use Web::Mention;
 
 use Readonly;
 Readonly my $WPM => 200; # The words-per-minute reading speed to assume
+
+my $markdown = Markdown::Perl->new(
+    mode                    => 'github',
+    # Drop '"' so literal quotes survive for Plerd::SmartyPants to curl.
+    html_escaped_characters => '&<>',
+);
+sub markdown { $markdown->convert( $_[0] ) }
 
 has 'plerd' => (
     is => 'ro',
@@ -444,10 +451,11 @@ sub _process_source_file {
     }
     $self->body( $body );
 
-    foreach ( qw( title body ) ) {
-        if ( defined( $self->$_ ) ) {
-            $self->$_( Plerd::SmartyPants::process( markdown( $self->$_ ) ) );
-        }
+    foreach my $field ( qw( title body ) ) {
+        next unless defined $self->$field;
+        $self->$field(
+            Plerd::SmartyPants::process( markdown( $self->$field ) )
+        );
     }
 
     # Strip unnecessary <p> tags that the markdown processor just added to the title.
