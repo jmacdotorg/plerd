@@ -2,6 +2,9 @@ use warnings;
 use strict;
 use utf8;
 use Test::More;
+# Some test descriptions below interpolate emoji titles, so tell the TAP
+# formatter to emit UTF-8 and avoid "Wide character in print" warnings.
+Test2::API::test2_stack()->top->format->encoding( 'utf8' );
 use Path::Class::Dir;
 use Path::Class::File;
 use URI;

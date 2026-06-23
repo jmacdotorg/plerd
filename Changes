@@ -2,6 +2,26 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Source files with Windows (CRLF) line endings are now normalized to
+        LF throughout. Previously the in-place source rewrite left the body
+        with CRLF line endings (mixed with LF metadata).
+
+      - Publishing no longer dies when the optional tags.tt template is
+        missing, so a blog with no tags can publish without it.
+
+      - Posts whose titles consist entirely of characters that can't appear
+        in a filename (such as emoji) no longer collide on a single
+        YYYY-MM-DD-.html name; each now gets a distinct, stable filename
+        derived from a hash of its title.
+
+      - The docroot/index.html symlink now targets recent.html by basename
+        rather than an absolute path, so it keeps working when the blog's
+        docroot is moved or served from a different location.
+
+      - Full and incremental publishing now share one post-ordering rule
+        (date-descending, then basename-ascending), so the two paths can no
+        longer disagree about ordering. Output order is unchanged.
+
 1.901 2026-06-21T22:27:57Z
 
       - Fixed README generation: the CI badge and an "install Sweat"
