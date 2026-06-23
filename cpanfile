@@ -1,3 +1,6 @@
+# Markdown::Perl (our Markdown engine) requires Perl 5.26 or later.
+requires 'perl', '5.026';
+
 requires 'Moose';
 requires 'Template';
 requires 'Path::Class';
@@ -7,7 +10,7 @@ requires 'JSON';
 requires 'DateTime' => '1.54';
 requires 'DateTime::Format::W3CDTF';
 requires 'URI';
-requires 'Text::MultiMarkdown';
+requires 'Markdown::Perl';
 requires 'YAML';
 requires 'FindBin';
 requires 'File::ChangeNotify';
@@ -21,3 +24,4 @@ requires 'Readonly';
 requires 'Web::Mention' => '0.703'; 
 requires 'MooseX::Types::URI';
 requires 'Test::Warn';
+requires 'Capture::Tiny'; # Used by t/init.t.

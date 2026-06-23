@@ -57,7 +57,7 @@ All publication writes are atomic: `_publish_template_to_file`/`_atomically_writ
 
 - **`Plerd::Post`** (`Post.pm`) — one post per Markdown source file. The real work happens in `_process_source_file`, fired by a Moose **trigger** the moment `source_file` is set (not lazily). That method:
   - parses the leading `key: value` metadata block (terminated by a blank line) into `attributes`, then the Markdown body;
-  - runs the body and title through `Text::MultiMarkdown::markdown` then `Plerd::SmartyPants`;
+  - runs the body and title through `Markdown::Perl` (a shared converter in GitHub mode, so fenced code blocks, tables, and the rest of GFM work) then `Plerd::SmartyPants`. The converter drops `"` from its HTML-escaped characters so SmartyPants can curl literal double quotes into typographic ones; quotes inside code are still escaped via `html_escaped_code_characters`;
   - **mutates the source file in place** — if `time`, `published_filename`, or `guid` are missing, it computes them and rewrites the file with the full metadata block. This write-back is core behavior, not a side effect to "fix." Date logic: explicit W3C `time:` wins; else a `YYYY-MM-DD` filename prefix sets midnight of that date (or now, if the date is today); else now.
   - resolves tags (comma-separated `tags:` header) into shared `Plerd::Tag` objects via `$plerd->tag_named`.
   - `publish` renders `post.tt`. `send_webmentions` walks the post's links via `Web::Mention`.
