@@ -379,32 +379,39 @@ sub _build_social_meta_tags {
 
     my $tags = '';
 
-    my %targets = (
-        twitter => 'twitter_id',
-        opengraph => 'facebook_id',
-    );
+    # No image (post-specific or blog-wide) means no social metadata at all.
+    return $tags unless $self->socialmeta;
 
-    if ( $self->socialmeta ) {
-        for my $target ( keys %targets ) {
-            my $id_method = $targets{ $target };
-            if ( $self->plerd->$id_method ) {
-                try {
-                    $tags .=
-                        $self->socialmeta->$target->create(
-                            $self->socialmeta_mode
-                        );
-                }
-                catch {
-                    warn "Couldn't create $target meta tags for "
-                         . $self->source_file->basename
-                         . ": $_\n";
-                };
-            }
-        }
+    # Open Graph tags get emitted for every post that has an image. A
+    # configured facebook_id, if any, populates the fb:app_id tag; without
+    # one, we drop that empty tag rather than emit it blank.
+    $tags .= $self->_create_social_meta_tags( 'opengraph' );
+    unless ( $self->plerd->facebook_id ) {
+        $tags =~ s{\n?<meta property="fb:app_id" content=""/>}{};
     }
+
+    # Twitter Cards are a legacy extra, emitted only when the blog defines a
+    # twitter_id.
+    $tags .= $self->_create_social_meta_tags( 'twitter' )
+        if $self->plerd->twitter_id;
 
     return $tags;
 
+}
+
+sub _create_social_meta_tags {
+    my ( $self, $target ) = @_;
+
+    my $tags = '';
+    try {
+        $tags = $self->socialmeta->$target->create( $self->socialmeta_mode );
+    }
+    catch {
+        warn "Couldn't create $target meta tags for "
+             . $self->source_file->basename
+             . ": $_\n";
+    };
+    return $tags;
 }
 
 # Normalize CRLF ("Windows") and bare-CR ("classic Mac") newlines to LF, so

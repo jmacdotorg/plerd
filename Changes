@@ -2,6 +2,27 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Open Graph metadata tags are now generated for any post that has an
+        associated image (its own, or the blog-wide fallback image), whether
+        or not the blog configures a "facebook_id". This makes link previews
+        work out of the box on Discord, Slack, Mastodon, and other services
+        that read Open Graph data.
+
+      - Twitter Card support is no longer scaffolded or documented. The
+        "twitter_id" directive still works, but it has been removed from the
+        sample configuration file, since Open Graph metadata already drives
+        link previews on X as well as everywhere else.
+
+      - The "plerdall --init" success message now points to the configuration
+        file's real location (conf/plerd.conf), rather than a nonexistent
+        path in the working directory's root.
+
+      - Fixed a test whose expected result depended on the local time zone,
+        causing spurious failures when the suite ran anywhere west of US
+        Eastern.
+
+      - Revised and refreshed the README documentation.
+
 1.902 2026-06-23T22:37:04Z
 
       - Source files with Windows (CRLF) line endings are now normalized to

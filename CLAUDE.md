@@ -33,6 +33,8 @@ This project follows test-driven development. Whenever appropriate, begin work o
 
 (The fail-first step only applies when the test genuinely precedes the implementation. If a change has already landed and you are adding tests retroactively, just confirm the new tests pass — don't revert working code to manufacture a failing run.)
 
+Comments document the present, never the diff. Don't write comments that narrate a change ("used to do X, now does Y"; "previously gated on…"; "no longer…"). If a comment exists only to record that the code changed, drop it; otherwise restate it as a present-tense reason the current code is the way it is. Watch for history smuggled into single words like "still", "now", or "anymore".
+
 Run the two CLI programs from the distribution root (they resolve `lib/` via FindBin):
 
 ```

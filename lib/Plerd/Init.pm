@@ -47,12 +47,12 @@ sub initialize ( $$ ) {
     my $success = populate_directory( $dir, \@messages );
 
     if ( $success ) {
-        my $config_file = Path::Class::File->new( $dir, 'plerd.conf' );
+        my $config_file = Path::Class::File->new( $dir, 'conf', 'plerd.conf' );
         push @messages,
             "I have created and populated a new Plerd working directory at "
             . "$dir. Your next step involves updating the configuration file "
             . "at $config_file.\n"
-            . "For full documentation, links to mailing lists, and other stuff, "
+            . "For full documentation and links to user resources, "
             . "please visit http://plerd.jmac.org/. Enjoy!";
     }
     return \@messages;
@@ -367,14 +367,11 @@ author_email: s.handwich\@example.com
 ######################
 # Social-media setup
 ######################
-# Fill in these values in order to activate Twitter Card support for your
-# Plerd-based blog.
-
-# twitter_id: The Twitter username to associate with this blog.
-#             If you define this, then Plerd will try to generate Twitter Card
-#             metatags on each post's webpage.
-#             (Don't include the leading '\@', please.)
-twitter_id: MyBlogsTwitterUsername
+# Plerd can add Open Graph metadata tags to each post, so that services like
+# Discord, Slack, and Mastodon can present an attractive summary when someone
+# shares a link to one of your posts. Plerd generates these tags for any post
+# that has an image associated with it -- either its own, or the blog-wide
+# fallback image configured here.
 
 # image: Your blog's "logo", used as a fallback image for posts that do not
 #        define an image themselves.
