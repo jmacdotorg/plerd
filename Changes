@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+1.903 2026-06-26T01:15:00Z
+
       - Open Graph metadata tags are now generated for any post that has an
         associated image (its own, or the blog-wide fallback image), whether
         or not the blog configures a "facebook_id". This makes link previews
