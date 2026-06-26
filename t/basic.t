@@ -225,6 +225,8 @@ $post_template_content =~
 $post_template->spew( $post_template_content );
 $plerd->publish_all;
 
+# The extra-headers fixture uses noon UTC so its local date stays 2000-01-01
+# in every timezone this suite realistically runs in.
 my $byline_post =
     Path::Class::File->new(
         $docroot_dir,
@@ -391,6 +393,41 @@ $post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
 like( $post,
     qr{name="twitter:image:alt" content="Just a test image."},
     'Metatags: Defined default alt-text',
+);
+
+}
+
+### Test that Open Graph tags are emitted for any post that has an image,
+### even when the blog defines neither a facebook_id nor a twitter_id.
+{
+my $og_plerd = Plerd->new(
+    path         => $blog_dir->stringify,
+    title        => 'Test Blog',
+    author_name  => 'Nobody',
+    author_email => 'nobody@example.com',
+    base_uri     => URI->new ( 'http://blog.example.com/' ),
+    image        => URI->new ( 'http://blog.example.com/logo.png' ),
+);
+
+$og_plerd->publish_all;
+
+my $og_post = Path::Class::File->new( $docroot_dir, "$ymd-metatags.html" )->slurp;
+
+like( $og_post,
+    qr{property="og:image" content="http://blog.example.com/logo.png"},
+    'Open Graph tags emitted without a facebook_id',
+);
+like( $og_post,
+    qr{property="og:title" content=},
+    'Open Graph title tag emitted without a facebook_id',
+);
+unlike( $og_post,
+    qr{name="twitter:},
+    'No Twitter Card tags emitted without a twitter_id',
+);
+unlike( $og_post,
+    qr{property="fb:app_id"},
+    'No empty fb:app_id tag when facebook_id is unset',
 );
 
 }
