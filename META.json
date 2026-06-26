@@ -43,6 +43,7 @@
       "runtime" : {
          "requires" : {
             "App::Daemon" : "0",
+            "Capture::Tiny" : "0",
             "Data::GUID" : "0",
             "DateTime" : "1.54",
             "DateTime::Format::W3CDTF" : "0",
@@ -54,17 +55,18 @@
             "HTML::Strip" : "0",
             "JSON" : "0",
             "List::Util" : "1.45",
+            "Markdown::Perl" : "0",
             "Moose" : "0",
             "MooseX::Types::URI" : "0",
             "Path::Class" : "0",
             "Readonly" : "0",
             "Template" : "0",
             "Test::Warn" : "0",
-            "Text::MultiMarkdown" : "0",
             "Try::Tiny" : "0",
             "URI" : "0",
             "Web::Mention" : "0.703",
-            "YAML" : "0"
+            "YAML" : "0",
+            "perl" : "5.026"
          }
       }
    },
@@ -80,7 +82,7 @@
          "web" : "https://github.com/jmacdotorg/plerd"
       }
    },
-   "version" : "1.903",
+   "version" : "1.903_001",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",

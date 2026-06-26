@@ -221,9 +221,11 @@ Once you've configured your blog as described above, you can add these attribute
 
 - **image\_alt**: A textual description of the image referenced by the `image` attribute. (Equivalent in usage to the "alt" attribute in an HTML `<img>` tag.) Plerd will just leave this blank, if you don't define it yourself.
 
-### MultiMarkdown
+### GitHub-Flavored Markdown
 
-Plerd supports [MultiMarkdown](https://fletcherpenney.net/multimarkdown/) syntax out of the box! Go ahead and put MultiMarkdown tables and stuff into your posts. It'll just work.
+Plerd processes your posts with [Markdown::Perl](https://metacpan.org/pod/Markdown::Perl)
+in its GitHub-Flavored Markdown (GFM) mode. This means you get the full CommonMark spec, including fenced code blocks, plus GFM extensions such as tables, strikethrough, and task lists. For a full syntax
+reference, see [pmarkdown supported syntax](https://github.com/mkende/pmarkdown/blob/main/Syntax.md).
 
 ### Webmention
 
