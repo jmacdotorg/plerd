@@ -46,7 +46,7 @@ I do my best to avoid breaking functionality when I do release updates to Plerd,
 available as "cpanminus" in your favorite package manager. (Or install it from
 source, through the instructions at [http://cpanmin.us](http://cpanmin.us).)
 
-Then, run this command:
+Then, to install the latest release of Plerd, run this command:
 
     cpanm Plerd
 
@@ -61,7 +61,7 @@ Alternately, you can run these commands under \`sudo\` to install Plerd at the s
 
 If everything installed as it should, then you should have the `plerdall` and `plerdwatcher` programs in your command path.
 
-**To install Plerd from source**, set the current working directory to the same directory containing this README file, make sure you have `cpanm` as described above, and then do this:
+**To install Plerd from source** instead, set the current working directory to the same directory containing this README file, make sure you have `cpanm` as described above, and then do this:
 
     cpanm --installdeps .
     perl Makefile.PL
