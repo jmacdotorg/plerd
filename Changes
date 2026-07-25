@@ -2,6 +2,8 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+2.000 2026-07-25T16:05:48Z
+
       - Plerd now processes Markdown with Markdown::Perl, running in its
         GitHub-Flavored Markdown (GFM) mode, in place of Text::MultiMarkdown.
         Fenced code blocks work at last -- both ``` and ~~~ fences, with a
