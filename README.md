@@ -40,13 +40,17 @@ I do my best to avoid breaking functionality when I do release updates to Plerd,
 
 ## Setup
 
+### Before you begin
+
+To install and run Plerd, you need the following installed on your machine:
+
+- Perl version 5.26 or later. [Perlbrew](https://perlbrew.pl) is an excellent tool to install and manage a more recent perl alongside your machine's system Perl, if needed.
+- The `cpanm` program for managing third-party Perl libraries. You can likely find it as `cpanminus` in your favorite package manager. Or, install it from
+source, through the instructions at [http://cpanmin.us](http://cpanmin.us).
+
 ### Installation
 
-**First, make sure you have the `cpanm` program on your machine.** It is likely
-available as "cpanminus" in your favorite package manager. (Or install it from
-source, through the instructions at [http://cpanmin.us](http://cpanmin.us).)
-
-Then, to install the latest release of Plerd, run this command:
+To install the latest release of Plerd, run this command:
 
     cpanm Plerd
 
@@ -248,6 +252,12 @@ To keep up to date on Plerd news, follow [the Plerd blog](https://plerd.jmac.org
 You can also [email me, Jason McIntosh](mailto:jmac@jmac.org), directly. I am always interested to hear about other folks making use of Plerd, and I will do whatever I can to help them with it. All such feedback does tend to make the software that much better, after all!
 
 [Plerd has a homepage at its creator's website.](http://jmac.org/plerd)
+
+### Support for Plerd 1.x
+
+Plerd version 2.000 was released in July, 2026, after a significant change in dependencies required a more recent Perl version. If you still need to run Plerd version 1, you can find a maintenance branch called `maint/1.x` in the Plerd GitHub repository. You can also [find the most recent version 1 release on CPAN](https://metacpan.org/release/JMAC/Plerd-1.903), and install it directly with the following command:
+
+    cpanm Plerd@1.903
 
 ## See Plerd at work
 

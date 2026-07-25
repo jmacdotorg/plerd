@@ -12,10 +12,9 @@ use_ok( 'Plerd' );
 use Plerd::Init;
 
 # Regression test for GitHub issue #57: GitHub-style fenced code blocks.
-# Text::MultiMarkdown does not understand ``` or ~~~ fences -- it collapsed a
-# backtick-fenced block into a single inline <code> span (so every line
-# wrapped together) and ignored ~~~ entirely. Plerd now pre-processes fences
-# into <pre><code> blocks before handing the body to Markdown.
+# Markdown::Perl's GitHub mode renders both ``` and ~~~ fences as <pre><code>
+# blocks, preserving line breaks and turning a fence's language into a
+# "language-foo" class.
 
 my $blog_dir = Path::Class::Dir->new( "$FindBin::Bin/code_blocks_blog" );
 $blog_dir->rmtree;

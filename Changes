@@ -2,6 +2,31 @@ Revision history for Plerd
 
 {{$NEXT}}
 
+      - Plerd now processes Markdown with Markdown::Perl, running in its
+        GitHub-Flavored Markdown (GFM) mode, in place of Text::MultiMarkdown.
+        Fenced code blocks work at last -- both ``` and ~~~ fences, with a
+        fence's language becoming a "language-foo" class on its <code> element
+        -- as do GFM tables, strikethrough, and task lists, atop the whole of
+        the CommonMark spec. Syntax peculiar to MultiMarkdown is no longer
+        recognized.
+
+      - Plerd requires Perl 5.26 or later, a requirement inherited from
+        Markdown::Perl. Version 1.903 is the last release to support earlier
+        versions of Perl. It remains available from CPAN by way of "cpanm
+        Plerd@1.903", and the 1.x line continues to live on this project's
+        "maint/1.x" Git branch.
+
+      - All HTML markup found in a post's source file now passes through to
+        the published page, unfiltered. GFM ordinarily escapes tags such as
+        <iframe>, <script>, and <style>, because GitHub renders text from
+        strangers; Plerd, a single-user blogging platform, instead trusts that
+        its author meant to write the markup that they wrote.
+
+      - Markdown::Perl replaces Text::MultiMarkdown among this distribution's
+        dependencies. Capture::Tiny, which the test suite has long used while
+        receiving it by happenstance from the Text::Markdown stack, is now
+        declared outright.
+
 1.903 2026-06-26T01:15:00Z
 
       - Open Graph metadata tags are now generated for any post that has an

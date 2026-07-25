@@ -82,7 +82,7 @@
          "web" : "https://github.com/jmacdotorg/plerd"
       }
    },
-   "version" : "1.903_001",
+   "version" : "2.000",
    "x_authority" : "cpan:JMAC",
    "x_contributors" : [
       "Christian Sánchez <sanchezchristian@gmail.com>",
