@@ -24,6 +24,10 @@ my $markdown = Markdown::Perl->new(
     mode                    => 'github',
     # Drop '"' so literal quotes survive for Plerd::SmartyPants to curl.
     html_escaped_characters => '&<>',
+    # GitHub-Flavored Markdown escapes raw <iframe>, <script>, <style> and
+    # similar tags, since GitHub renders untrusted input. A blog author writes
+    # their own source files, so let these through.
+    disallowed_html_tags    => [],
 );
 sub markdown { $markdown->convert( $_[0] ) }
 

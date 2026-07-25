@@ -227,6 +227,8 @@ Plerd processes your posts with [Markdown::Perl](https://metacpan.org/pod/Markdo
 in its GitHub-Flavored Markdown (GFM) mode. This means you get the full CommonMark spec, including fenced code blocks, plus GFM extensions such as tables, strikethrough, and task lists. For a full syntax
 reference, see [pmarkdown supported syntax](https://github.com/mkende/pmarkdown/blob/main/Syntax.md).
 
+Plerd departs from GFM in one respect: it passes all HTML markup found in a post's source file to its published output, unfiltered. Because Plerd is intended as a single-user blogging platform, it trusts that all HTML tags included in a post are present with the author's intent, and should be rendered as such.
+
 ### Webmention
 
 Plerd supports [Webmention](https://jmac.org/webmention/), an open technology that allows websites to send simple "Hey, this page of mine contains a link to that page of yours!" messages to other websites. If the linking page employs [Microformats2](http://microformats.io) metadata, then the target page can choose to display salient information about the mention, such as its author, or a summary of its content. It can adjust the format of this display depending upon the mention's apparent type -- a "like", a repost, a comment-style response, and so on.
