@@ -15,6 +15,7 @@ use Plerd::Util;
 use Plerd::Init;
 use Cwd;
 use Path::Class::Dir;
+use Pod::Usage qw(pod2usage);
 
 use Text::Wrap qw(wrap);
 
@@ -26,13 +27,26 @@ my $process_webmentions = 0;
 my $rebuild_webmentions = 0;
 my $config_file;
 my $init_path;
+my $help;
+my $show_version;
 GetOptions(
     'send-webmentions'    => \$webmention_enabled,
     'process-webmentions' => \$process_webmentions,
     'rebuild-webmentions' => \$rebuild_webmentions,
     'config=s'            => \$config_file,
     'init:s'              => \$init_path,
-);
+    'help'                => \$help,
+    'version'             => \$show_version,
+) or pod2usage( -exitval => 2, -verbose => 0 );
+
+if ( $help ) {
+    pod2usage( -exitval => 0, -verbose => 1 );
+}
+
+if ( $show_version ) {
+    print "plerdall is part of Plerd $Plerd::VERSION\n";
+    exit 0;
+}
 
 if ($process_webmentions or $rebuild_webmentions) {
     die "Plerd ended its experimental Webmention receipt support in version "
@@ -114,6 +128,18 @@ file that should have accompanied this distribution. It is also
 available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
+
+=head2 help
+
+ bin/plerdwatcher --help
+
+Print this documentation and exit.
+
+=head2 version
+
+ bin/plerdwatcher --version
+
+Print the running version of Plerd and exit.
 
 =head2 config
 
