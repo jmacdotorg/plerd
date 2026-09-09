@@ -14,6 +14,7 @@ use App::Daemon qw( daemonize );
 use Try::Tiny;
 use Log::Log4perl qw( :easy );
 use Getopt::Long;
+use Pod::Usage qw(pod2usage);
 
 use Plerd;
 use Plerd::Util;
@@ -21,11 +22,24 @@ use Plerd::Util;
 my $webmention_enabled = 0;
 my $webmention_port  = 0;
 my $config_file;
+my $help;
+my $show_version;
 GetOptions(
     'config=s'              => \$config_file,
     'send-webmentions'      => \$webmention_enabled,
     'receive-webmentions=i' => \$webmention_port,
-);
+    'version'               => \$show_version,
+    'help'                  => \$help,
+) or pod2usage( -exitval => 2, -verbose => 0 );
+
+if ( $help ) {
+    pod2usage( -exitval => 0, -verbose => 1 );
+}
+
+if ( $show_version ) {
+    print "plerdwatcher is part of Plerd $Plerd::VERSION\n";
+    exit 0;
+}
 
 if ($webmention_port) {
     die "Plerd ended its experimental Webmention receipt support in version "
@@ -162,6 +176,18 @@ file that should have accompanied this distribution. It is also
 available online at L<https://github.com/jmacdotorg/plerd#plerd>.
 
 =head1 OPTIONS
+
+=head2 help
+
+ bin/plerdwatcher --help
+
+Print this documentation and exit.
+
+=head2 version
+
+ bin/plerdwatcher --version
+
+Print the running version of Plerd and exit.
 
 =head2 config
 
